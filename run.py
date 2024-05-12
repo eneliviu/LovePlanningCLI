@@ -3,6 +3,8 @@
 import gspread
 from google.oauth2.service_account import Credentials
 import regex as re
+from tabulate import tabulate
+import pprint
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -99,25 +101,35 @@ def user_register():
     user_email = input('Please enter your pasword: ')
     validate_user_email(user_email)
 
+def make_dict_from_nested_lists(list_data:list[list]) -> dict:
+    '''
+    Takes the google sheet data as list of lists and creats a dictionary using 
+    dictionary comprehension.
+    The keys are the values in the first list (list_data[0]) of the list_data entry.
+    Each dictionary key receives a list of values from the remaining lists of list_data argument.        
+    '''
+    d_keys = list_data[0]
+    return {d_keys[i]:[s[i] for s in list_data[1:]] for i in range(len(d_keys)) }  
 
-# Registered users:
 
-def validate_username(user_name:str):
+# For Registered Users:
+
+def validate_username(user_name:str) -> bool:
     '''
     The name string must not be empty ot contain
     alphanumeric and/or underscores. It works for registered users, 
     as well as for new users trying to register.
     '''
     try: 
-        if len(user_name) < 2:
-            raise NameError('Username should not contain at least three characters')
+        if len(user_name) < 4:
+            raise NameError('Username should not contain at least four characters')
     except NameError as e:
         print(f'Invalid username: {e}, please try again.\n')
         return False
     
     return True
 
-def match_user_name(user_data:dict, user_name:str):
+def match_user_name(user_data:dict, user_name:str) -> bool:
     '''
     Validates existing usernames by matching them against the
     records in the 'username'- column of the 'users'- sheet.  
@@ -146,66 +158,58 @@ def match_user_passwords(user_data:dict, user_name:str, user_password:str) -> bo
         print('Passwords do not match, please try again')
         return False
 
-def user_login():
-
+def user_login() -> list:
+    '''
+    Validates credentials (username and password) from user input.
+    The while-loop runs until the user enters the correct data. 
+    Returns the user data from the 'tasks'- google sheet as a dictionary with 
+    the keys corresponig to the column names and the values as the column data.
+    '''
     while True:
 
-        user_input = input('Please enter your username and password separated by comma:')
+        user_input = input('Please enter your username and password separated by comma :')
         user_input = user_input.split(',')
         user_name = user_input[0].strip()
-        user_password  = user_input[1].strip()
+        user_password = user_input[1].strip()
 
         if validate_username(user_name):
-            print(user_name)
             users = SHEET.worksheet('users')
             user_data = users.get_all_values()
-            d_keys = user_data[0]
-            user_data = {d_keys[i]:[s[i] for s in user_data[1:]] for i in range(len(d_keys)) }
+            user_data = make_dict_from_nested_lists(user_data)
 
             if match_user_name(user_data,
                                 user_name) & \
                 match_user_passwords(user_data,
                                     user_name,
                                     user_password):
-                print('Login successful!')
+                
             
                 break
     
-    print(user_data)
+    user_id = user_data['user_id'][user_data['user_name'].index(user_name)]
+    return(user_id)
     
-    return user_data
 
 def user_help():
     print('This is the functionality')
 
-def exit_app():
-    print('Exit')
 
-def task_handler():
-    '''
+def list_tasks(user_id:str):
+    tasks = SHEET.worksheet('tasks')
+    task_data = tasks.get_all_values()
+    user_task = make_dict_from_nested_lists(task_data)
+
+    idx_task = [i for i in range(len(user_task['user_id'])) if user_task['user_id'][i] == user_id]
+    user_task = [t[1:] for t in [task_data[1:][i] for i in idx_task]]
     
-    '''
-    print('You are logged in, please enter an option:')
-    print('1 to list the active tasks')
-    print('2 to add new tasks')
-    print('3 to delete tasks')
-    print('4 to return to the main menu:')
+    print('\n Your tasks are listed below:')
+    print(tabulate(user_task, headers = task_data[0][1:]))
 
-    while True:
-        user_choice = int(input())
-        if(user_choice not in [1,2,3,4]):
-            print('Please enter a valid option: 1 (View), 2 (Add), 3 (Delete), 4 (Return)')
-        else:
-            if user_choice == 1:
-                print('User choce 1')
-            elif user_choice == 2:
-                user_register()
-            elif user_choice == 3:
-                user_help()
-            else:
-                exit_app() 
-            break
-
+    # Output Formatting: https://www.geeksforgeeks.org/python-output-formatting/
+    # d_keys = list(user_task.keys())[2:]
+    # for key in d_keys:
+    #     print(key, ":", [user_task[key][i] for i in idx_task])
+    
 
 def main_menu_options():
     '''
@@ -214,33 +218,64 @@ def main_menu_options():
     from the user via the terminal. The loop will repeatedly
     request user input data, until it is valid. 
     '''
-    print('Please enter an option:')
-    print('Press 1 to Log in:')
-    print('Press 2 to Register:')
-    print('Press 3 to Exit:')
+    print('Please select an option: 1 (Log in), 2 (Register), 3 (Help) or 4 (Exit):')
 
     while True:
-        input_option = int(input())
+        input_option = int(input('Enter your choice: '))
         if(input_option not in [1,2,3,4]):
-            print('Please enter a valid option: 1 (Log in), 2 (Register), 3 (Help) or 4 (Exit) application')
+            print('Please enter a valid option: 1 (Log in), 2 (Register), 3 (Help) or 4 (Exit):')
         else:
             break
     return input_option
 
-
 def handle_input_options(input_option:int):
-    if input_option == 1:
-        user_login()
-    elif input_option == 2:
-        user_register()
-    elif input_option == 3:
-        user_help()
-    else:
-        exit_app()
+    '''
+    Takes the menu selection from user input and handles the menu item logic.  
+    '''
+    while True:
+        if input_option == 1:
+            user_cred = user_login() # validates and returns credentials for regsistered users
+            task_handler(user_cred) # takes user_id and returns the user tasks
+
+            break
+        elif input_option == 2:
+            user_register()
+            break
+        elif input_option == 3:
+            user_help()
+        else:
+            break
+
+
+def task_handler(user_data) -> None:
+    '''
+    Lists task handling options for registered users.
+    Each option  
+    '''
+    print('\nLogin successful! Please enter an option:')
+    print('1 (view active tasks), 2 (add task), 3 (delete task), 4 (exit)')
+
+    while True:
+        user_choice = int(input())
+        if(user_choice not in [1,2,3,4]):
+            print('Please enter a valid option:')
+            print('1 (view active tasks), 2 (add task), 3 (delete task), 4 (exit)')
+        else:
+            if user_choice == 1:
+                list_tasks(user_data)
+                break
+            elif user_choice == 2:
+                user_register()
+            elif user_choice == 3:
+                user_help()
+            else:
+                print('You are logged out')
+                break
+
 
 
 def main():
-    print('Welcome to LovePlanning, the ultimate task Management tool! :\n')
+    print('Welcome to LovePlanning, the Ultimate Task Management Tool!')
     input_option = main_menu_options()
     handle_input_options(input_option)
 
