@@ -124,14 +124,29 @@ def match_user_name(user_data:dict, user_name:str):
     '''
     while True:
         if user_name in user_data['user_name']:
-            print('Valid username')
             return True
         else:
             print('Username not found, please try again')
             return False
 
+def match_user_passwords(user_data:dict, user_name:str, user_password:str) -> bool:
+    '''
+    Validates existing passwords by matching them against the
+    records in the 'password'- column of the 'users'- sheet.  
+    '''
+    users = SHEET.worksheet('users')
+    user_data = users.get_all_values()
+    d_keys = user_data[0]
+    user_data = {d_keys[i]:[s[i] for s in user_data[1:]] for i in range(len(d_keys)) }
+    password = user_data['password'][user_data['user_name'] == user_name]
+    
+    if user_password == password:
+        return True
+    else:
+        print('Passwords do not match, please try again')
+        return False
 
-def fn():
+def user_login():
 
     while True:
 
@@ -159,40 +174,6 @@ def fn():
     print(user_data)
     
     return user_data
-
-
-def match_user_passwords(user_data:dict, user_name:str, user_password:str) -> bool:
-    '''
-    Validates existing passwords by matching them against the
-    records in the 'password'- column of the 'users'- sheet.  
-    '''
-    users = SHEET.worksheet('users')
-    user_data = users.get_all_values()
-    d_keys = user_data[0]
-    user_data = {d_keys[i]:[s[i] for s in user_data[1:]] for i in range(len(d_keys)) }
-    password = user_data['password'][user_data['user_name'] == user_name]
-    
-    if user_password == password:
-        print('Valid password')
-        return True
-    else:
-        print('Passwords do not match, please try again')
-        return False
-
-def user_login():
-
-    user_input = input('Please enter your user name: ')
-    username_ok = validate_username(user_name)
-
-    
-    user_password = input('Please enter your pasword: ')
-    user_password_ok = match_user_passwords(user_name, user_password) 
-
-    if username_ok & user_password_ok:
-        print('Loggin succesfull')
-        task_handler()
-
-
 
 def user_help():
     print('This is the functionality')
@@ -249,7 +230,7 @@ def main_menu_options():
 
 def handle_input_options(input_option:int):
     if input_option == 1:
-        fn()
+        user_login()
     elif input_option == 2:
         user_register()
     elif input_option == 3:
