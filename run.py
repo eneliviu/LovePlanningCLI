@@ -133,15 +133,13 @@ def match_user_name(user_data:dict, user_name:str):
 
 def fn():
 
-    user_input = input('Please enter your username and password separated by comma:')
-    user_input = user_input.split(',')
-    user_name = user_input[0].strip()
-    user_password  = user_input[1].strip()
-    
- 
-    
-
     while True:
+
+        user_input = input('Please enter your username and password separated by comma:')
+        user_input = user_input.split(',')
+        user_name = user_input[0].strip()
+        user_password  = user_input[1].strip()
+
         if validate_username(user_name):
             print(user_name)
             users = SHEET.worksheet('users')
