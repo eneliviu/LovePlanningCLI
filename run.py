@@ -114,20 +114,39 @@ def make_dict_from_nested_lists(list_data:list[list]) -> dict:
 
 # For Registered Users:
 
+
+def validate_log_input(user_input:str) -> bool:
+    '''
+    Check if the user name and passord login input contains
+    two non-empty strings separated by comma. 
+    '''
+
+    try:
+        if len(user_input[0]) < 4:
+            raise ValueError('Please enter a valid username')
+    except ValueError as e:
+        print(f'')
+
+    return True
+
+
+
 def validate_username(user_name:str) -> bool:
     '''
-    The name string must not be empty ot contain
-    alphanumeric and/or underscores. It works for registered users, 
-    as well as for new users trying to register.
+    The name string must not be empty and must cotain two strings separated by comma,
+    It works for registered users, as well as for new users trying to register.
     '''
     try: 
         if len(user_name) < 4:
-            raise NameError('Username should not contain at least four characters')
-    except NameError as e:
+            raise ValueError('Username should not contain at least four characters')
+    except ValueError as e:
         print(f'Invalid username: {e}, please try again.\n')
         return False
     
     return True
+
+
+
 
 def match_user_name(user_data:dict, user_name:str) -> bool:
     '''
@@ -168,15 +187,29 @@ def user_login() -> list:
     while True:
 
         user_input = input('Please enter your username and password separated by comma :')
-        user_input = user_input.split(',')
-        user_name = user_input[0].strip()
-        user_password = user_input[1].strip()
 
+        # Validate user_input: two strings separated by comma:
         if validate_username(user_name):
+
+            # Retrieve the input components: username [0] and password [1]
+            user_input = user_input.split(',')
+            user_name = user_input[0].strip()
+            user_password = user_input[1].strip()
+
+            # Get the user data from the 'users' Google worksheet:
             users = SHEET.worksheet('users')
             user_data = users.get_all_values()
+
+            # Create a dictionary from the user data (list of lists):
+            # keys: column names (worksheet header)
+            # values: column data (without the header).
             user_data = make_dict_from_nested_lists(user_data)
 
+            # Check if username and password exist:
+            # Username first, as there is no need to retrieve passords 
+            # for non-existing usernames. 
+        
+            # If everything True, break the while loop:
             if match_user_name(user_data,
                                 user_name) & \
                 match_user_passwords(user_data,
@@ -186,6 +219,7 @@ def user_login() -> list:
             
                 break
     
+    # Everything seems to be fine, return the user id:
     user_id = user_data['user_id'][user_data['user_name'].index(user_name)]
     return(user_id)
     
@@ -222,7 +256,7 @@ def main_menu_options():
 
     while True:
         input_option = int(input('Enter your choice: '))
-        if(input_option not in [1,2,3,4]):
+        if(input_option not in range(1, 5)):
             print('Please enter a valid option: 1 (Log in), 2 (Register), 3 (Help) or 4 (Exit):')
         else:
             break
@@ -235,7 +269,7 @@ def handle_input_options(input_option:int):
     while True:
         if input_option == 1:
             user_cred = user_login() # validates and returns credentials for regsistered users
-            task_handler(user_cred) # takes user_id and returns the user tasks
+            task_handler(user_cred)  # takes user_id and returns the user tasks
 
             break
         elif input_option == 2:
