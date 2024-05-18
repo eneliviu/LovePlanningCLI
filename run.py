@@ -179,6 +179,24 @@ def match_user_passwords(user_data:dict, user_name:str, user_password:str) -> bo
         print('Passwords do not match, please try again')
         return False
 
+
+def get_user_info(user_name:str) -> list[str]:
+    '''
+    Get the user info from the 'users' worksheet based on 
+    the username index. This is handy when there are many 
+    registered users since  does not require to import the 
+    entire worksheet data.
+    '''
+    users = SHEET.worksheet('users')
+    # usernames column from the worksheet (second column):
+    users_col = users.col_values(2) 
+    # Retrive the index of the username in the column; add 1 to account for the header
+    user_idx = users_col.index('jodo')+1
+    # Retrieve the row containig the user info based n the username index:
+    user_info = users.row_values(user_idx) 
+    return user_info
+
+
 def user_login() -> list:
     '''
     Validates credentials (username and password) from user input.
@@ -202,6 +220,9 @@ def user_login() -> list:
             # Get the user data from the 'users' Google worksheet:
             users = SHEET.worksheet('users')
             user_data = users.get_all_values()
+            
+            # Retrieve user information (row) from the 'users' worksheet:
+            # users.row_values( users.col_values(2).index('jodo')+1) 
 
             # Create a dictionary from the user data (list of lists):
             # keys: column names (worksheet header)
