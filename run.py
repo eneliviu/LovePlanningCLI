@@ -133,8 +133,10 @@ def validate_log_input(user_input:str) -> bool:
 
 def validate_username(user_name:str) -> bool:
     '''
-    The name string must not be empty and must cotain two strings separated by comma,
-    It works for registered users, as well as for new users trying to register.
+    Validate the user input for login option:
+    - The name and passord strings must not be empty;
+    - The input must contain two strings separated by comma;
+    It applies to registered users, as well as to new users trying to register.
     '''
     try: 
         if len(user_name) < 4:
@@ -180,9 +182,10 @@ def match_user_passwords(user_data:dict, user_name:str, user_password:str) -> bo
 def user_login() -> list:
     '''
     Validates credentials (username and password) from user input.
-    The while-loop runs until the user enters the correct data. 
-    Returns the user data from the 'tasks'- google sheet as a dictionary with 
-    the keys corresponig to the column names and the values as the column data.
+    - The while-loop runs until the user enters the correct data. 
+    - Returns the user data from the 'tasks'- google sheet as a dictionary
+        - keys: column names (worksheet header)
+        - values: column data (without header)
     '''
     while True:
 
@@ -209,7 +212,7 @@ def user_login() -> list:
             # Username first, as there is no need to retrieve passords 
             # for non-existing usernames. 
         
-            # If everything True, break the while loop:
+            # If username and password OK, break the while loop:
             if match_user_name(user_data,
                                 user_name) & \
                 match_user_passwords(user_data,
