@@ -290,6 +290,7 @@ def user_login() -> list:
             user_data = get_user_info(USERS, user_name, 'user_name')
             if match_user_credentials(user_data, user_name, user_password):
                 print('Login successful!\n')
+                
                 break
 
     return user_data
@@ -321,16 +322,31 @@ def delete_task(user_data:dict) -> None:
                             'Press Yes(y) to proceed, or No(n) to return: ')
     
     if validate_static_options(remove_choice, STATIC_OPTIONS):
+  
+        task_remove_idx = [int(k) for k in task_remove_idx.split(',')]
+        
         if remove_choice.lower() == 'y':
             task_remove_idx = int(task_remove_idx)
             tasks, task_header = get_sheet_meta(TASKS)
             userid_col = get_user_column(tasks, 'user_id', task_header)           
-            task_idx = [i+1 for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
-            task_idx = task_idx[task_remove_idx]
+            row_idx = [i  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
+    
+            row_idx = [row_idx[task_remove_idx]]
             
+            # Check that user input task index corresponds with the task indexes from the worksheet:
+
+            def validate_task_index(task_remove_idx:list[int], row_idx:list[int]):
+                if all([True for k in task_remove_idx if k in  row_idx]):
+                    return True
+                else:
+
+
             for k in task_remove_idx:
-                tasks.delete_row(k)
+                tasks.delete_rows(task_idx[k])
             print(f'Task {task_remove_idx - 1} deleted.')
+
+            # Update the task_id for the remaining tasks:
+
 
         else:
             print('Operation cancelled.')  
