@@ -258,7 +258,7 @@ def get_user_info(sheet_name:str, user_name:str, column_name:str) -> dict:
 
 
 
-def list_tasks_simple(user_id:str, worksheet_name:str):
+def list_tasks_simple(user_id:str, worksheet_name:str) -> tuple[list[int], list[list[str]]]:
     '''
     Get the tasks by the user_id of a registered user.
     Returns the nested list of tasks (first return) and
@@ -308,14 +308,14 @@ def user_login() -> list:
     return user_data
     
 
-def user_help():
+def user_help()-> None:
     print('This is the help')
     return 
 
 
 
 
-def delete_task(user_id:str):
+def delete_task(user_data:dict) -> None:
     task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
                             'Use commas to separate multiple entries: \n')
     
