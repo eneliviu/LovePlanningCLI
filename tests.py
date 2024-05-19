@@ -24,60 +24,10 @@ print(d)
 #     return user_task
 
 
-
-
-def user_login() -> list:
-    '''
-    Validates credentials (username and password) from user input.
-    - The while-loop runs until the user enters the correct data. 
-    - Returns the user data from the 'tasks'- google sheet as a dictionary
-        - keys: column names (worksheet header)
-        - values: column data (without header)
-    '''
+task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
+                            'Use commas to separate multiple entries: \n')
     
-    while True:
+    #validate_task_id()
 
-        user_input = input('Please enter your username and password separated by comma: ')
-
-        # Validate user_input: two strings separated by comma:
-        if validate_login_input(user_input):
-
-            # Retrieve the input components: username [0] and password [1]
-            user_input = user_input.split(',')
-            user_name = user_input[0].strip()
-            user_password = user_input[1].strip()
-
-            # Get the user data from the 'users' Google worksheet:
-            users = SHEET.worksheet(USERS)
-            user_data = users.get_all_values()
-            
-            # Retrieve user information (row) from the 'users' worksheet:
-            # users.row_values( users.col_values(2).index('jodo')+1) 
-
-            # Create a dictionary from the user data (list of lists):
-            # keys: column names (worksheet header)
-            # values: column data (without the header).
-            #user_data = make_dict_from_nested_lists(user_data)
-
-            user_data = get_user_info(USERS, user_name, 'user_name')
-
-            # Check if username and password exist:
-            # Username first, as there is no need to retrieve passords 
-            # for non-existing usernames. 
-        
-            # If username and password OK, break the while loop:
-            # if match_user_name(user_data,
-            #                     user_name) & \
-            #     match_user_passwords(user_data,
-            #                         user_name,
-            #                         user_password):
-            #     break
-
-            if match_user_credentials(user_data, user_name, user_password):
-                break
-    
-    # Everything seems to be fine, return the user id:
-    user_id = user_data['user_id'][user_data['user_name'].index(user_name)]
-    #user_tasks = list_tasks_simple(user_id)
-
-    return user_id
+    print(f'you selected: {task_remove_idx}')
+    task_remove_idx = int(task_remove_idx) + 1 

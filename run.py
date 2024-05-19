@@ -1,10 +1,16 @@
+
+#=================================================================#
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
+#=================================================================#
 
 import gspread
 from google.oauth2.service_account import Credentials
 import regex as re
 from tabulate import tabulate
 import pprint
+import os
+
+#=================================================================#
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -19,9 +25,23 @@ SHEET = GSPREAD_CLIENT.open('LovePlanning')
 
 USERS = 'users'
 TASKS = 'tasks'
+STATIC_OPTIONS = ['y', 'n']
+#=================================================================#
+# --------------------- For New Users: ---------------------------#
 
 
-# New users
+def clean_cli() -> None:
+# https://www.geeksforgeeks.org/clear-screen-python/
+    if os.name == 'nt':
+        _ = os.system('cls')
+    else:
+        _ = os.system('clear')
+
+def clear_output(clean_cli_choice:str) -> None:
+    if validate_static_options(clean_cli_choice, STATIC_OPTIONS):
+        clean_cli()
+
+
 def validate_password_length(user_data:str):
     '''
     Validate entry password for new users: 
@@ -115,9 +135,8 @@ def make_dict_from_nested_lists(list_data:list[list]) -> dict:
     d_keys = list_data[0]
     return {d_keys[i]:[s[i] for s in list_data[1:]] for i in range(len(d_keys)) }  
 
-
-# For Registered Users:
-
+#=================================================================#
+# ------------------- For Registered Users: ----------------------#
 
 def validate_login_input(user_input:str) -> bool:
     '''
@@ -132,8 +151,6 @@ def validate_login_input(user_input:str) -> bool:
         print(f'')
 
     return True
-
-
 
 def validate_username(user_name:str) -> bool:
     '''
@@ -151,9 +168,6 @@ def validate_username(user_name:str) -> bool:
     
     return True
 
-
-
-
 def match_user_name(user_data:dict, user_name:str) -> bool:
     '''
     Validates existing usernames by matching them against the
@@ -165,24 +179,6 @@ def match_user_name(user_data:dict, user_name:str) -> bool:
         else:
             print('Username not found, please try again')
             return False
-
-# def match_user_passwords(user_data:dict, user_name:str, user_password:str) -> bool:
-#     '''
-#     Validates existing passwords by matching them against the
-#     records in the 'password'- column of the 'users'- sheet.  
-#     '''
-#     users = SHEET.worksheet('users')
-#     user_data = users.get_all_values()
-#     d_keys = user_data[0]
-#     user_data = {d_keys[i]:[s[i] for s in user_data[1:]] for i in range(len(d_keys)) }
-#     password = user_data['password'][user_data['user_name'] == user_name]
-    
-#     if user_password == password:
-#         return True
-#     else:
-#         print('Passwords do not match, please try again')
-#         return False
-
 
 def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> bool:
     '''
@@ -210,7 +206,6 @@ def get_sheet_meta(worksheet_name:str) -> list:
     users = SHEET.worksheet(worksheet_name)
     users_header = users.row_values(1)
     return users, users_header
-
 
 def get_user_column(worksheet:gspread.worksheet.Worksheet, column_name:str, header:list[str]) -> list[str]:
     '''
@@ -256,9 +251,7 @@ def get_user_info(sheet_name:str, user_name:str, column_name:str) -> dict:
 
     return dict(zip(user_header, user_info))
 
-
-
-def list_tasks_simple(user_id:str, worksheet_name:str) -> tuple[list[int], list[list[str]]]:
+def list_tasks_simple(user_data:dict, worksheet_name:str) -> tuple[list[int], list[list[str]]]:
     '''
     Get the tasks by the user_id of a registered user.
     Returns the nested list of tasks (first return) and
@@ -270,7 +263,7 @@ def list_tasks_simple(user_id:str, worksheet_name:str) -> tuple[list[int], list[
     userid_col = get_user_column(tasks, 'user_id', task_header)
 
     # Get all the row values for the tasks associated to an user_id:   
-    tasks_idx = [i+1 for i in range(len(userid_col)) if userid_col[i] == user_id]
+    tasks_idx = [i+1 for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
     task_info = [tasks.row_values(int(t_ixd))[1:] for t_ixd in tasks_idx]
     
     return task_info, task_header
@@ -284,12 +277,10 @@ def user_login() -> list:
         - values: column data (without header)
     '''
     while True:
-
         user_input = input('Please enter your username and password separated by comma: ')
-
+        
         # Validate user_input: two strings separated by comma:
         if validate_login_input(user_input):
-
             # Retrieve the input components: username [0] and password [1]
             user_input = user_input.split(',')
             user_name = user_input[0].strip()
@@ -297,56 +288,55 @@ def user_login() -> list:
 
             # Get the user data from the 'users' Google worksheet:
             user_data = get_user_info(USERS, user_name, 'user_name')
-
             if match_user_credentials(user_data, user_name, user_password):
+                print('Login successful!\n')
                 break
-    
-    # Everything seems to be fine, return the user id:
-    #user_id = user_data['user_id'][user_data['user_name'].index(user_name)]
-    #user_tasks = list_tasks_simple(user_id)
 
     return user_data
-    
 
-def user_help()-> None:
+def user_help() -> None:
     print('This is the help')
     return 
 
-
-
-
+def validate_static_options(remove_choice:str, options:list[str]) -> bool:
+    while True:
+        if remove_choice.lower() not in options:
+            remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return: ')
+        else:
+            break
+            
+    return True
+    
 def delete_task(user_data:dict) -> None:
+    '''
+    Delete one or more selected tasks by task id.
+    The function removes the rows corresponding to the selected tasks from the 'tasks'Google worksheet.
+    The task ids separated by commas are entered by the user.
+    After input validation, the task deletion (yes or no) is completed according to the user choice.
+    After completion, the user returns to the main menu.
+    '''
     task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
                             'Use commas to separate multiple entries: \n')
+    remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
+                            'Press Yes(y) to proceed, or No(n) to return: ')
     
-    #validate_task_id()
+    if validate_static_options(remove_choice, STATIC_OPTIONS):
+        if remove_choice.lower() == 'y':
+            task_remove_idx = int(task_remove_idx)
+            tasks, task_header = get_sheet_meta(TASKS)
+            userid_col = get_user_column(tasks, 'user_id', task_header)           
+            task_idx = [i+1 for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
+            task_idx = task_idx[task_remove_idx]
+            
+            for k in task_remove_idx:
+                tasks.delete_row(k)
+            print(f'Task {task_remove_idx - 1} deleted.')
 
-    print(f'you selected: {task_remove_idx}')
-    task_remove_idx = int(task_remove_idx) + 1 
+        else:
+            print('Operation cancelled.')  
     
-    #tasks_list, _ = list_tasks_simple(user_id)
-    # tasks_list = [t for t in tasks_list if t[0] in task_remove_idx]
 
-    tasks, task_header = get_sheet_meta(TASKS)
-
-    users_col = get_user_column(tasks, column_name, user_header)
-
-    # Retrieve the row containig the user info based n the username index:
-    user_info = get_username_index(users, users_col, user_name)
-
-
-
-    userid_col = get_user_column(tasks, 'user_id', task_header)
-    
-    tasks_list = [t for t in userid_col[1:] if t[0] in task_remove_idx]
-    
-    for k in task_remove_idx:
-        tasks.delete_row(k)
-
-    print(f'Task {task_remove_idx - 1} deleted.')
-
-
-def main_menu_options():
+def main_menu_options() -> None:
     '''
     Gets input data to register a new user. 
     Run a while loop to collect a valid string of data
@@ -363,7 +353,7 @@ def main_menu_options():
             break
     return input_option
 
-def handle_input_options(input_option:int):
+def handle_input_options(input_option:int) -> None:
     '''
     Takes the menu selection from user input and handles the menu item logic.  
     '''
@@ -379,29 +369,26 @@ def handle_input_options(input_option:int):
             user_help()
             break
         else:
-            break
+            return False
 
 def add_new_task():
     pass
 
-
 def task_handler(user_data:dict) -> None:
     '''
     List and handles the available options for registered users:\n
-    '1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Exit)'
+    '1 (View), 2 (Add), 3 (Delete), 4 (Exit)'
     '''
-    print('Login successful! Please enter an option:\n'
-        '1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Exit)')
+    print(' Please enter an option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit): ')
 
     while True:
         user_choice = int(input())
         if(user_choice not in range(1, 5)):
-            print('Please enter a valid option:')
-            print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Exit)')
+            print('Please enter a valid option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit)')
         else:
             if user_choice != 4:
-                task_info, task_header = list_tasks_simple(user_data['user_id'], TASKS)
-                print('User tasks retrieved.')
+                task_info, task_header = list_tasks_simple(user_data, TASKS)
+                print('User tasks retrieved.\n')
             else:
                 break # Exit the outer if-else
 
@@ -410,19 +397,35 @@ def task_handler(user_data:dict) -> None:
                         print('You have no scheduled tasks.')
                 else:
                     print('Your tasks are listed below:')
+                    # Formatted user tasks console print
                     print(tabulate(task_info, headers = task_header[1:]))
-                break
-            elif user_choice == 2: 
+                    clean_cli_choice = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
+                    clear_output(clean_cli_choice)
+                    task_handler(user_data)
+                #break
+            elif user_choice == 2: # Add ask
                 add_new_task()
-            elif user_choice == 3:
+            elif user_choice == 3: # Delete task
+                print('Your tasks are listed below:')
+                # Formatted user tasks console print
+                print(tabulate(task_info, headers = task_header[1:]))
                 delete_task(user_data)
+                clean_cli_choice = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
+                clear_output(clean_cli_choice)
+                task_handler(user_data)  
             else:
-                print('You are now logged out')
-                break
+                return False
+                
 
-def main():
+#=================================================================#
+# -------------- Run the App: ---------------------------#
+
+def main() -> None:
     print('Welcome to LovePlanning, the Ultimate Task Management Tool!')
     input_option = main_menu_options()
-    handle_input_options(input_option)
+    while True:
+        if not handle_input_options(input_option):
+            print('You are now logged out')
+            break
 
 main()
