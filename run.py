@@ -318,34 +318,37 @@ def delete_task(user_data:dict) -> None:
     '''
     task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
                             'Use commas to separate multiple entries: \n')
+                # Check that user input task index corresponds with the task indexes from the worksheet:
+    def validate_task_index(task_remove_idx:list[int], row_idx:list[int]):
+        if all([True for k in task_remove_idx if k in  row_idx]):
+            return True
+        else:
+            pass
+
     remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
                             'Press Yes(y) to proceed, or No(n) to return: ')
     
     if validate_static_options(remove_choice, STATIC_OPTIONS):
-  
-        task_remove_idx = [int(k) for k in task_remove_idx.split(',')]
+
+        if len(task_remove_idx) > 1:
+            task_remove_idx = [int(k) - 1 for k in task_remove_idx.split(',')]
+        else:
+            task_remove_idx = task_remove_idx[0] - 1 
         
         if remove_choice.lower() == 'y':
             task_remove_idx = int(task_remove_idx)
             tasks, task_header = get_sheet_meta(TASKS)
             userid_col = get_user_column(tasks, 'user_id', task_header)           
-            row_idx = [i  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
+            row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
     
-            row_idx = [row_idx[task_remove_idx]]
+            row_idx = [row_idx[task_remove_idx1]]
             
-            # Check that user input task index corresponds with the task indexes from the worksheet:
-
-            def validate_task_index(task_remove_idx:list[int], row_idx:list[int]):
-                if all([True for k in task_remove_idx if k in  row_idx]):
-                    return True
-                else:
-
-
-            for k in task_remove_idx:
-                tasks.delete_rows(task_idx[k])
+            for k in row_idx:
+                tasks.delete_rows(k)
             print(f'Task {task_remove_idx - 1} deleted.')
 
             # Update the task_id for the remaining tasks:
+            
 
 
         else:
