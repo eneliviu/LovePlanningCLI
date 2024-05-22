@@ -124,7 +124,7 @@ def user_register():
     user_email = input('Please enter your pasword: ')
     validate_user_email(user_email)
 
-def make_dict_from_nested_lists(list_data:list[list]) -> dict:
+def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
     '''
     Takes the google sheet data as list of lists and creats a dictionary using 
     dictionary comprehension. The keys are the values in the first list (list_data[0]) of the list_data entry.
@@ -132,8 +132,13 @@ def make_dict_from_nested_lists(list_data:list[list]) -> dict:
     Handy for printing the user data or for handling data inputs (though with care when there are 
     many regsitered users)        
     '''
-    d_keys = list_data[0]
-    return {d_keys[i]:[s[i] for s in list_data[1:]] for i in range(len(d_keys)) }  
+
+    #task_info.insert(0,task_header[1:])
+    #d_keys = list_data[0]
+
+    list_data.copy().insert(0, d_keys) # shallow list copy to avoid changing the original variable 
+
+    return {d_keys[i]:[s[i] for s in list_data] for i in range(len(d_keys)) }  
 
 #=================================================================#
 # ------------------- For Registered Users: ----------------------#
@@ -251,22 +256,23 @@ def get_user_info(sheet_name:str, user_name:str, column_name:str) -> dict:
 
     return dict(zip(user_header, user_info))
 
-def list_tasks_simple(user_data:dict, worksheet_name:str) -> tuple[list[int], list[list[str]]]:
+def list_tasks_simple(user_data:dict, worksheet_name:str) -> tuple[list[list[str]], list[str]]:
     '''
     Get the tasks by the user_id of a registered user.
     Returns the nested list of tasks (first return) and
     the header of the 'tasks' worksheet (second return).  
     '''
-    tasks, task_header = get_sheet_meta(worksheet_name)
 
+    tasks, task_header = get_sheet_meta(worksheet_name)
     # Get the data in the 'user_id' column
     userid_col = get_user_column(tasks, 'user_id', task_header)
 
     # Get all the row values for the tasks associated to an user_id:   
     tasks_idx = [i+1 for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
     task_info = [tasks.row_values(int(t_ixd))[1:] for t_ixd in tasks_idx]
-    
-    return task_info, task_header
+    #make_dict_from_nested_lists(task_info, task_header[1:])
+
+    return tasks, task_info, task_header 
 
 def user_login() -> list:
     '''
@@ -299,6 +305,14 @@ def user_help() -> None:
     print('This is the help')
     return 
 
+def validate_task_index(task_remove_idx:list[int], row_idx:list[int]) -> bool:
+    while True:
+        if all([True for k in task_remove_idx if k in  row_idx]):
+            return True
+        else:
+            break
+    return True
+    
 def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     while True:
         if remove_choice.lower() not in options:
@@ -308,7 +322,7 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
             
     return True
     
-def delete_task(user_data:dict) -> None:
+def delete_task(user_data:dict, task_info:list[list[str]], task_header:list[str]) -> None:
     '''
     Delete one or more selected tasks by task id.
     The function removes the rows corresponding to the selected tasks from the 'tasks'Google worksheet.
@@ -316,38 +330,54 @@ def delete_task(user_data:dict) -> None:
     After input validation, the task deletion (yes or no) is completed according to the user choice.
     After completion, the user returns to the main menu.
     '''
+
     task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
                             'Use commas to separate multiple entries: \n')
-                # Check that user input task index corresponds with the task indexes from the worksheet:
-    def validate_task_index(task_remove_idx:list[int], row_idx:list[int]):
-        if all([True for k in task_remove_idx if k in  row_idx]):
-            return True
-        else:
-            pass
-
-    remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
+    
+    # Check that user input task index corresponds with the task indexes from the worksheet:
+    if validate_task_index(task_remove_idx):
+        remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
                             'Press Yes(y) to proceed, or No(n) to return: ')
     
+    # If the user inputs are valid, delete task(s) and update the remaining task_id cells 
+    # to start from 1: 
     if validate_static_options(remove_choice, STATIC_OPTIONS):
-
-        if len(task_remove_idx) > 1:
-            task_remove_idx = [int(k) - 1 for k in task_remove_idx.split(',')]
-        else:
-            task_remove_idx = task_remove_idx[0] - 1 
-        
         if remove_choice.lower() == 'y':
-            task_remove_idx = int(task_remove_idx)
-            tasks, task_header = get_sheet_meta(TASKS)
-            userid_col = get_user_column(tasks, 'user_id', task_header)           
-            row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
-    
-            row_idx = [row_idx[task_remove_idx1]]
+            #tasks, task_header = get_sheet_meta(TASKS)
+            #userid_col = get_user_column(tasks, 'user_id', task_header)           
+            #user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
             
-            for k in row_idx:
-                tasks.delete_rows(k)
-            print(f'Task {task_remove_idx - 1} deleted.')
+            taskid_col = get_user_column(tasks, 'task_id', task_header)
+            user_task_data = make_dict_from_nested_lists(task_info, task_header[1:])
+
+            # Subtract 1 form the task index for 0-based Python list indexing:
+            # Subset the worksheet rows to be deleted: 
+            if len(task_remove_idx) > 1:
+                task_remove_idx = [int(k) - 1 for k in task_remove_idx.split(',')]
+                row_idx = [user_row_idx[i] for i in task_remove_idx]
+                # Delete one row (task) at a time:
+                for k in row_idx:
+                    tasks.delete_rows(k)
+                    print(f'Task {k - 1} deleted.')
+            else:
+                task_remove_idx = int(task_remove_idx[0]) - 1 
+                row_idx = user_row_idx[task_remove_idx]
+                # Delete one row (task) at a time:
+                tasks.delete_rows(row_idx)
+                print(f'Task {k - 1} deleted.')
 
             # Update the task_id for the remaining tasks:
+            for k in user_task_data.keys():
+                del user_task_data[k][task_remove_idx]
+        
+            # Check if there any task left:
+            if (len(user_task_data['task_id'])==0):
+                print('There is no active task left in the list!')
+            else:
+                user_task_data['task_id'] = [i+1 for i in range(len(user_task_data['task_id']))]
+
+            # Update the worksheet:
+
             
 
 
@@ -418,8 +448,8 @@ def task_handler(user_data:dict) -> None:
                     print('Your tasks are listed below:')
                     # Formatted user tasks console print
                     print(tabulate(task_info, headers = task_header[1:]))
-                    clean_cli_choice = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
-                    clear_output(clean_cli_choice)
+                    clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
+                    clear_output(clean_cli)
                     task_handler(user_data)
                 #break
             elif user_choice == 2: # Add ask
@@ -429,8 +459,8 @@ def task_handler(user_data:dict) -> None:
                 # Formatted user tasks console print
                 print(tabulate(task_info, headers = task_header[1:]))
                 delete_task(user_data)
-                clean_cli_choice = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
-                clear_output(clean_cli_choice)
+                clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
+                clear_output(clean_cli)
                 task_handler(user_data)  
             else:
                 return False
