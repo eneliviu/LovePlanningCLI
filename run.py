@@ -349,62 +349,47 @@ def delete_task(user_data:dict,
     # to start from 1: 
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
-            user_task_data = make_dict_from_nested_lists(kwargs['task_info'], 
-                                                        kwargs['task_header'][1:])
-            
+            task_remove_idx = sorted(list(set([int(k) for k in task_remove_idx.split(',')])))
+            user_task_data = make_dict_from_nested_lists(kwargs['task_info'], kwargs['task_header'][1:])
             user_task_data['task_id'] = [int(i) for i in  user_task_data['task_id'] ]
 
-            # Subtract 1 form the task index for 0-based Python list indexing:
             # Subset the worksheet rows to be deleted: 
-            if len(task_remove_idx) > 1:
-                task_remove_idx = sorted(list(set([int(k) for k in task_remove_idx.split(',')])))
-                user_row_remove_idx = [user_task_data['task_id'].index(i) for i in user_task_data['task_id'] \
-                                        if i in task_remove_idx]
-                #rows_to_delete = [kwargs['tasks_idx'][i] for i in user_row_remove_idx]
+            user_row_remove_idx = [user_task_data['task_id'].index(i) for i in user_task_data['task_id'] \
+                                    if i in task_remove_idx]
 
-                # Delete one row (task) at a time:      
-                reduce_idx = 0
-                for k in user_row_remove_idx:
-                    row_to_delete = [kwargs['tasks_idx'][i] - reduce_idx for i in user_row_remove_idx if i == k]
-                    kwargs['tasks'].delete_rows(row_to_delete[0])
-                    print(f'Task {k} deleted...Row {row_to_delete[0]} deleted.')
-                
-                # Update task index:
-                userid_col = get_user_column(kwargs['tasks'], 'user_id', kwargs['task_header'])   
-                user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']] 
-                #taskid_col = get_user_column(kwargs['tasks'], 'task_id', kwargs['task_header'])
-                taskid_col = list(user_task_data.keys()).index('task_id') + 2
-                
-                update_idx = 1
-                for k in user_row_idx:    
-                    kwargs['tasks'].update_cell(k, taskid_col, update_idx)
-                    update_idx += 1
-        
-            else:
-                task_remove_idx = int(task_remove_idx[0]) - 1 
-                row_idx = user_row_idx[task_remove_idx]
-                # Delete one row (task) at a time:
-                kwargs['tasks'].delete_rows(row_idx)
-                print(f'Task {k - 1} deleted.')
-
-            # Update the task_id for the remaining tasks:
-            for k in user_task_data.keys():
-                del user_task_data[k][task_remove_idx]
-        
-            # Check if there any task left:
-            if (len(user_task_data['task_id'])==0):
-                print('There is no active task left in the list!')
-            else:
-                user_task_data['task_id'] = [i+1 for i in range(len(user_task_data['task_id']))]
 
             # Update the worksheet:
-
+            ## Delete one row (task) at a time:      
+            reduce_idx = 0
+            for k in user_row_remove_idx:
+                row_to_delete = [kwargs['tasks_idx'][i] - reduce_idx for i in user_row_remove_idx if i == k]
+                kwargs['tasks'].delete_rows(row_to_delete[0])
+                print(f'Task {k} deleted...Row {row_to_delete[0]} deleted.')
+                reduce_idx += 1
             
-
-
-        else:
-            print('Operation cancelled.')  
+            ## Update task index: 
+            ### Get the row and column ids for the user: 
+            userid_col = get_user_column(kwargs['tasks'], 'user_id', kwargs['task_header'])   
+            user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']] 
+            #taskid_col = get_user_column(kwargs['tasks'], 'task_id', kwargs['task_header'])
+            taskid_col = list(user_task_data.keys()).index('task_id') + 2
+        
+            update_idx = 1
+            for k in user_row_idx:    
+                kwargs['tasks'].update_cell(k, taskid_col, update_idx)
+                update_idx += 1
     
+            # Check if there any task left:
+            for k in user_task_data.keys():
+                del user_task_data[k][task_remove_idx]
+            
+            if (len(user_task_data['task_id'])==0):
+                print('There is no active task left in the list!')
+            #else:
+            #    user_task_data['task_id'] = [i+1 for i in range(len(user_task_data['task_id']))]
+
+    else:
+        print('Operation cancelled.')     
 
 def main_menu() -> None:
     '''
