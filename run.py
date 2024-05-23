@@ -9,6 +9,7 @@ import regex as re
 from tabulate import tabulate
 import pprint
 import os
+#import pandas as pd
 
 #=================================================================#
 
@@ -272,7 +273,7 @@ def list_tasks_simple(user_data:dict, worksheet_name:str) -> tuple[list[list[str
     task_info = [tasks.row_values(int(t_ixd))[1:] for t_ixd in tasks_idx]
     #make_dict_from_nested_lists(task_info, task_header[1:])
 
-    return tasks, task_info, task_header 
+    return tasks, task_info, task_header, tasks_idx
 
 def user_login() -> list:
     '''
@@ -305,9 +306,9 @@ def user_help() -> None:
     print('This is the help')
     return 
 
-def validate_task_index(task_remove_idx:list[int], row_idx:list[int]) -> bool:
+def validate_task_index(task_remove_idx:list[int], tasks_idx:list[int]) -> bool:
     while True:
-        if all([True for k in task_remove_idx if k in  row_idx]):
+        if all([True for k in task_remove_idx if k in  tasks_idx]):
             return True
         else:
             break
@@ -322,7 +323,12 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
             
     return True
     
-def delete_task(user_data:dict, task_info:list[list[str]], task_header:list[str]) -> None:
+def delete_task(user_data:dict,
+                #tasks:gspread.worksheet.Worksheet,
+                #task_info:list[list[str]],
+                #task_header:list[str]
+                #tasks_idx:list[int]
+                **kwargs) -> None:
     '''
     Delete one or more selected tasks by task id.
     The function removes the rows corresponding to the selected tasks from the 'tasks'Google worksheet.
@@ -331,39 +337,54 @@ def delete_task(user_data:dict, task_info:list[list[str]], task_header:list[str]
     After completion, the user returns to the main menu.
     '''
 
-    task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
+    task_remove_idx = input('Please enter the indexes of the tasks to be removed or Escape to cancel.\n'
                             'Use commas to separate multiple entries: \n')
     
     # Check that user input task index corresponds with the task indexes from the worksheet:
-    if validate_task_index(task_remove_idx):
+    if validate_task_index(task_remove_idx, kwargs['tasks_idx']):
         remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
-                            'Press Yes(y) to proceed, or No(n) to return: ')
+                            'Press Yes(y) to proceed, No(n) to return or Escape to cancel: ')
     
     # If the user inputs are valid, delete task(s) and update the remaining task_id cells 
     # to start from 1: 
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
-            #tasks, task_header = get_sheet_meta(TASKS)
-            #userid_col = get_user_column(tasks, 'user_id', task_header)           
-            #user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
+            user_task_data = make_dict_from_nested_lists(kwargs['task_info'], 
+                                                        kwargs['task_header'][1:])
             
-            taskid_col = get_user_column(tasks, 'task_id', task_header)
-            user_task_data = make_dict_from_nested_lists(task_info, task_header[1:])
+            user_task_data['task_id'] = [int(i) for i in  user_task_data['task_id'] ]
 
             # Subtract 1 form the task index for 0-based Python list indexing:
             # Subset the worksheet rows to be deleted: 
             if len(task_remove_idx) > 1:
-                task_remove_idx = [int(k) - 1 for k in task_remove_idx.split(',')]
-                row_idx = [user_row_idx[i] for i in task_remove_idx]
-                # Delete one row (task) at a time:
-                for k in row_idx:
-                    tasks.delete_rows(k)
-                    print(f'Task {k - 1} deleted.')
+                task_remove_idx = sorted(list(set([int(k) for k in task_remove_idx.split(',')])))
+                user_row_remove_idx = [user_task_data['task_id'].index(i) for i in user_task_data['task_id'] \
+                                        if i in task_remove_idx]
+                #rows_to_delete = [kwargs['tasks_idx'][i] for i in user_row_remove_idx]
+
+                # Delete one row (task) at a time:      
+                reduce_idx = 0
+                for k in user_row_remove_idx:
+                    row_to_delete = [kwargs['tasks_idx'][i] - reduce_idx for i in user_row_remove_idx if i == k]
+                    kwargs['tasks'].delete_rows(row_to_delete[0])
+                    print(f'Task {k} deleted...Row {row_to_delete[0]} deleted.')
+                
+                # Update task index:
+                userid_col = get_user_column(kwargs['tasks'], 'user_id', kwargs['task_header'])   
+                user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']] 
+                #taskid_col = get_user_column(kwargs['tasks'], 'task_id', kwargs['task_header'])
+                taskid_col = list(user_task_data.keys()).index('task_id') + 2
+                
+                update_idx = 1
+                for k in user_row_idx:    
+                    kwargs['tasks'].update_cell(k, taskid_col, update_idx)
+                    update_idx += 1
+        
             else:
                 task_remove_idx = int(task_remove_idx[0]) - 1 
                 row_idx = user_row_idx[task_remove_idx]
                 # Delete one row (task) at a time:
-                tasks.delete_rows(row_idx)
+                kwargs['tasks'].delete_rows(row_idx)
                 print(f'Task {k - 1} deleted.')
 
             # Update the task_id for the remaining tasks:
@@ -385,7 +406,7 @@ def delete_task(user_data:dict, task_info:list[list[str]], task_header:list[str]
             print('Operation cancelled.')  
     
 
-def main_menu_options() -> None:
+def main_menu() -> None:
     '''
     Gets input data to register a new user. 
     Run a while loop to collect a valid string of data
@@ -433,10 +454,11 @@ def task_handler(user_data:dict) -> None:
     while True:
         user_choice = int(input())
         if(user_choice not in range(1, 5)):
-            print('Please enter a valid option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit)')
+            print('Please enter a valid option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit).\n'
+                'Press Escape(Esc) to Cancel.')
         else:
             if user_choice != 4:
-                task_info, task_header = list_tasks_simple(user_data, TASKS)
+                tasks, task_info, task_header, tasks_idx = list_tasks_simple(user_data, TASKS)
                 print('User tasks retrieved.\n')
             else:
                 break # Exit the outer if-else
@@ -458,7 +480,11 @@ def task_handler(user_data:dict) -> None:
                 print('Your tasks are listed below:')
                 # Formatted user tasks console print
                 print(tabulate(task_info, headers = task_header[1:]))
-                delete_task(user_data)
+                delete_task(user_data = user_data,
+                            tasks = tasks,
+                            task_info = task_info,
+                            task_header = task_header,
+                            tasks_idx = tasks_idx)
                 clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
                 clear_output(clean_cli)
                 task_handler(user_data)  
@@ -471,7 +497,7 @@ def task_handler(user_data:dict) -> None:
 
 def main() -> None:
     print('Welcome to LovePlanning, the Ultimate Task Management Tool!')
-    input_option = main_menu_options()
+    input_option = main_menu()
     while True:
         if not handle_input_options(input_option):
             print('You are now logged out')
