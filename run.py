@@ -380,6 +380,8 @@ def delete_task(user_data:dict,
                 update_idx += 1
     
             # Check if there any task left:
+
+            ## ERRORS HERE:   
             for k in user_task_data.keys():
                 del user_task_data[k][task_remove_idx]
             
