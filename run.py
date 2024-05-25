@@ -10,7 +10,8 @@ from tabulate import tabulate
 import pprint
 import os
 #import pandas as pd
-
+from dataclasses import dataclass, field
+from typing import List
 #=================================================================#
 
 SCOPE = [
@@ -27,9 +28,36 @@ SHEET = GSPREAD_CLIENT.open('LovePlanning')
 USERS = 'users'
 TASKS = 'tasks'
 STATIC_OPTIONS = ['y', 'n']
+USER_HEADER = ['user_id', 'user_name', 'email', 'password']
+TASK_HEADER = ['user_id', 'task_id', 'description', 'category', 'priority', 'due', 'status']
+
+# @dataclass
+# class Defaults:
+#     USERS: str = 'users'
+#     TASKS: str = 'tasks'
+#     #STATIC_OPTIONS: list['str'] = field(['y', 'n'])
+#     USER_HEADER:list = field(default=['user_id','user_name','email','password'])
+    
+
 #=================================================================#
 # --------------------- For New Users: ---------------------------#
 
+
+
+#----------------------------------------------------------------#
+'''
+New users:
+- input user_name
+    - validate user_name
+        - non-empty
+        
+- input password
+
+'''
+
+
+
+#----------------------------------------------------------------#
 
 def clean_cli() -> None:
 # https://www.geeksforgeeks.org/clear-screen-python/
@@ -37,35 +65,34 @@ def clean_cli() -> None:
         _ = os.system('cls')
     else:
         _ = os.system('clear')
-
 def clear_output(clean_cli_choice:str) -> None:
     if validate_static_options(clean_cli_choice, STATIC_OPTIONS):
         clean_cli()
 
 
-def validate_password_length(user_data:str):
+def validate_password_length(user_password:str):
     '''
     Validate entry password for new users: 
     password must contain at least 8 characters.
     '''
     try: 
-        if len(user_data) <= 8:
+        if len(user_password) <= 8:
             raise ValueError(
-                    f'At least 8 characters required, you provided {len(user_data)}'
+                    f'At least 8 characters required, you provided {len(user_password)}'
                 )
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n')
         return False
 
     return True 
-def validate_user_password_capital(user_data:str):
+def validate_user_password_capital(user_password:str):
     '''
     Validate entry password for new users: 
     password must contain at least one capital letter. 
     '''
-    print(f'You entered: {user_data}')
+    print(f'You entered: {user_password}')
   
-    capital_letters = [s for s in user_data if s.isupper()]
+    capital_letters = [s for s in user_password if s.isupper()]
 
     try:
         if len(capital_letters) <2:
@@ -78,33 +105,54 @@ def validate_user_password_capital(user_data:str):
         return False
     
     return True
-def validate_user_password_numerals(user_data:str):
+def validate_user_password_numerals(user_password:str):
     '''
-    Validate entry password for new users: 
-    password must contain at least two numerals.
+    Validate entry password for new users.
+    The password must contain at least two numerals.
     '''          
-    num_in_str = re.match(r'[0-9]', user_data).span()
-        
+    
     try:
-        if len(num_in_str) <=2:
-            raise ValueError(
-                f'Al teast two numerals are reuqired, you provided {len(num_in_str)}'
-                )
+        is_num_in_str = re.match(r'[0-9]', user_password) is not None
+        if is_num_in_str:
+            num_in_str = re.match(r'[0-9]', user_password).span() 
+            if len(num_in_str) <=2:
+                raise ValueError(
+                    f'At teast two numerals are required, you provided {len(num_in_str)}'
+                    )
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n') 
-        return False      
-             
+        return False
+
     return True  
-def validate_user_email(user_data:str):
+def validate_user_password(user_password:str):
+    
+    while True:
+            user_input = input('Please enter your username and password separated by comma: ')
+            
+            # Validate user_input: two strings separated by comma:
+            if validate_login_input(user_input):
+                # Retrieve the input components: username [0] and password [1]
+                user_input = user_input.split(',')
+                user_name = user_input[0].strip()
+                user_password = user_input[1].strip()
+
+                # Get the user data from the 'users' Google worksheet:
+                user_data = get_user_info(USERS, user_name, 'user_name')
+                if match_user_credentials(user_data, user_name, user_password):
+                    print('Login successful!\n')
+                    
+                    break
+
+def validate_user_email(user_email:str):
     '''
     Check if the string contains a valid email address 
     using regular expressions (regex).
     https://www.w3schools.com/python/python_regex.asp 
     '''
-    print(f'You entered: {user_data}')
+    print(f'You entered: {user_email}')
     valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
     try: 
-        if re.search(valid_pattern, user_data) is None:
+        if re.search(valid_pattern, user_email) is None:
             raise ValueError(
                     f'Please enter a valid email address'
                 )
@@ -113,17 +161,94 @@ def validate_user_email(user_data:str):
         return False
 
     return False
-def user_register():
-    user_name = input('Please enter your username: ')
-    validate_username(user_name)
-    
-    user_password = input('Please enter your pasword: ')
-    validate_password_length(user_password)
-    validate_user_password_capital(user_password)
-    validate_user_password_numerals(user_password)
 
-    user_email = input('Please enter your pasword: ')
-    validate_user_email(user_email)
+
+def validate_username(user_name:str) -> bool:
+    '''
+    Validate the user input for login option:
+    - The name and passord strings must not be empty;
+    - The input must contain two strings separated by comma;
+    It applies to registered users, as well as to new users trying to register.
+    '''
+    try: 
+        if len(user_name) == 0:
+            raise ValueError('Username must not be empty.')
+    except ValueError as e:
+        print(f'Invalid username: {e}, please try again.\n')
+        return False
+    
+    return True
+
+
+
+def check_new_user_credentials(user_data:dict, 
+                               user_name:str) -> bool:
+    '''
+    Validates username and password for new users by matching them against the
+    records of the rehistered users in the 'users' sheet. The new user credentials
+    should not be found aming the credentials of the existing users. Passwords are not
+    mached against the registered ones, since that would be a security break.  
+    Returns a bool (True/False).  
+    '''
+
+    if user_name != user_data['user_name']:   
+        return True
+    else: 
+        print('Username not available, please try again')
+        return False
+
+
+def new_user_registration():
+    '''
+    Validates credentials (username and password) from user input.
+    - The while-loop runs until the user enters the correct data. 
+    - Returns the user data from the 'tasks'- google sheet as a dictionary
+        - keys: column names (worksheet header)
+        - values: column data (without header)
+    ''' 
+    while True:        
+        new_user_name = input('Please enter your username: ')
+
+        validate_username(new_user_name)
+        
+        user_password = input('Please enter your pasword: ')
+        validate_password_length(user_password)
+        validate_user_password_capital(user_password)
+        validate_user_password_numerals(user_password)
+
+        user_email = input('Please enter your pasword: ')
+        validate_user_email(user_email)
+        SHEET.add_worksheet(title = new_user_name, rows=100, cols = len(TASK_HEADER))
+
+
+
+    
+        user_input = input('Please enter your username and password separated by comma: ')
+        
+        # Validate user_input: two strings separated by comma:
+        user_input = validate_login_input(user_input)
+        if user_input:
+            # Retrieve the input components: username [0] and password [1]
+            user_name = user_input[0].strip()
+            user_password = user_input[1].strip()
+
+            # Get the user data from the 'users' Google worksheet:
+            user_data = get_user_info(USERS, user_name, 'user_name')
+            if check_new_user_credentials(user_data, user_name):
+                print('Registration successful!\n')
+                break
+
+    return user_data
+
+
+
+
+#user_data = get_user_info(USERS, user_name, 'user_name')
+    
+
+
+
+
 
 def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
     '''
@@ -141,50 +266,51 @@ def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
 
     return {d_keys[i]:[s[i] for s in list_data] for i in range(len(d_keys)) }  
 
+
+
+
 #=================================================================#
 # ------------------- For Registered Users: ----------------------#
 
 def validate_login_input(user_input:str) -> bool:
     '''
-    Check if the user name and passord login input contains
-    two non-empty strings separated by comma. 
+    Check if the user log input contains two non-empty strings 
+    (username and passord) separated by comma. 
     '''
-
-    try:
-        if len(user_input[0]) < 4:
-            raise ValueError('Please enter a valid username')
-    except ValueError as e:
-        print(f'')
-
-    return True
-
-def validate_username(user_name:str) -> bool:
-    '''
-    Validate the user input for login option:
-    - The name and passord strings must not be empty;
-    - The input must contain two strings separated by comma;
-    It applies to registered users, as well as to new users trying to register.
-    '''
-    try: 
-        if len(user_name) < 4:
-            raise ValueError('Username should not contain at least four characters')
-    except ValueError as e:
-        print(f'Invalid username: {e}, please try again.\n')
-        return False
     
-    return True
+    try:
+        if len(user_input) == 0:
+            raise ValueError('Enter username and password separated by comma')
+        elif user_input.find(',') < 0:
+            raise ValueError('Use comma to separate username and password.')    
+        else:
+            user_input = user_input.split(',')
+            if len(user_input[0]) == 0 and len(user_input[1]) == 0:
+                raise ValueError('Username and Password cannot be empty.')
+            elif len(user_input[0].strip()) == 0:
+                raise ValueError('Username cannot be empty.')
+            elif len(user_input[1].strip()) == 0:
+                raise ValueError('Password cannot be empty.')
+            else:
+                return user_input
+    except ValueError as e:
+            print(f'{e}. Please try again!')
+            return False
+
 
 def match_user_name(user_data:dict, user_name:str) -> bool:
     '''
     Validates existing usernames by matching them against the
     records in the 'username'- column of the 'users'- sheet.  
     '''
+ 
     while True:
         if user_name in user_data['user_name']:
             return True
         else:
             print('Username not found, please try again')
             return False
+
 
 def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> bool:
     '''
@@ -209,9 +335,9 @@ def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> 
             return False
 
 def get_sheet_meta(worksheet_name:str) -> list:
-    users = SHEET.worksheet(worksheet_name)
-    users_header = users.row_values(1)
-    return users, users_header
+    wksheet = SHEET.worksheet(worksheet_name)
+    wksheet_header = wksheet.row_values(1)
+    return wksheet, wksheet_header
 
 def get_user_column(worksheet:gspread.worksheet.Worksheet, column_name:str, header:list[str]) -> list[str]:
     '''
@@ -257,14 +383,14 @@ def get_user_info(sheet_name:str, user_name:str, column_name:str) -> dict:
 
     return dict(zip(user_header, user_info))
 
-def list_tasks_simple(user_data:dict, worksheet_name:str) -> tuple[list[list[str]], list[str]]:
+def list_tasks_simple(user_data:dict) -> tuple[list[list[str]], list[str]]:
     '''
     Get the tasks by the user_id of a registered user.
     Returns the nested list of tasks (first return) and
     the header of the 'tasks' worksheet (second return).  
     '''
 
-    tasks, task_header = get_sheet_meta(worksheet_name)
+    tasks, task_header = get_sheet_meta(user_data['user_name'])
     # Get the data in the 'user_id' column
     userid_col = get_user_column(tasks, 'user_id', task_header)
 
@@ -275,7 +401,7 @@ def list_tasks_simple(user_data:dict, worksheet_name:str) -> tuple[list[list[str
 
     return tasks, task_info, task_header, tasks_idx
 
-def user_login() -> list:
+def user_login(new_user:bool) -> list:
     '''
     Validates credentials (username and password) from user input.
     - The while-loop runs until the user enters the correct data. 
@@ -287,18 +413,23 @@ def user_login() -> list:
         user_input = input('Please enter your username and password separated by comma: ')
         
         # Validate user_input: two strings separated by comma:
-        if validate_login_input(user_input):
+        user_input = validate_login_input(user_input)
+        if user_input:
             # Retrieve the input components: username [0] and password [1]
-            user_input = user_input.split(',')
+            #user_input = user_input.split(',')
             user_name = user_input[0].strip()
             user_password = user_input[1].strip()
 
             # Get the user data from the 'users' Google worksheet:
             user_data = get_user_info(USERS, user_name, 'user_name')
-            if match_user_credentials(user_data, user_name, user_password):
-                print('Login successful!\n')
-                
-                break
+            if new_user:
+                if check_new_user_credentials(user_data, user_name, user_password):
+                    print('Registration successful!\n')
+                    break
+            else:
+                if match_user_credentials(user_data, user_name, user_password):
+                    print('Login successful!\n')
+                    break
 
     return user_data
 
@@ -382,13 +513,15 @@ def delete_task(user_data:dict,
             # Check if there any task left:
 
             ## ERRORS HERE:   
-            for k in user_task_data.keys():
+            for k in list(user_task_data.keys()):
                 del user_task_data[k][task_remove_idx]
             
             if (len(user_task_data['task_id'])==0):
                 print('There is no active task left in the list!')
-            #else:
-            #    user_task_data['task_id'] = [i+1 for i in range(len(user_task_data['task_id']))]
+            else:
+                #
+                print(f"{len(user_row_remove_idx)} tasks deleted, {len(user_task_data['task_id'])} remaining.")
+                #user_task_data['task_id'] = [i+1 for i in range(len(user_task_data['task_id']))]
 
     else:
         print('Operation cancelled.')     
@@ -420,7 +553,7 @@ def handle_input_options(input_option:int) -> None:
             task_handler(user_data)  # takes user_id and returns the user tasks
             break
         elif input_option == 2:
-            user_register()
+            new_user_registration()
             break
         elif input_option == 3:
             user_help()
@@ -445,7 +578,7 @@ def task_handler(user_data:dict) -> None:
                 'Press Escape(Esc) to Cancel.')
         else:
             if user_choice != 4:
-                tasks, task_info, task_header, tasks_idx = list_tasks_simple(user_data, TASKS)
+                tasks, task_info, task_header, tasks_idx = list_tasks_simple(user_data)
                 print('User tasks retrieved.\n')
             else:
                 break # Exit the outer if-else
