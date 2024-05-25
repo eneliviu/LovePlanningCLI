@@ -68,7 +68,21 @@ def clean_cli() -> None:
 def clear_output(clean_cli_choice:str) -> None:
     if validate_static_options(clean_cli_choice, STATIC_OPTIONS):
         clean_cli()
+def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
+    '''
+    Takes the google sheet data as list of lists and creats a dictionary using 
+    dictionary comprehension. The keys are the values in the first list (list_data[0]) of the list_data entry.
+    Each dictionary key receives a list of values from the remaining lists of list_data argument. 
+    Handy for printing the user data or for handling data inputs (though with care when there are 
+    many regsitered users)        
+    '''
 
+    #task_info.insert(0,task_header[1:])
+    #d_keys = list_data[0]
+
+    list_data.copy().insert(0, d_keys) # shallow list copy to avoid changing the original variable 
+
+    return {d_keys[i]:[s[i] for s in list_data] for i in range(len(d_keys)) }  
 
 def validate_password_length(user_password:str):
     '''
@@ -95,7 +109,7 @@ def validate_user_password_capital(user_password:str):
     capital_letters = [s for s in user_password if s.isupper()]
 
     try:
-        if len(capital_letters) <2:
+        if len(capital_letters) < 1:
             raise ValueError(
                     f'At least one capital letter required, you provided {len(capital_letters)}'
                 )
@@ -161,8 +175,6 @@ def validate_user_email(user_email:str):
         return False
 
     return False
-
-
 def validate_username(user_name:str) -> bool:
     '''
     Validate the user input for login option:
@@ -179,10 +191,7 @@ def validate_username(user_name:str) -> bool:
     
     return True
 
-
-
-def check_new_user_credentials(user_data:dict, 
-                               user_name:str) -> bool:
+def check_new_user_credentials(new_user_name:str, new_email:str, new_password:str) -> bool:
     '''
     Validates username and password for new users by matching them against the
     records of the rehistered users in the 'users' sheet. The new user credentials
@@ -191,12 +200,26 @@ def check_new_user_credentials(user_data:dict,
     Returns a bool (True/False).  
     '''
 
-    if user_name != user_data['user_name']:   
-        return True
-    else: 
+    username_column = get_user_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
+    user_email_column = get_user_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
+    
+    if (new_user_name not in username_column[-1]) and (new_email not in user_email_column[-1]) :
+        SHEET.add_worksheet(title = new_user_name, rows=1000, cols = len(TASK_HEADER))
+        # Write the default worksheet column names:
+        SHEET.worksheet(new_user_name).append_row(TASK_HEADER)
+        new_user_data = [len(username_column) + 1, new_user_name, new_email, new_password]
+        SHEET.worksheet(USERS).append_row(new_user_data)
+        new_user_data = make_dict_from_nested_lists([new_user_data], USER_HEADER)
+        return new_user_data
+    elif new_email not in user_email_column[-1]:
+        print('Email address not available, please try again')
+        return False
+    elif new_user_name not in username_column[-1]:
         print('Username not available, please try again')
         return False
-
+    else: 
+        print('Username and password not available, please try again')
+        return False
 
 def new_user_registration():
     '''
@@ -208,7 +231,6 @@ def new_user_registration():
     ''' 
     while True:        
         new_user_name = input('Please enter your username: ')
-
         validate_username(new_user_name)
         
         user_password = input('Please enter your pasword: ')
@@ -218,54 +240,21 @@ def new_user_registration():
 
         user_email = input('Please enter your pasword: ')
         validate_user_email(user_email)
-        SHEET.add_worksheet(title = new_user_name, rows=100, cols = len(TASK_HEADER))
 
-
-
-    
-        user_input = input('Please enter your username and password separated by comma: ')
-        
-        # Validate user_input: two strings separated by comma:
-        user_input = validate_login_input(user_input)
-        if user_input:
-            # Retrieve the input components: username [0] and password [1]
-            user_name = user_input[0].strip()
-            user_password = user_input[1].strip()
-
-            # Get the user data from the 'users' Google worksheet:
-            user_data = get_user_info(USERS, user_name, 'user_name')
-            if check_new_user_credentials(user_data, user_name):
+        if validate_username(new_user_name) and \
+            validate_password_length(user_password) and \
+            validate_user_password_capital(user_password) and \
+            validate_user_password_numerals(user_password):
+            
+            new_user_data = check_new_user_credentials(new_user_name, 
+                                                        user_email,
+                                                        user_password)
+            
+            if new_user_data:
                 print('Registration successful!\n')
                 break
 
-    return user_data
-
-
-
-
-#user_data = get_user_info(USERS, user_name, 'user_name')
-    
-
-
-
-
-
-def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
-    '''
-    Takes the google sheet data as list of lists and creats a dictionary using 
-    dictionary comprehension. The keys are the values in the first list (list_data[0]) of the list_data entry.
-    Each dictionary key receives a list of values from the remaining lists of list_data argument. 
-    Handy for printing the user data or for handling data inputs (though with care when there are 
-    many regsitered users)        
-    '''
-
-    #task_info.insert(0,task_header[1:])
-    #d_keys = list_data[0]
-
-    list_data.copy().insert(0, d_keys) # shallow list copy to avoid changing the original variable 
-
-    return {d_keys[i]:[s[i] for s in list_data] for i in range(len(d_keys)) }  
-
+    return new_user_data
 
 
 
@@ -341,7 +330,7 @@ def get_sheet_meta(worksheet_name:str) -> list:
 
 def get_user_column(worksheet:gspread.worksheet.Worksheet, column_name:str, header:list[str]) -> list[str]:
     '''
-    Get the user_id column from a worksheet. Returns a list containing the column header and the values.
+    Get the 'user_id' column from a worksheet. Returns a list containing the column header and the values.
     Notice that the for Google Sheets, the row numbers start at 1, while Python list indices start at 0.
     Returns a dictionary with the header values as keys and user records as values.  
     '''
@@ -401,7 +390,7 @@ def list_tasks_simple(user_data:dict) -> tuple[list[list[str]], list[str]]:
 
     return tasks, task_info, task_header, tasks_idx
 
-def user_login(new_user:bool) -> list:
+def user_login() -> list:
     '''
     Validates credentials (username and password) from user input.
     - The while-loop runs until the user enters the correct data. 
@@ -416,22 +405,17 @@ def user_login(new_user:bool) -> list:
         user_input = validate_login_input(user_input)
         if user_input:
             # Retrieve the input components: username [0] and password [1]
-            #user_input = user_input.split(',')
             user_name = user_input[0].strip()
             user_password = user_input[1].strip()
 
             # Get the user data from the 'users' Google worksheet:
             user_data = get_user_info(USERS, user_name, 'user_name')
-            if new_user:
-                if check_new_user_credentials(user_data, user_name, user_password):
-                    print('Registration successful!\n')
-                    break
-            else:
-                if match_user_credentials(user_data, user_name, user_password):
-                    print('Login successful!\n')
-                    break
-
+            if match_user_credentials(user_data, user_name, user_password):
+                print('Login successful!\n')
+                break
+    
     return user_data
+                    
 
 def user_help() -> None:
     print('This is the help')
@@ -549,17 +533,18 @@ def handle_input_options(input_option:int) -> None:
     '''
     while True:
         if input_option == 1:
-            user_data = user_login() # validates and returns credentials for regsistered users
+            user_data = user_login()
             task_handler(user_data)  # takes user_id and returns the user tasks
             break
         elif input_option == 2:
-            new_user_registration()
+            user_data = new_user_registration()
+            task_handler(user_data) 
             break
         elif input_option == 3:
             user_help()
             break
         else:
-            return False
+            break
 
 def add_new_task():
     pass
