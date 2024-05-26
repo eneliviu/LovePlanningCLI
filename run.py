@@ -169,14 +169,13 @@ def validate_user_password(**kwargs):
 
     return new_user_password
 
-def validate_username() -> bool:
+def validate_username(username_column:list[str]) -> bool:
     '''
     Validate the user input for login option:
     - The name and passord strings must not be empty;
     - The input must contain two strings separated by comma;
     It applies to registered users, as well as to new users trying to register.
     '''
-    username_column = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
     while True:
         new_user_name = input('Please enter your username: ')
         try: 
@@ -192,7 +191,7 @@ def validate_username() -> bool:
     
     return new_user_name
 
-def validate_user_email() -> bool:
+def validate_user_email(user_email_column:list[str]) -> bool:
     '''
     Check if the string contains a valid email address 
     using regular expressions (regex).
@@ -200,7 +199,6 @@ def validate_user_email() -> bool:
     '''
     
     valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
-    user_email_column = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
     while True:
         new_user_email = input('Please enter your email address: ')
         try: 
@@ -218,40 +216,29 @@ def validate_user_email() -> bool:
 
 
 
-def check_new_user_credentials(**kwargs) -> bool:
+def create_new_user_worksheet(new_user_data:dict) -> None:
     '''
     Validates username and password for new users by matching them against the
     records of the rehistered users in the 'users' sheet. The new user credentials
     should not be found aming the credentials of the existing users. Passwords are not
     mached against the registered ones, since that would be a security break.
-    Attributes:
-    - user_name: string
-    - user_email: string
-    - password:string
+    Dictionary keys:
+    - user row index: int
+    - user_name: str
+    - user_email: str
+    - password: str
+    - number of tasks: int
     
-    Returns a bool (True/False).  
+    Returns a the dictionary containing the new user credentials.  
     '''
     
-    username_column = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
-    user_email_column = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
-    
-    if (kwargs['user_name'] not in username_column[-1]) and \
-        (kwargs['user_email'] not in user_email_column[-1]) :
-        SHEET.add_worksheet(title = kwargs['user_name'], rows=1000, cols = len(TASK_HEADER))
-        # Write the default worksheet column names:
-        SHEET.worksheet(kwargs['user_name']).append_row(TASK_HEADER)
-        new_user_data = [len(username_column) + 1, 
-                        kwargs['user_name'],
-                        kwargs['user_email'],
-                        kwargs['password'],
-                        kwargs['tasks']]
-        SHEET.worksheet(USERS).append_row(new_user_data)
-        #new_user_data = make_dict_from_nested_lists([new_user_data], USER_HEADER)
-        new_user_data = dict(zip(USER_HEADER, new_user_data))
-        return new_user_data
-    else: 
-        print('Username and password not available, please try again')
-        return False
+    SHEET.add_worksheet(title = new_user_data['user_name'], rows = 1000, cols = len(TASK_HEADER))
+    # Write the default worksheet column names:
+    SHEET.worksheet(new_user_data['user_name']).append_row(TASK_HEADER)
+    SHEET.worksheet(USERS).append_row(list(new_user_data.values()))
+
+  
+
 
 def new_user_registration():
     '''
@@ -262,16 +249,23 @@ def new_user_registration():
         - values: column data (without header)
     ''' 
 
-    new_user_name = validate_username()
+    username_column = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
+    user_email_column = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
+    
+    new_user_name = validate_username(username_column)
     new_user_password = validate_user_password(length=8,
                                             capital_letters=1,
                                             digits=2)
-    new_user_email = validate_user_email()
+    new_user_email = validate_user_email(user_email_column)
 
-    new_user_data = check_new_user_credentials(user_name = new_user_name,
-                                                password = new_user_password,
-                                                user_email = new_user_email,
-                                                tasks = 0)
+    new_user_data = [len(username_column) + 1, 
+                        new_user_name,
+                        new_user_email,
+                        new_user_password,
+                        0]
+    new_user_data = dict(zip(USER_HEADER, new_user_data))
+
+    create_new_user_worksheet(new_user_data)
     
     
     print('Registration successful!\n')
