@@ -187,7 +187,7 @@ def validate_username() -> bool:
             else:
                 break
         except ValueError as e:
-            print(f'Invalid username: {e}. Please try again!')
+            print(f'{e}. Please try again!')
             return False
     
     return new_user_name
@@ -200,19 +200,18 @@ def validate_user_email() -> bool:
     '''
     
     valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
-
+    user_email_column = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
     while True:
         new_user_email = input('Please enter your email address: ')
         try: 
             if re.search(valid_pattern, new_user_email) is None:
-                print('Condition 1 not met')
-                raise ValueError(
-                        f'Please enter a valid email address'
-                    )
+                raise ValueError('Please enter a valid email address')
+            elif new_user_email in user_email_column[-1]:
+                raise ValueError('Email address not available')
             else:
                 break
         except ValueError as e:
-            print(f'Invalid email address: {e}, please try again.\n')
+            print(f'{e}. Please try again!')
 
     return new_user_email
 
