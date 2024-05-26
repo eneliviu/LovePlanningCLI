@@ -87,23 +87,23 @@ def validate_password_length(user_password:str):
     Validate entry password for new users: 
     password must contain at least 8 characters.
     '''
+
     try: 
         if len(user_password) <= 8:
             raise ValueError(
                     f'At least 8 characters required, you provided {len(user_password)}'
                 )
+        else:
+            return True 
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n')
         return False
 
-    return True 
 def validate_user_password_capital(user_password:str):
     '''
     Validate entry password for new users: 
     password must contain at least one capital letter. 
     '''
-    print(f'You entered: {user_password}')
-  
     capital_letters = [s for s in user_password if s.isupper()]
 
     try:
@@ -111,11 +111,12 @@ def validate_user_password_capital(user_password:str):
             raise ValueError(
                     f'At least one capital letter required, you provided {len(capital_letters)}'
                 )
+        else:
+            return True
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n')
         return False
-    
-    return True
+
 def validate_user_password_numerals(user_password:str):
     '''
     Validate entry password for new users.
@@ -130,71 +131,105 @@ def validate_user_password_numerals(user_password:str):
                 raise ValueError(
                     f'At teast two numerals are required, you provided {len(num_in_str)}'
                     )
+            else:
+                return True 
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n') 
         return False
 
-    return True  
-def validate_user_password(user_password:str):
-    
+
+def validate_user_password(**kwargs):
+    '''
+    Validate entry password for new users: at least 8 characters length, of which
+    at least one capital letter and at least two numerals.
+    '''
+        
     while True:
-            user_input = input('Please enter your username and password separated by comma: ')
-            
-            # Validate user_input: two strings separated by comma:
-            if validate_login_input(user_input):
-                # Retrieve the input components: username [0] and password [1]
-                user_input = user_input.split(',')
-                user_name = user_input[0].strip()
-                user_password = user_input[1].strip()
+        
+        new_user_password = input('Please enter your pasword: ')
+        password_length = len(new_user_password)
+        capital_letters = len([s for s in new_user_password if s.isupper()])
 
-                # Get the user data from the 'users' Google worksheet:
-                user_data = get_user_info(USERS, user_name, 'user_name')
-                if match_user_credentials(user_data, user_name, user_password):
-                    print('Login successful!\n')
-                    
-                    break
+        try: 
+            if password_length < kwargs['length']:
+                raise ValueError(
+                        f'At least {kwargs["length"]} characters required!'
+                    )
+            elif password_length >= kwargs['length'] and \
+                capital_letters < kwargs['capital_letters']:
+                raise ValueError(f'At least one capital letter required!')
+            elif password_length >= kwargs['length'] and \
+                capital_letters >= kwargs['capital_letters'] and \
+                sum([s.isdigit() for s in new_user_password]) < kwargs['digits']:
+                raise ValueError(f'At least {kwargs["digits"]} numerals are required!')
+            else:
+                break 
+        except ValueError as e:
+            print(f'Invalid password: {e}, please try again.\n')
 
-def validate_user_email(user_email:str):
-    '''
-    Check if the string contains a valid email address 
-    using regular expressions (regex).
-    https://www.w3schools.com/python/python_regex.asp 
-    '''
-    print(f'You entered: {user_email}')
-    valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
-    try: 
-        if re.search(valid_pattern, user_email) is None:
-            raise ValueError(
-                    f'Please enter a valid email address'
-                )
-    except ValueError as e:
-        print(f'Invalid email address: {e}, please try again.\n')
-        return False
+    return new_user_password
 
-    return True
-
-def validate_username(user_name:str) -> bool:
+def validate_username() -> bool:
     '''
     Validate the user input for login option:
     - The name and passord strings must not be empty;
     - The input must contain two strings separated by comma;
     It applies to registered users, as well as to new users trying to register.
     '''
-    try: 
-        if len(user_name) == 0:
-            raise ValueError('Username must not be empty.')
-    except ValueError as e:
-        print(f'Invalid username: {e}, please try again.\n')
-        return False
+    username_column = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
+    while True:
+        new_user_name = input('Please enter your username: ')
+        try: 
+            if len(new_user_name) == 0:
+                raise ValueError('Username must not be empty')
+            elif new_user_name in username_column[-1]:
+                raise ValueError('Username not available')
+            else:
+                break
+        except ValueError as e:
+            print(f'Invalid username: {e}. Please try again!')
+            return False
     
-    return True
+    return new_user_name
+
+def validate_user_email() -> bool:
+    '''
+    Check if the string contains a valid email address 
+    using regular expressions (regex).
+    https://www.w3schools.com/python/python_regex.asp 
+    '''
+    
+    valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
+
+    while True:
+        new_user_email = input('Please enter your email address: ')
+        try: 
+            if re.search(valid_pattern, new_user_email) is None:
+                print('Condition 1 not met')
+                raise ValueError(
+                        f'Please enter a valid email address'
+                    )
+            else:
+                break
+        except ValueError as e:
+            print(f'Invalid email address: {e}, please try again.\n')
+
+    return new_user_email
+
+
+
 
 def check_new_user_credentials(**kwargs) -> bool:
     '''
     Validates username and password for new users by matching them against the
     records of the rehistered users in the 'users' sheet. The new user credentials
     should not be found aming the credentials of the existing users. Passwords are not
-    mached against the registered ones, since that would be a security break.  
+    mached against the registered ones, since that would be a security break.
+    Attributes:
+    - user_name: string
+    - user_email: string
+    - password:string
+    
     Returns a bool (True/False).  
     '''
     
@@ -209,17 +244,12 @@ def check_new_user_credentials(**kwargs) -> bool:
         new_user_data = [len(username_column) + 1, 
                         kwargs['user_name'],
                         kwargs['user_email'],
-                        kwargs['password']]
+                        kwargs['password'],
+                        kwargs['tasks']]
         SHEET.worksheet(USERS).append_row(new_user_data)
         #new_user_data = make_dict_from_nested_lists([new_user_data], USER_HEADER)
         new_user_data = dict(zip(USER_HEADER, new_user_data))
         return new_user_data
-    elif kwargs['user_email'] not in user_email_column[-1]:
-        print('Email address not available, please try again')
-        return False
-    elif kwargs['user_name'] not in username_column[-1]:
-        print('Username not available, please try again')
-        return False
     else: 
         print('Username and password not available, please try again')
         return False
@@ -232,31 +262,21 @@ def new_user_registration():
         - keys: column names (worksheet header)
         - values: column data (without header)
     ''' 
-    while True:        
-        new_user_name = input('Please enter your username: ')
-        validate_username(new_user_name)
-        
-        new_user_password = input('Please enter your pasword: ')
-        validate_password_length(new_user_password)
-        validate_user_password_capital(new_user_password)
-        validate_user_password_numerals(new_user_password)
 
-        new_user_email = input('Please enter your email address: ')
-        validate_user_email(new_user_email)
+    new_user_name = validate_username()
+    new_user_password = validate_user_password(length=8,
+                                            capital_letters=1,
+                                            digits=2)
+    new_user_email = validate_user_email()
 
-        if validate_username(new_user_name) and \
-            validate_password_length(new_user_password) and \
-            validate_user_password_capital(new_user_password) and \
-            validate_user_password_numerals(new_user_password):
+    new_user_data = check_new_user_credentials(user_name = new_user_name,
+                                                password = new_user_password,
+                                                user_email = new_user_email,
+                                                tasks = 0)
+    
+    
+    print('Registration successful!\n')
             
-            new_user_data = check_new_user_credentials(user_name = new_user_name,
-                                                        password = new_user_password,
-                                                        user_email = new_user_email)
-            
-            if new_user_data:
-                print('Registration successful!\n')
-                break
-
     return new_user_data
 
 #=================================================================#
@@ -511,43 +531,7 @@ def delete_task(user_data:dict,
     else:
         print('Operation cancelled.')     
 
-def main_menu() -> None:
-    '''
-    Gets input data to register a new user. 
-    Run a while loop to collect a valid string of data
-    from the user via the terminal. The loop will repeatedly
-    request user input data, until it is valid. 
-    '''
-    print('Please select an option: 1 (Log in), 2 (Register), 3 (Help) or 4 (Exit):')
-
-    while True:
-        input_option = int(input('Enter your choice: '))
-        if(input_option not in range(1, 5)):
-            print('Please enter a valid option: 1 (Log in), 2 (Register), 3 (Help) or 4 (Exit):')
-        else:
-            break
-    return input_option
-
-def handle_input_options(input_option:int) -> None:
-    '''
-    Takes the menu selection from user input and handles the menu item logic.  
-    '''
-    while True:
-        if input_option == 1:
-            user_data = user_login()
-            task_handler(user_data)  # takes user_id and returns the user tasks
-            break
-        elif input_option == 2:
-            user_data = new_user_registration()
-            task_handler(user_data) 
-            break
-        elif input_option == 3:
-            user_help()
-            break
-        else:
-            break
-
-def validate_new_task() -> list[str]:
+def validate_new_task_description() -> list[str]:
     '''
     Validates the task description entry. 
     The task description must be non-empty and
@@ -607,7 +591,7 @@ def create_new_task() -> dict:
     it maintains the default sorting by due date, with the earliest due date at the top. 
     '''
         
-    new_task = validate_new_task()
+    new_task = validate_new_task_description()
     print('New task added.')
     task_category = validate_new_task_category()
     print(f'Task category {task_category.upper()} added.')
@@ -617,22 +601,57 @@ def create_new_task() -> dict:
 
     #user_id
     #task_id 
+
+    # SHEET.add_worksheet(title = kwargs['user_name'], rows=1000, cols = len(TASK_HEADER))
+    # # Write the default worksheet column names:
+    # SHEET.worksheet(kwargs['user_name']).append_row(TASK_HEADER)
+    # new_user_data = [len(username_column) + 1, 
+    #                 kwargs['user_name'],
+    #                 kwargs['user_email'],
+    #                 kwargs['password'],
+    #                 kwargs['tasks']]
+    # SHEET.worksheet(USERS).append_row(new_user_data)
+
+
+
     return dict(zip(TASK_HEADER, task_info))
-                        
 
+def main_menu() -> None:
+    '''
+    Gets input data to register a new user. 
+    Run a while loop to collect a valid string of data
+    from the user via the terminal. The loop will repeatedly
+    request user input data, until it is valid. 
+    '''
+    #print('Select an option: 1(Login), 2(Register), 3(Remove user), 4(Help), 5(Exit):')
 
+    while True:
+        input_option = int(input('Select an option: 1(Login), 2(Register), 3(Remove user), 4(Help), 5(Exit): '))
+        if(input_option not in range(1, 5)):
+            print('Invalid choice!\n'
+                  'Enter a valid option: 1(Login), 2(Register), 3(Remove user), 4(Help), 5(Exit):')
+        else:
+            break
+    return input_option
 
-    
-    
-
-
-
-
-    
-
-
-
-
+def handle_input_options(input_option:int) -> None:
+    '''
+    Takes the menu selection from user input and handles the menu item logic.  
+    '''
+    while True:
+        if input_option == 1:
+            user_data = user_login()
+            task_handler(user_data)  # takes user_id and returns the user tasks
+            break
+        elif input_option == 2: # Regiister new user
+            user_data = new_user_registration()
+            task_handler(user_data) 
+            break
+        elif input_option == 3:
+            user_help()
+            break
+        else:
+            break
 
 def task_handler(user_data:dict) -> None:
     '''
@@ -666,6 +685,7 @@ def task_handler(user_data:dict) -> None:
                 #break
             elif user_choice == 2: # Add ask
                 create_new_task()
+                task_handler(user_data)
             elif user_choice == 3: # Delete task
                 print('Your tasks are listed below:')
                 # Formatted user tasks console print
