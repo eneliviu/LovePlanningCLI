@@ -12,6 +12,8 @@ import os
 #import pandas as pd
 from dataclasses import dataclass, field
 from typing import List
+
+from datetime import datetime
 #=================================================================#
 
 SCOPE = [
@@ -28,8 +30,9 @@ SHEET = GSPREAD_CLIENT.open('LovePlanning')
 USERS = 'users'
 TASKS = 'tasks'
 STATIC_OPTIONS = ['y', 'n']
-USER_HEADER = ['user_id', 'user_name', 'email', 'password']
-TASK_HEADER = ['user_id', 'task_id', 'description', 'category', 'priority', 'due', 'status']
+USER_HEADER = ['user_id', 'user_name', 'email', 'password', 'tasks']
+TASK_HEADER = ['user_id', 'task_id', 'description', 'category', 'created', 'due', 'status']
+TASK_CATEGORY = ['errand', 'personal', 'work']
 
 # @dataclass
 # class Defaults:
@@ -41,9 +44,6 @@ TASK_HEADER = ['user_id', 'task_id', 'description', 'category', 'priority', 'due
 
 #=================================================================#
 # --------------------- For New Users: ---------------------------#
-
-
-
 #----------------------------------------------------------------#
 '''
 New users:
@@ -54,8 +54,6 @@ New users:
 - input password
 
 '''
-
-
 
 #----------------------------------------------------------------#
 
@@ -113,7 +111,6 @@ def validate_user_password_capital(user_password:str):
             raise ValueError(
                     f'At least one capital letter required, you provided {len(capital_letters)}'
                 )
-
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n')
         return False
@@ -174,7 +171,8 @@ def validate_user_email(user_email:str):
         print(f'Invalid email address: {e}, please try again.\n')
         return False
 
-    return False
+    return True
+
 def validate_username(user_name:str) -> bool:
     '''
     Validate the user input for login option:
@@ -191,7 +189,7 @@ def validate_username(user_name:str) -> bool:
     
     return True
 
-def check_new_user_credentials(new_user_name:str, new_email:str, new_password:str) -> bool:
+def check_new_user_credentials(**kwargs) -> bool:
     '''
     Validates username and password for new users by matching them against the
     records of the rehistered users in the 'users' sheet. The new user credentials
@@ -199,22 +197,27 @@ def check_new_user_credentials(new_user_name:str, new_email:str, new_password:st
     mached against the registered ones, since that would be a security break.  
     Returns a bool (True/False).  
     '''
-
-    username_column = get_user_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
-    user_email_column = get_user_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
     
-    if (new_user_name not in username_column[-1]) and (new_email not in user_email_column[-1]) :
-        SHEET.add_worksheet(title = new_user_name, rows=1000, cols = len(TASK_HEADER))
+    username_column = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
+    user_email_column = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
+    
+    if (kwargs['user_name'] not in username_column[-1]) and \
+        (kwargs['user_email'] not in user_email_column[-1]) :
+        SHEET.add_worksheet(title = kwargs['user_name'], rows=1000, cols = len(TASK_HEADER))
         # Write the default worksheet column names:
-        SHEET.worksheet(new_user_name).append_row(TASK_HEADER)
-        new_user_data = [len(username_column) + 1, new_user_name, new_email, new_password]
+        SHEET.worksheet(kwargs['user_name']).append_row(TASK_HEADER)
+        new_user_data = [len(username_column) + 1, 
+                        kwargs['user_name'],
+                        kwargs['user_email'],
+                        kwargs['password']]
         SHEET.worksheet(USERS).append_row(new_user_data)
-        new_user_data = make_dict_from_nested_lists([new_user_data], USER_HEADER)
+        #new_user_data = make_dict_from_nested_lists([new_user_data], USER_HEADER)
+        new_user_data = dict(zip(USER_HEADER, new_user_data))
         return new_user_data
-    elif new_email not in user_email_column[-1]:
+    elif kwargs['user_email'] not in user_email_column[-1]:
         print('Email address not available, please try again')
         return False
-    elif new_user_name not in username_column[-1]:
+    elif kwargs['user_name'] not in username_column[-1]:
         print('Username not available, please try again')
         return False
     else: 
@@ -233,30 +236,28 @@ def new_user_registration():
         new_user_name = input('Please enter your username: ')
         validate_username(new_user_name)
         
-        user_password = input('Please enter your pasword: ')
-        validate_password_length(user_password)
-        validate_user_password_capital(user_password)
-        validate_user_password_numerals(user_password)
+        new_user_password = input('Please enter your pasword: ')
+        validate_password_length(new_user_password)
+        validate_user_password_capital(new_user_password)
+        validate_user_password_numerals(new_user_password)
 
-        user_email = input('Please enter your pasword: ')
-        validate_user_email(user_email)
+        new_user_email = input('Please enter your email address: ')
+        validate_user_email(new_user_email)
 
         if validate_username(new_user_name) and \
-            validate_password_length(user_password) and \
-            validate_user_password_capital(user_password) and \
-            validate_user_password_numerals(user_password):
+            validate_password_length(new_user_password) and \
+            validate_user_password_capital(new_user_password) and \
+            validate_user_password_numerals(new_user_password):
             
-            new_user_data = check_new_user_credentials(new_user_name, 
-                                                        user_email,
-                                                        user_password)
+            new_user_data = check_new_user_credentials(user_name = new_user_name,
+                                                        password = new_user_password,
+                                                        user_email = new_user_email)
             
             if new_user_data:
                 print('Registration successful!\n')
                 break
 
     return new_user_data
-
-
 
 #=================================================================#
 # ------------------- For Registered Users: ----------------------#
@@ -286,7 +287,6 @@ def validate_login_input(user_input:str) -> bool:
             print(f'{e}. Please try again!')
             return False
 
-
 def match_user_name(user_data:dict, user_name:str) -> bool:
     '''
     Validates existing usernames by matching them against the
@@ -299,7 +299,6 @@ def match_user_name(user_data:dict, user_name:str) -> bool:
         else:
             print('Username not found, please try again')
             return False
-
 
 def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> bool:
     '''
@@ -319,7 +318,7 @@ def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> 
             return False
         elif user_password != user_data['password']: 
             print('Password not found, please try again')   
-            return False
+            False
         else:
             return False
 
@@ -328,19 +327,20 @@ def get_sheet_meta(worksheet_name:str) -> list:
     wksheet_header = wksheet.row_values(1)
     return wksheet, wksheet_header
 
-def get_user_column(worksheet:gspread.worksheet.Worksheet, column_name:str, header:list[str]) -> list[str]:
+def get_column(worksheet:gspread.worksheet.Worksheet, column_name:str, header:list[str]) -> list[str]:
     '''
-    Get the 'user_id' column from a worksheet. Returns a list containing the column header and the values.
+    Get the 'user_id' column from a worksheet. 
+    Returns a list containing the column header and the values.
     Notice that the for Google Sheets, the row numbers start at 1, while Python list indices start at 0.
     Returns a dictionary with the header values as keys and user records as values.  
     '''
     # Get the 1-based index of the 'user_id' columns
-    userid_col_idx = header.index(column_name) + 1
+    col_idx = header.index(column_name) + 1
     # Get the data in the 'user_id' column
-    userid_col = worksheet.col_values(userid_col_idx)
-    return userid_col
+    col_data = worksheet.col_values(col_idx)
+    return col_data
 
-def get_username_index(worksheet:gspread.worksheet.Worksheet, users_col:list[str], user_name:str) -> list:
+def get_row_index(worksheet:gspread.worksheet.Worksheet, users_col:list[str], user_name:str) -> list:
      # Get the index of the username in the column
     user_idx = users_col.index(user_name)+1
     # Retrieve the row containig the user info based n the username index:
@@ -365,10 +365,10 @@ def get_user_info(sheet_name:str, user_name:str, column_name:str) -> dict:
     
     # Get the usernames column from the worksheet indexed by userame_col_idx:
     #users_col = users.col_values(userame_col_idx)
-    users_col = get_user_column(users, column_name, user_header)
+    users_col = get_column(users, column_name, user_header)
 
     # Retrieve the row containig the user info based n the username index:
-    user_info = get_username_index(users, users_col, user_name)
+    user_info = get_row_index(users, users_col, user_name)
 
     return dict(zip(user_header, user_info))
 
@@ -381,7 +381,7 @@ def list_tasks_simple(user_data:dict) -> tuple[list[list[str]], list[str]]:
 
     tasks, task_header = get_sheet_meta(user_data['user_name'])
     # Get the data in the 'user_id' column
-    userid_col = get_user_column(tasks, 'user_id', task_header)
+    userid_col = get_column(tasks, 'user_id', task_header)
 
     # Get all the row values for the tasks associated to an user_id:   
     tasks_idx = [i+1 for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']]
@@ -409,14 +409,16 @@ def user_login() -> list:
             user_password = user_input[1].strip()
 
             # Get the user data from the 'users' Google worksheet:
-            user_data = get_user_info(USERS, user_name, 'user_name')
-            if match_user_credentials(user_data, user_name, user_password):
-                print('Login successful!\n')
-                break
+            try:
+                user_data = get_user_info(USERS, user_name, 'user_name')
+                if match_user_credentials(user_data, user_name, user_password):
+                    print('Login successful!')
+                    break
+            except ValueError as e:
+                print(f' {e}. Please try again.')
     
     return user_data
                     
-
 def user_help() -> None:
     print('This is the help')
     return 
@@ -472,7 +474,6 @@ def delete_task(user_data:dict,
             user_row_remove_idx = [user_task_data['task_id'].index(i) for i in user_task_data['task_id'] \
                                     if i in task_remove_idx]
 
-
             # Update the worksheet:
             ## Delete one row (task) at a time:      
             reduce_idx = 0
@@ -484,9 +485,9 @@ def delete_task(user_data:dict,
             
             ## Update task index: 
             ### Get the row and column ids for the user: 
-            userid_col = get_user_column(kwargs['tasks'], 'user_id', kwargs['task_header'])   
+            userid_col = get_column(kwargs['tasks'], 'user_id', kwargs['task_header'])   
             user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']] 
-            #taskid_col = get_user_column(kwargs['tasks'], 'task_id', kwargs['task_header'])
+            #taskid_col = get_column(kwargs['tasks'], 'task_id', kwargs['task_header'])
             taskid_col = list(user_task_data.keys()).index('task_id') + 2
         
             update_idx = 1
@@ -546,8 +547,92 @@ def handle_input_options(input_option:int) -> None:
         else:
             break
 
-def add_new_task():
-    pass
+def validate_new_task() -> list[str]:
+    '''
+    Validates the task description entry. 
+    The task description must be non-empty and
+    have at most 70 characters. 
+    '''
+    while True:
+        
+        new_task = input('Enter a new task (maximum 70 characters): ')
+
+        if len(new_task) == 0 :
+            print('A new task cannot be empty. Please try again.')
+        elif len(new_task) > 70:
+            print(f'The task contains {len(new_task) - 70} extra characters. Please try again.')
+        else:
+            break
+        
+    return new_task
+    
+def validate_new_task_category() -> list[str]:
+    '''
+    Checks that the task category entry is either 'errand', 'personal', or 'work'.
+    Casts all inputs to string to avoid checking for numerals.   
+    '''
+    while True:
+        task_category = input('Specify the task category (errand, personal, or work): ')
+        if str(task_category).lower().strip() not in TASK_CATEGORY:
+            print('Invalid choice. Please select a valid category (errand, personal, or work): ')
+        else:
+            break       
+    
+    return task_category
+        
+def validate_due_date() -> datetime:
+    '''
+    Checks if the datetime input provides the valid day, month and year values in the 
+    requested format MM-DD-YYY (e.g., 15-05-2024), otherwise it throws a ValueError.
+    '''
+    #due_date = due_date.split('-')
+    #due_date = [d.lstrip('0') for d in due_date]
+
+    while True:
+        due_date = input('Enter the due date for the task in the MM-DD-YYYY format: ')
+        try:
+            due_date = datetime.strptime(due_date, "%m-%d-%Y")
+            #doy = due_date[0]
+            #moy = due_date[1]
+            #yr  = due_date[2]
+            break
+        except ValueError as e:
+            print('Invalid format. Please enter the date as MM-DD-YYYY.')
+            
+    return due_date
+
+def create_new_task() -> dict:
+    '''
+    Add a new task to the user worksheet. The new task is inserted such that 
+    it maintains the default sorting by due date, with the earliest due date at the top. 
+    '''
+        
+    new_task = validate_new_task()
+    print('New task added.')
+    task_category = validate_new_task_category()
+    print(f'Task category {task_category.upper()} added.')
+    due_date = validate_due_date()
+    print(f'Task due date {due_date} added.')   
+    task_info = [new_task, task_category,'chore', due_date, 'active']
+
+    #user_id
+    #task_id 
+    return dict(zip(TASK_HEADER, task_info))
+                        
+
+
+
+    
+    
+
+
+
+
+    
+
+
+
+
 
 def task_handler(user_data:dict) -> None:
     '''
@@ -564,7 +649,7 @@ def task_handler(user_data:dict) -> None:
         else:
             if user_choice != 4:
                 tasks, task_info, task_header, tasks_idx = list_tasks_simple(user_data)
-                print('User tasks retrieved.\n')
+                #print('User tasks retrieved.\n')
             else:
                 break # Exit the outer if-else
 
@@ -580,7 +665,7 @@ def task_handler(user_data:dict) -> None:
                     task_handler(user_data)
                 #break
             elif user_choice == 2: # Add ask
-                add_new_task()
+                create_new_task()
             elif user_choice == 3: # Delete task
                 print('Your tasks are listed below:')
                 # Formatted user tasks console print
@@ -596,7 +681,6 @@ def task_handler(user_data:dict) -> None:
             else:
                 return False
                 
-
 #=================================================================#
 # -------------- Run the App: ---------------------------#
 
