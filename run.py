@@ -15,6 +15,10 @@ from dataclasses import dataclass, field
 from typing import List
 
 from datetime import datetime
+
+from rich.console import Console
+from rich.markdown import Markdown
+import sys
 #=================================================================#
 
 SCOPE = [
@@ -45,17 +49,7 @@ TASK_CATEGORY = ['errand', 'personal', 'work']
 
 #=================================================================#
 # --------------------- For New Users: ---------------------------#
-#----------------------------------------------------------------#
-'''
-New users:
-- input user_name
-    - validate user_name
-        - non-empty
-        
-- input password
-'''
 
-#----------------------------------------------------------------#
 #%%
 def clean_cli() -> None:
 # https://www.geeksforgeeks.org/clear-screen-python/
@@ -233,7 +227,6 @@ def create_new_user_worksheet(new_user_data:dict) -> None:
     SHEET.worksheet(new_user_data['user_name']).append_row(TASK_HEADER)
     SHEET.worksheet(USERS).append_row(list(new_user_data.values()))
 
-
 def new_user_registration():
     '''
     Validates credentials (username and password) from user input.
@@ -270,12 +263,12 @@ def new_user_registration():
 #=================================================================#
 # ------------------- For Registered Users: ----------------------#
 
-def validate_login_input(user_input:str) -> bool:
+def validate_login_input() -> bool:
     '''
     Check if the user log input contains two non-empty strings 
     (username and passord) separated by comma. 
     '''
-    
+    user_input = input('Please enter your username and password separated by comma: ')
     try:
         if len(user_input) == 0:
             raise ValueError('Enter username and password separated by comma')
@@ -404,10 +397,7 @@ def user_login() -> list:
         - values: column data (without header)
     '''
     while True:
-        
-        user_input = input('Please enter your username and password separated by comma: ')
-        # Validate user_input: two strings separated by comma:
-        user_input = validate_login_input(user_input)
+        user_input = validate_login_input()
         if user_input:
             # Retrieve the input components: username [0] and password [1]
             user_name = user_input[0].strip()
@@ -425,9 +415,10 @@ def user_login() -> list:
     return user_data
                     
 def user_help() -> None:
-    print('This is the help')
-    return 
-
+    console = Console()
+    with open("README.md", "r+") as help_file:
+        console.print(Markdown(help_file.read()))
+    
 def validate_task_index(task_remove_idx:list[int], tasks_idx:list[int]) -> bool:
     while True:
         if all([True for k in task_remove_idx if k in  tasks_idx]):
@@ -510,6 +501,36 @@ def delete_task(user_data:dict, **kwargs) -> None:
     else:
         print('Operation cancelled.')     
 
+def delete_account(user_name:str) -> None:
+    '''
+    Delete the user account in the following order:
+    - removes the user info from the 'users'-worksheet
+    - updates the 'user_id' column from the 'users'-worksheet
+    - removes the worksheet containing the user tasks
+    
+    The deletion cannot be undone. 
+    '''
+    
+    # Remove the row containing the user information from the 'users'-worksheet:
+    user_data = get_user_info(USERS, user_name)
+    user_column, _ = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
+    _, row_index = get_row(SHEET.worksheet(USERS), user_column, user_data['user_name'])
+    SHEET.worksheet(USERS).delete_rows(row_index)
+
+    # Update the 'user_id'-column from the 'users'-worksheet:
+    user_id_column, column_idx = get_column(SHEET.worksheet(USERS), 'user_id', USER_HEADER)
+    user_id_column[1:] = [i + 1 for i in range(len(user_id_column[1:]))]
+
+
+    for i in range(len(user_id_column[1:])):
+        SHEET.worksheet(USERS).update_cell(i + 2, column_idx, user_column[i + 1])
+
+    # Remove the user worksheet:
+    SHEET.del_worksheet(SHEET.worksheet(user_data['user_name']))
+
+
+
+
 def validate_new_task_description() -> list[str]:
     '''
     Validates the task description entry. 
@@ -582,13 +603,13 @@ def add_task(user_data:str) -> None:
     task_row['status'] = 'active'
     task_row['task_id'] = str(int(user_data['tasks']) + 1)
     task_info = list(task_row.values())
+    
     #print(tabulate([task_info], headers=TASK_HEADER))
-
-        #print(tabulate(task_row, headers="keys", numalign="center"))
+    #print(tabulate(task_row, headers="keys", numalign="center"))
 
     SHEET.worksheet(user_data['user_name']).append_row(task_info)
     # Update the  number of tasks in the 'tasks' column from the 'users'-worksheet:
-
+    
     user_column, _ = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
     user_row, row_index = get_row(SHEET.worksheet(USERS), user_column, user_data['user_name'])
     user_row = dict(zip(USER_HEADER, user_row))
@@ -597,25 +618,22 @@ def add_task(user_data:str) -> None:
     # Update user row:
     _, column_index = get_column(SHEET.worksheet(USERS), 'tasks', USER_HEADER)
     SHEET.worksheet(USERS).update_cell(row_index, column_index, int(user_row['tasks']))
-    #SHEET.worksheet(USERS).insert_row(list(user_row.values()),
-    #                                        int(user_row['user_id']) + 1)
 
     return dict(zip(TASK_HEADER, task_info))
 
-def main_menu() -> None:
+def main_menu() -> int:
     '''
     Gets input data to register a new user. 
     Run a while loop to collect a valid string of data
-    from the user via the terminal. The loop will repeatedly
-    request user input data, until it is valid. 
+    from the user via the terminal. The loop breaks
+    when the user input data is valid.
+    Returns an integer in range 1-5. 
     '''
-    #print('Select an option: 1(Login), 2(Register), 3(Remove user), 4(Help), 5(Exit):')
-
     while True:
         input_option = int(input('Select: 1 (Login), 2 (Register), 3 (Delete account), 4 (Help), 5 (Exit): '))
         if(input_option not in range(1, 6)):
             print('Invalid choice!\n'
-                'Valid options: 1(Login), 2(Register), 3(Remove user), 4(Help), 5(Exit):')
+                'Valid options: 1 (Login), 2 (Register), 3 (Remove user), 4 (Help), 5 (Exit):')
         else:
             break
     return input_option
@@ -625,26 +643,32 @@ def handle_input_options(input_option:int) -> None:
     Takes the menu selection from user input and handles the menu item logic.  
     '''
     while True:
-        if input_option == 1:
+        if input_option == 1: # USER LOGIN
             user_data = user_login()
             task_handler(user_data)  # takes user_id and returns the user tasks
             break
-        elif input_option == 2: # Regiister new user
+        elif input_option == 2: # REGISTER NEW USER
             user_data = new_user_registration()
             task_handler(user_data) 
             break
-        elif input_option == 3:
-            user_help()
+        elif input_option == 3: # DELETE USER ACCOUNT
+            delete_account()
             break
+        elif input_option == 4: # HELP MENU
+            user_help()
+            handle_input_options(main_menu())
         else:
             break
 
 def task_handler(user_data:dict) -> None:
     '''
-    List and handles the available options for registered users:\n
-    '1 (View), 2 (Add), 3 (Delete), 4 (Exit)'
+    Handles the available options for registered users:\n
+    - 1 (View):   List all tasks
+    - 2 (Add):    Add a new task
+    - 3 (Delete): Delete a task
+    - 4 (Exit):   Return to the main menu
     '''
-    print(' Please enter an option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit): ')
+    print('Select an option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit): ')
 
     while True:
         user_choice = int(input())
@@ -678,18 +702,21 @@ def task_handler(user_data:dict) -> None:
                 add_task(user_data)
                 task_handler(user_data)
             elif user_choice == 3: # Delete task
-                print('Your tasks are listed below:')
-                # Formatted user tasks console print
-                print(tabulate(task_info, headers = TASK_HEADER))
-                delete_task(user_data = user_data,
-                            tasks = tasks,
-                            task_info = list(task_info.values()),
-                            task_header = TASK_HEADER,
-                            tasks_idx = tasks_idx)
+                # print('Your tasks are listed below:')
+                # # Formatted user tasks console print
+                # print(tabulate(task_info, headers = TASK_HEADER))
+                # delete_task(user_data = user_data,
+                #             tasks = tasks,
+                #             task_info = list(task_info.values()),
+                #             task_header = TASK_HEADER,
+                #             tasks_idx = tasks_idx)
                 
-                clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
-                clear_output(clean_cli)
-                task_handler(user_data)  
+                # clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
+                # clear_output(clean_cli)
+                # task_handler(user_data) 
+                delete_account(user_data['user_name'])
+                print('Your account was deleted!')
+                break
             else:
                 break
 
