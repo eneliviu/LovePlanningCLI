@@ -4,7 +4,8 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
 #=================================================================#
 
-import gspread
+import gspread 
+from gspread_formatting import *
 from google.oauth2.service_account import Credentials
 import regex as re
 from tabulate import tabulate
@@ -14,6 +15,9 @@ import os
 from typing import Tuple
 from datetime import datetime
 import sys
+
+from rich.console import Console
+from rich.markdown import Markdown
 
 #=================================================================#
 
@@ -82,61 +86,6 @@ def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
 
 #%%
 
-def validate_password_length(user_password:str) -> bool:
-    '''
-    Validate entry password for new users: 
-    password must contain at least 8 characters.
-    '''
-
-    try: 
-        if len(user_password) <= 8:
-            raise ValueError(
-                    f'At least 8 characters required, you provided {len(user_password)}'
-                )
-        else:
-            return True 
-    except ValueError as e:
-        print(f'Invalid password: {e}, please try again.\n')
-        return False
-
-def validate_user_password_capital(user_password:str) -> bool:
-    '''
-    Validate entry password for new users: 
-    password must contain at least one capital letter. 
-    '''
-    capital_letters = [s for s in user_password if s.isupper()]
-
-    try:
-        if len(capital_letters) < 1:
-            raise ValueError(
-                    f'At least one capital letter required, you provided {len(capital_letters)}'
-                )
-        else:
-            return True
-    except ValueError as e:
-        print(f'Invalid password: {e}, please try again.\n')
-        return False
-
-def validate_user_password_numerals(user_password:str) -> bool:
-    '''
-    Validate entry password for new users.
-    The password must contain at least two numerals.
-    '''          
-    
-    try:
-        is_num_in_str = re.match(r'[0-9]', user_password) is not None
-        if is_num_in_str:
-            num_in_str = re.match(r'[0-9]', user_password).span() 
-            if len(num_in_str) <=2:
-                raise ValueError(
-                    f'At teast two numerals are required, you provided {len(num_in_str)}'
-                    )
-            else:
-                return True 
-    except ValueError as e:
-        print(f'Invalid password: {e}, please try again.\n') 
-        return False
-
 def validate_user_password(**kwargs) -> str:
     '''
     Validate entry password for new users: at least 8 characters length, of which
@@ -145,7 +94,12 @@ def validate_user_password(**kwargs) -> str:
         
     while True:
         
-        new_user_password = input('Please enter your pasword: ')
+        new_user_password = input('Please enter your pasword or Exit to cancel: ')
+        
+        if new_user_password.lower() == 'exit':
+            print('Operation canceled!')
+            sys.exit(0)
+        
         password_length = len(new_user_password)
         capital_letters = len([s for s in new_user_password if s.isupper()])
 
@@ -176,7 +130,12 @@ def validate_username(username_column:list[str]) -> bool:
     It applies to registered users, as well as to new users trying to register.
     '''
     while True:
-        new_user_name = input('Please enter your username: ')
+        new_user_name = input('Please enter your username or Exit to cancel: ')
+        
+        if new_user_name.lower() == 'exit':
+            print('Operation canceled!')
+            sys.exit(0)
+
         try: 
             if len(new_user_name) == 0:
                 raise ValueError('Username must not be empty')
@@ -199,7 +158,12 @@ def validate_user_email(user_email_column:list[str]) -> bool:
     
     valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
     while True:
-        new_user_email = input('Please enter your email address: ')
+        new_user_email = input('Enter your email address or Exit to cancel: ')
+        
+        if new_user_email.lower() == 'exit':
+            print('Operation canceled!')
+            sys.exit(0)
+
         try: 
             if re.search(valid_pattern, new_user_email) is None:
                 raise ValueError('Please enter a valid email address')
@@ -241,7 +205,6 @@ def new_user_registration() -> dict:
         - keys: column names (worksheet header)
         - values: column data (without header)
     ''' 
-
     username_column, _ = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
     user_email_column, _ = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
     
@@ -274,20 +237,25 @@ def validate_login_input() -> bool:
     Check if the user log input contains two non-empty strings 
     (username and passord) separated by comma. 
     '''
-    user_input = input('Please enter your username and password separated by comma: ')
+    user_input = input('Enter username and password separated by comma or Exit to cancel: ')
+    
+    if user_input.lower() == 'exit':
+            print('Operation canceled!')
+            sys.exit(0)
+    
     try:
         if len(user_input) == 0:
             raise ValueError('Enter username and password separated by comma')
         elif user_input.find(',') < 0:
-            raise ValueError('Use comma to separate username and password.')    
+            raise ValueError('Use comma to separate username and password')
         else:
             user_input = user_input.split(',')
             if len(user_input[0]) == 0 and len(user_input[1]) == 0:
-                raise ValueError('Username and Password cannot be empty.')
+                raise ValueError('Username and Password cannot be empty')
             elif len(user_input[0].strip()) == 0:
-                raise ValueError('Username cannot be empty.')
+                raise ValueError('Username cannot be empty')
             elif len(user_input[1].strip()) == 0:
-                raise ValueError('Password cannot be empty.')
+                raise ValueError('Password cannot be empty')
             else:
                 return user_input
     except ValueError as e:
@@ -378,10 +346,9 @@ def get_user_info(worksheet_name:str, user_name:str) -> dict:
 
 def tasks_list(user_data:dict) -> Tuple[gspread.worksheet.Worksheet, dict]:
     '''
-    Get the tasks by the user_id of a registered user.
-    Returns the 
-    nested list of tasks (first return) and
-    the header of the 'tasks' worksheet (second return).  
+    Takes a dictionary conatining the user information, and returns a tuple containing:
+    - the user worksheet (the first element)
+    - a dictionary containing the user tasks information (the second element).  
     '''
     #tasks, task_header = get_sheet_meta(user_data['user_name'])
     wksheet = SHEET.worksheet(user_data['user_name'])
@@ -401,8 +368,10 @@ def user_login() -> list:
     '''
     while True:
         user_input = validate_login_input()
+
+        # Retrieve the input components: username [0] and password [1]
         if user_input:
-            # Retrieve the input components: username [0] and password [1]
+
             user_name = user_input[0].strip()
             user_password = user_input[1].strip()
 
@@ -414,12 +383,12 @@ def user_login() -> list:
                     break
             except ValueError as e:
                 print(f' {e}. Please try again.')
-    
+
     return user_data
                     
 def user_help() -> None:
     console = Console()
-    with open("README.md", "r+") as help_file:
+    with open("HELP.md", "r+") as help_file:
         console.print(Markdown(help_file.read()))
     
 def validate_task_index(task_remove_idx:list[int], tasks_idx:list[int]) -> bool:
@@ -445,14 +414,34 @@ def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
     due_date_col, _ = get_column(worksheet, 'due', TASK_HEADER)
     due_dates_tasks = [datetime.strptime(d, "%m-%d-%Y") for d in due_date_col[1:]]
     due_dates_tasks_ordered = sorted(due_dates_tasks)
+    due_date_idx = [due_dates_tasks.index(d) for d in due_dates_tasks_ordered]
+    overdue_task_row = [ i + 2 for i in range(len(due_dates_tasks_ordered)) if due_dates_tasks_ordered[i] < datetime.now()]
+    
+    if len(overdue_task_row) > 0:
+            check_overdue_task(worksheet, overdue_task_row)
+    
     if due_dates_tasks_ordered != due_dates_tasks:
-        due_date_idx = [due_dates_tasks.index(d) for d in due_dates_tasks_ordered]
         unsorted_task = worksheet.get_all_values()[1:] 
         sorted_task = [unsorted_task[idx] for idx in due_date_idx]
         worksheet.update([TASK_HEADER] + sorted_task)
         return True
     else:
         return False
+
+def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
+    '''
+    Check if a task is overdue by comparing the due date of the task with the current date-time.
+    Changes the task status from 'active' with 'overdue', and sets the cell background colour to red.
+    '''
+    # Format cell background color using RGB values as floats (1 is full intensity, 0 is no intensity):
+    ## https://gspread-formatting.readthedocs.io/en/latest/#
+    fmt = CellFormat(backgroundColor = color(1, 0.9, 0.9))
+
+    # Update task status for overdue tasks:
+    for k in overdue_rows:
+        worksheet.update_cell(k, TASK_HEADER.index('status') + 1, 'overdue')
+        cell_in_worksheet = gspread.utils.rowcol_to_a1(k, TASK_HEADER.index('status') + 1)
+        format_cell_range(worksheet, cell_in_worksheet, fmt)
 
 def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task_data:dict) -> None:
     '''
@@ -482,7 +471,7 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
             task_remove_idx = sorted(list(set([int(k) for k in task_remove_idx.split(',')])))
-            user_row_remove_idx = [i - 1 for i in task_remove_idx]
+            #user_row_remove_idx = [i - 1 for i in task_remove_idx]
 
             # Update the worksheet:
             ## Delete one row (task) at a time:      
@@ -497,6 +486,10 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
             taskid_col, column_id = get_column(worksheet, 'task_id', TASK_HEADER) 
             if len(taskid_col[1:]) == 0:
                 print('All task were removed!')
+                # Update the cell containing the # of tasks in the user row form the 'user'-worksheet:
+                SHEET.worksheet(USERS).update_cell(int(user_data['user_id'])+1, 
+                                        USER_HEADER.index('tasks') + 1,
+                                        str(len(taskid_col[1:])))
                 return 
 
             ## If there are more tasks left, make sure they are sorted ascending by due date: 
@@ -512,7 +505,7 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
                                             USER_HEADER.index('tasks') + 1,
                                             str(len(taskid_col[1:])))
 
-            print(f"Tasks deleted: {len(user_row_remove_idx)} --- Tasks left: {len(taskid_col[1:])}.")
+            print(f"Tasks deleted: {len(task_remove_idx)} --- Tasks left: {len(taskid_col[1:])}.")
 
     else:
         print('Operation cancelled.')     
@@ -578,7 +571,7 @@ def validate_new_task_category() -> list[str]:
 def validate_due_date() -> datetime:
     '''
     Checks if the datetime input provides the valid day, month and year values in the 
-    requested format MM-DD-YYY (e.g., 15-05-2024), otherwise it throws a ValueError.
+    requested format MM-DD-YYY (e.g., 05-15-2024), otherwise it throws a ValueError.
     The due date also has to be past the current time.
     '''
 
@@ -629,6 +622,7 @@ def add_task(user_data:str) -> None:
         for k in range(len(taskid_col[1:])):    
             SHEET.worksheet(user_data['user_name']).update_cell(k + 2, column_id, k+1)
 
+
     # Update the  number of tasks in the 'tasks' column from the 'users'-worksheet:
     user_column, _ = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
     user_row, row_index = get_row(SHEET.worksheet(USERS), user_column, user_data['user_name'])
@@ -657,6 +651,11 @@ def main_menu() -> int:
     '''
     while True:
         input_option = input('Select: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
+        
+        if input_option.lower() == 'exit':
+            print('OPeration cancelled!')
+            sys.exit(0)
+
         if not input_option.isdigit():
             print('Invalid choice!\n'
                 'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
@@ -687,9 +686,10 @@ def handle_input_options(input_option:int) -> None:
             break
         elif input_option == 3: # HELP MENU
             user_help()
+            clean_cli = input('Press y (Yes) to clear the output, or n (No) otherwise: ')
+            clear_output(clean_cli)
             handle_input_options(main_menu())
         else: # Exit app
-            print('You are now logged out!')
             break
 
 def task_handler(user_data:dict) -> None:
@@ -714,7 +714,6 @@ def task_handler(user_data:dict) -> None:
             print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit).')
         else:
             user_choice = int(user_choice)
-            
             if user_choice == 1: # View tasks
                 tasks, task_info = tasks_list(user_data)
                 if int(user_data['tasks']) == 0:
@@ -744,7 +743,6 @@ def task_handler(user_data:dict) -> None:
                 print('The account was deleted! You are now logged out.')
                 sys.exit(0)
             else:
-                print('You are now logged out!')
                 sys.exit(0)
 
 #%%                

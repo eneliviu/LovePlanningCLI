@@ -31,3 +31,59 @@ task_remove_idx = input('Please enter the indexes of the tasks to be removed.'
 
     print(f'you selected: {task_remove_idx}')
     task_remove_idx = int(task_remove_idx) + 1 
+
+
+def validate_password_length(user_password:str) -> bool:
+    '''
+    Validate entry password for new users: 
+    password must contain at least 8 characters.
+    '''
+
+    try: 
+        if len(user_password) <= 8:
+            raise ValueError(
+                    f'At least 8 characters required, you provided {len(user_password)}'
+                )
+        else:
+            return True 
+    except ValueError as e:
+        print(f'Invalid password: {e}, please try again.\n')
+        return False
+
+def validate_user_password_capital(user_password:str) -> bool:
+    '''
+    Validate entry password for new users: 
+    password must contain at least one capital letter. 
+    '''
+    capital_letters = [s for s in user_password if s.isupper()]
+
+    try:
+        if len(capital_letters) < 1:
+            raise ValueError(
+                    f'At least one capital letter required, you provided {len(capital_letters)}'
+                )
+        else:
+            return True
+    except ValueError as e:
+        print(f'Invalid password: {e}, please try again.\n')
+        return False
+
+def validate_user_password_numerals(user_password:str) -> bool:
+    '''
+    Validate entry password for new users.
+    The password must contain at least two numerals.
+    '''          
+    
+    try:
+        is_num_in_str = re.match(r'[0-9]', user_password) is not None
+        if is_num_in_str:
+            num_in_str = re.match(r'[0-9]', user_password).span() 
+            if len(num_in_str) <=2:
+                raise ValueError(
+                    f'At teast two numerals are required, you provided {len(num_in_str)}'
+                    )
+            else:
+                return True 
+    except ValueError as e:
+        print(f'Invalid password: {e}, please try again.\n') 
+        return False
