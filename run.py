@@ -8,17 +8,13 @@ import gspread
 from google.oauth2.service_account import Credentials
 import regex as re
 from tabulate import tabulate
-import pprint
+#import pprint
 import os
-#import pandas as pd
-from dataclasses import dataclass, field
-from typing import List
-
+#from dataclasses import dataclass, field
+from typing import Tuple
 from datetime import datetime
-
-from rich.console import Console
-from rich.markdown import Markdown
 import sys
+
 #=================================================================#
 
 SCOPE = [
@@ -51,32 +47,42 @@ TASK_CATEGORY = ['errand', 'personal', 'work']
 # --------------------- For New Users: ---------------------------#
 
 #%%
+
 def clean_cli() -> None:
+    '''
+    CLean the console. Works for Windows and Linux OS.
+    '''
 # https://www.geeksforgeeks.org/clear-screen-python/
     if os.name == 'nt':
         _ = os.system('cls')
     else:
         _ = os.system('clear')
+
 def clear_output(clean_cli_choice:str) -> None:
+    '''
+    Validates the user option to clear the terminal.
+    '''
     if validate_static_options(clean_cli_choice, STATIC_OPTIONS):
-        clean_cli()
+        if clean_cli_choice.lower() == 'y': 
+            clean_cli()
+        
 def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
     '''
-    Takes the google sheet data as list of lists and creats a dictionary using 
-    dictionary comprehension. The keys are the values in the first list (list_data[0]) of the list_data entry.
-    Each dictionary key receives a list of values from the remaining lists of list_data argument. 
-    Handy for printing the user data or for handling data inputs (though with care when there are 
-    many regsitered users)        
+    Takes the google sheet data as list of lists and creates a dictionary using 
+    dictionary comprehension.
+    - keys: the values in d_keys list argument
+    - values: the lists in the list_data argument
+
+    Returns a dictionary. 
     '''
 
     #list_data.copy().insert(0, d_keys) # shallow list copy to avoid changing the original variable 
 
     return {d_keys[i]:[s[i] for s in list_data] for i in range(len(d_keys)) }  
 
-#----------------------------------------------------------------#
 #%%
 
-def validate_password_length(user_password:str):
+def validate_password_length(user_password:str) -> bool:
     '''
     Validate entry password for new users: 
     password must contain at least 8 characters.
@@ -93,7 +99,7 @@ def validate_password_length(user_password:str):
         print(f'Invalid password: {e}, please try again.\n')
         return False
 
-def validate_user_password_capital(user_password:str):
+def validate_user_password_capital(user_password:str) -> bool:
     '''
     Validate entry password for new users: 
     password must contain at least one capital letter. 
@@ -111,7 +117,7 @@ def validate_user_password_capital(user_password:str):
         print(f'Invalid password: {e}, please try again.\n')
         return False
 
-def validate_user_password_numerals(user_password:str):
+def validate_user_password_numerals(user_password:str) -> bool:
     '''
     Validate entry password for new users.
     The password must contain at least two numerals.
@@ -131,7 +137,7 @@ def validate_user_password_numerals(user_password:str):
         print(f'Invalid password: {e}, please try again.\n') 
         return False
 
-def validate_user_password(**kwargs):
+def validate_user_password(**kwargs) -> str:
     '''
     Validate entry password for new users: at least 8 characters length, of which
     at least one capital letter and at least two numerals.
@@ -227,7 +233,7 @@ def create_new_user_worksheet(new_user_data:dict) -> None:
     SHEET.worksheet(new_user_data['user_name']).append_row(TASK_HEADER)
     SHEET.worksheet(USERS).append_row(list(new_user_data.values()))
 
-def new_user_registration():
+def new_user_registration() -> dict:
     '''
     Validates credentials (username and password) from user input.
     - The while-loop runs until the user enters the correct data. 
@@ -370,20 +376,17 @@ def get_user_info(worksheet_name:str, user_name:str) -> dict:
 
     return dict(zip(USER_HEADER, user_info))
 
-def tasks_list(user_data:dict) -> tuple[list[list[str]], list[str]]:
+def tasks_list(user_data:dict) -> Tuple[gspread.worksheet.Worksheet, dict]:
     '''
     Get the tasks by the user_id of a registered user.
-    Returns the nested list of tasks (first return) and
+    Returns the 
+    nested list of tasks (first return) and
     the header of the 'tasks' worksheet (second return).  
     '''
-
     #tasks, task_header = get_sheet_meta(user_data['user_name'])
     wksheet = SHEET.worksheet(user_data['user_name'])
-    # Get the data in the 'task_id' column
-    #column_data, _ = get_column(wksheet, column_name, TASK_HEADER)
-
-    # Get all the row values for the tasks associated to an user_id:   
     
+    # Get all the row values for the tasks associated to an user_id:   
     task_info = make_dict_from_nested_lists(wksheet.get_all_values()[1:], TASK_HEADER)
     
     return wksheet, task_info
@@ -421,11 +424,13 @@ def user_help() -> None:
     
 def validate_task_index(task_remove_idx:list[int], tasks_idx:list[int]) -> bool:
     while True:
-        if all([True for k in task_remove_idx if k in  tasks_idx]):
+        if all([True for k in task_remove_idx if k in tasks_idx]):
             return True
+        elif len(tasks_idx) == 0:
+            print('There are no tasks to remove!')
+            return False
         else:
-            break
-    return True
+            return False
     
 def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     while True:
@@ -436,67 +441,78 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
             
     return True
     
-def delete_task(user_data:dict, **kwargs) -> None:
+def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
+    due_date_col, _ = get_column(worksheet, 'due', TASK_HEADER)
+    due_dates_tasks = [datetime.strptime(d, "%m-%d-%Y") for d in due_date_col[1:]]
+    due_dates_tasks_ordered = sorted(due_dates_tasks)
+    if due_dates_tasks_ordered != due_dates_tasks:
+        due_date_idx = [due_dates_tasks.index(d) for d in due_dates_tasks_ordered]
+        unsorted_task = worksheet.get_all_values()[1:] 
+        sorted_task = [unsorted_task[idx] for idx in due_date_idx]
+        worksheet.update([TASK_HEADER] + sorted_task)
+        return True
+    else:
+        return False
+
+def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task_data:dict) -> None:
     '''
-    Delete one or more selected tasks by task id.
+    Delete one or more selected tasks.
     The function removes the rows corresponding to the selected tasks from the 'tasks'Google worksheet.
-    The task ids separated by commas are entered by the user.
-    After input validation, the task deletion (yes or no) is completed according to the user choice.
+    The task IDs separated by commas are entered by the user.
+    After input validation, the task deletion awaits for confirmation (yes or no) in order to proceed.
     After completion, the user returns to the main menu.
+    
+    Arguments:
+    - user_data:     ---> dictionary with user the information from the 'users'-worksheet
+        - keys: user_id, user_name, email, password and tasks 
+    - user_task_data ---> dictionary with the user task information 
+        - keys: task_id, description, category, created, due and status
     '''
 
     task_remove_idx = input('Please enter the indexes of the tasks to be removed or Escape to cancel.\n'
                             'Use commas to separate multiple entries: \n')
     
     # Check that user input task index corresponds with the task indexes from the worksheet:
-    if validate_task_index(task_remove_idx, kwargs['tasks_idx']):
+    if validate_task_index(task_remove_idx, user_task_data['task_id']):
         remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
-                            'Press Yes(y) to proceed, No(n) to return or Escape to cancel: ')
+                            'Press Yes(y) to proceed, No(n) to cancel: ')
     
     # If the user inputs are valid, delete task(s) and update the remaining task_id cells 
     # to start from 1: 
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
             task_remove_idx = sorted(list(set([int(k) for k in task_remove_idx.split(',')])))
-            user_task_data = make_dict_from_nested_lists(kwargs['task_info'], kwargs['task_header'][0:])
-            user_task_data['task_id'] = [int(i) for i in  user_task_data['task_id'] ]
-
-            # Subset the worksheet rows to be deleted: 
-            user_row_remove_idx = [user_task_data['task_id'].index(i) for i in user_task_data['task_id'] \
-                                    if i in task_remove_idx]
+            user_row_remove_idx = [i - 1 for i in task_remove_idx]
 
             # Update the worksheet:
             ## Delete one row (task) at a time:      
             reduce_idx = 0
-            for k in user_row_remove_idx:
-                row_to_delete = [kwargs['tasks_idx'][i] - reduce_idx for i in user_row_remove_idx if i == k]
-                kwargs['tasks'].delete_rows(row_to_delete[0])
-                print(f'Task {k} deleted...Row {row_to_delete[0]} deleted.')
+            for k in range(len(task_remove_idx)):
+                row_to_delete = task_remove_idx[k] + 1 - reduce_idx
+                worksheet.delete_rows(row_to_delete)
+                print(f'Task {k} deleted...Row {row_to_delete} deleted.')
                 reduce_idx += 1
             
-            ## Update task index: 
-            ### Get the row and column ids for the user: 
-            userid_col, _ = get_column(kwargs['tasks'], 'user_id', kwargs['task_header'])   
-            user_row_idx = [i+1  for i in range(len(userid_col)) if userid_col[i] == user_data['user_id']] 
-            taskid_col = list(user_task_data.keys()).index('task_id') + 2
-        
-            update_idx = 1
-            for k in user_row_idx:    
-                kwargs['tasks'].update_cell(k, taskid_col, update_idx)
-                update_idx += 1
-    
-            # Check if there any task left:
+            ## Check if there is any task left, otherwise exit function:
+            taskid_col, column_id = get_column(worksheet, 'task_id', TASK_HEADER) 
+            if len(taskid_col[1:]) == 0:
+                print('All task were removed!')
+                return 
 
-            ## ERRORS HERE:   
-            for k in list(user_task_data.keys()):
-                del user_task_data[k][task_remove_idx]
-            
-            if (len(user_task_data['task_id'])==0):
-                print('There is no active task left in the list!')
-            else:
-                #
-                print(f"{len(user_row_remove_idx)} tasks deleted, {len(user_task_data['task_id'])} remaining.")
-                #user_task_data['task_id'] = [i+1 for i in range(len(user_task_data['task_id']))]
+            ## If there are more tasks left, make sure they are sorted ascending by due date: 
+            if sort_tasks_by_datetime(worksheet):
+                taskid_col, column_id = get_column(worksheet, 'task_id', TASK_HEADER)
+
+            ## If there are more tasks left, make sure the task_id is updated:
+            for k in range(len(taskid_col[1:])):    
+                worksheet.update_cell(k + 2, column_id, k+1)
+
+            # Update the cell containing the # of tasks in the user row form the 'user'-worksheet:
+            SHEET.worksheet(USERS).update_cell(int(user_data['user_id'])+1, 
+                                            USER_HEADER.index('tasks') + 1,
+                                            str(len(taskid_col[1:])))
+
+            print(f"Tasks deleted: {len(user_row_remove_idx)} --- Tasks left: {len(taskid_col[1:])}.")
 
     else:
         print('Operation cancelled.')     
@@ -521,21 +537,16 @@ def delete_account(user_name:str) -> None:
     user_id_column, column_idx = get_column(SHEET.worksheet(USERS), 'user_id', USER_HEADER)
     user_id_column[1:] = [i + 1 for i in range(len(user_id_column[1:]))]
 
-
     for i in range(len(user_id_column[1:])):
-        SHEET.worksheet(USERS).update_cell(i + 2, column_idx, user_column[i + 1])
+        SHEET.worksheet(USERS).update_cell(i + 2, column_idx, user_id_column[i + 1])
 
     # Remove the user worksheet:
     SHEET.del_worksheet(SHEET.worksheet(user_data['user_name']))
 
-
-
-
 def validate_new_task_description() -> list[str]:
     '''
-    Validates the task description entry. 
-    The task description must be non-empty and
-    have at most 70 characters. 
+    Validates the task description entry. The task description
+    must be non-empty and have at most 70 characters. 
     '''
     while True:
         
@@ -578,7 +589,7 @@ def validate_due_date() -> datetime:
             due_date = datetime.strptime(due_date, "%m-%d-%Y")
             try:
                 if due_date < creation_date:
-                    raise ValueError('The date is later than the current time')
+                    raise ValueError('The date is priorto the current time')
                 break
             except ValueError as e:
                 print(f'Invalid time. {e}.')
@@ -608,8 +619,17 @@ def add_task(user_data:str) -> None:
     #print(tabulate(task_row, headers="keys", numalign="center"))
 
     SHEET.worksheet(user_data['user_name']).append_row(task_info)
-    # Update the  number of tasks in the 'tasks' column from the 'users'-worksheet:
     
+    # Keep the tasks sorted ascedning by due date.
+    # If not sorted, then sort and update the task indexes. 
+    if sort_tasks_by_datetime(SHEET.worksheet(user_data['user_name'])): 
+        taskid_col, column_id = get_column(SHEET.worksheet(user_data['user_name']),
+                                            'task_id',
+                                            TASK_HEADER)
+        for k in range(len(taskid_col[1:])):    
+            SHEET.worksheet(user_data['user_name']).update_cell(k + 2, column_id, k+1)
+
+    # Update the  number of tasks in the 'tasks' column from the 'users'-worksheet:
     user_column, _ = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
     user_row, row_index = get_row(SHEET.worksheet(USERS), user_column, user_data['user_name'])
     user_row = dict(zip(USER_HEADER, user_row))
@@ -623,24 +643,38 @@ def add_task(user_data:str) -> None:
 
 def main_menu() -> int:
     '''
-    Gets input data to register a new user. 
-    Run a while loop to collect a valid string of data
+    Gets user choices as follows:
+    - 1 : User Login
+    - 2 : Register a new user
+    - 3 : Show the help content for running the application
+    - 4 : Exit the application
+
+    Runs a while loop to collect a valid string of data
     from the user via the terminal. The loop breaks
     when the user input data is valid.
-    Returns an integer in range 1-5. 
+    
+    Returns an integer in range 1-4. 
     '''
     while True:
-        input_option = int(input('Select: 1 (Login), 2 (Register), 3 (Delete account), 4 (Help), 5 (Exit): '))
-        if(input_option not in range(1, 6)):
+        input_option = input('Select: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
+        if not input_option.isdigit():
             print('Invalid choice!\n'
-                'Valid options: 1 (Login), 2 (Register), 3 (Remove user), 4 (Help), 5 (Exit):')
+                'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
+        elif input_option.isdigit() and int(input_option) not in range(1, 5):
+            print('Invalid choice!\n'
+                'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
         else:
             break
-    return input_option
+
+    return int(input_option)
 
 def handle_input_options(input_option:int) -> None:
     '''
-    Takes the menu selection from user input and handles the menu item logic.  
+    Takes the menu selection from user input and handles the menu item logic:
+    - 1 : User Login
+    - 2 : Register a new user
+    - 3 : Show the help content for running the application
+    - 4 : Exit the application
     '''
     while True:
         if input_option == 1: # USER LOGIN
@@ -651,80 +685,74 @@ def handle_input_options(input_option:int) -> None:
             user_data = new_user_registration()
             task_handler(user_data) 
             break
-        elif input_option == 3: # DELETE USER ACCOUNT
-            delete_account()
-            break
-        elif input_option == 4: # HELP MENU
+        elif input_option == 3: # HELP MENU
             user_help()
             handle_input_options(main_menu())
-        else:
+        else: # Exit app
+            print('You are now logged out!')
             break
 
 def task_handler(user_data:dict) -> None:
     '''
     Handles the available options for registered users:\n
-    - 1 (View):   List all tasks
-    - 2 (Add):    Add a new task
-    - 3 (Delete): Delete a task
-    - 4 (Exit):   Return to the main menu
+    - 1 (View tasks):     ---> List all tasks
+    - 2 (Add task):       ---> Add a new task
+    - 3 (Delete task):    ---> Delete a task
+    - 4 (Delete account): ---> Delete user account
+    - 5 (Exit):           ---> Return to the main menu
     '''
-    print('Select an option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit): ')
+    print('\nSelect an option:')
+    print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit).')
 
     while True:
-        user_choice = int(input())
-        if(user_choice not in range(1, 5)):
-            print('Please enter a valid option: 1 (View), 2 (Add), 3 (Delete), 4 (Exit).\n'
-                'Press Escape(Esc) to Cancel.')
+        user_choice = input()
+        if not user_choice.isdigit():
+            print('Invalid selection! Please select a valid option:')
+            print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit).')
+        elif int(user_choice) not in range(1, 6):
+            print('Invalid selection! Please select a valid option:')
+            print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit).')
         else:
-            if user_choice != 4:
-                tasks, task_info = tasks_list(user_data)
-                #print('User tasks retrieved.\n')
-            else:
-                break # Exit the outer if-else
-
+            user_choice = int(user_choice)
+            
             if user_choice == 1: # View tasks
-
-                print(user_data)
                 tasks, task_info = tasks_list(user_data)
-                
-                if len(task_info) == 0:
-                        print('You have no scheduled tasks.')
-                        
+                if int(user_data['tasks']) == 0:
+                        print('You have no scheduled tasks.\n')
+                        clean_cli = input('Press y (Yes) to clear the output, or n (No) otherwise: ')
+                        clear_output(clean_cli)
+                        task_handler(user_data)
                 else:
                     print('Your tasks are listed below:')
-                    # Formatted user tasks console print
-                    print(tabulate(list(task_info.values()), headers = TASK_HEADER))
-                    clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
+                    print(tabulate(task_info, headers="keys", numalign="center"))
+                    clean_cli = input('Press y (Yes) to clear the output, or n (No) otherwise: ')
                     clear_output(clean_cli)
                     task_handler(user_data)
-                #break
             elif user_choice == 2: # Add a new ask
                 add_task(user_data)
-                task_handler(user_data)
+                task_handler(get_user_info(USERS, user_data['user_name']))
             elif user_choice == 3: # Delete task
-                # print('Your tasks are listed below:')
-                # # Formatted user tasks console print
-                # print(tabulate(task_info, headers = TASK_HEADER))
-                # delete_task(user_data = user_data,
-                #             tasks = tasks,
-                #             task_info = list(task_info.values()),
-                #             task_header = TASK_HEADER,
-                #             tasks_idx = tasks_idx)
-                
-                # clean_cli = input('Press y(Yes) to clear the output, or n(No) otherwise: ')
-                # clear_output(clean_cli)
-                # task_handler(user_data) 
+                tasks, task_info = tasks_list(user_data)
+                print('Your tasks are listed below:')
+                print(tabulate(task_info, headers="keys", numalign="center"))
+                delete_task(user_data, tasks, task_info)
+                clean_cli = input('Press y (Yes) to clear the output, or n (No) otherwise: ')
+                clear_output(clean_cli)
+                task_handler(get_user_info(USERS, user_data['user_name']))
+            elif user_choice == 4: # Delete user account
                 delete_account(user_data['user_name'])
-                print('Your account was deleted!')
-                break
+                print('The account was deleted! You are now logged out.')
+                sys.exit(0)
             else:
-                break
+                print('You are now logged out!')
+                sys.exit(0)
 
 #%%                
-#=================================================================#
-# -------------- Run the App: ---------------------------#
-
+# The main() function to run the app:
 def main() -> None:
+    '''
+    The main() function that wraps all the other functionality required to run the app.
+    '''
     print('Welcome to LovePlanning, the Ultimate Task Management Tool!')
     input_option = main_menu()
     while True:
@@ -732,4 +760,9 @@ def main() -> None:
             print('You are now logged out')
             break
 
+# %%
+
+# Run the App:
+
 main()
+
