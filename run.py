@@ -52,6 +52,15 @@ TASK_CATEGORY = ['errand', 'personal', 'work']
 
 #%%
 
+def validate_static_options(remove_choice:str, options:list[str]) -> bool:
+    while True:
+        if remove_choice.lower() not in options:
+            remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return: ')
+        else:
+            break
+            
+    return True
+
 def clean_cli() -> None:
     '''
     CLean the console. Works for Windows and Linux OS.
@@ -262,19 +271,6 @@ def validate_login_input() -> bool:
             print(f'{e}. Please try again!')
             return False
 
-def match_user_name(user_data:dict, user_name:str) -> bool:
-    '''
-    Validates existing usernames by matching them against the
-    records in the 'username'- column of the 'users'- sheet.  
-    '''
- 
-    while True:
-        if user_name in user_data['user_name']:
-            return True
-        else:
-            print('Username not found, please try again')
-            return False
-
 def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> bool:
     '''
     Validates existing username and passowrd by matching them against the
@@ -401,15 +397,21 @@ def validate_task_index(task_remove_idx:list[int], tasks_idx:list[int]) -> bool:
         else:
             return False
     
-def validate_static_options(remove_choice:str, options:list[str]) -> bool:
-    while True:
-        if remove_choice.lower() not in options:
-            remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return: ')
-        else:
-            break
-            
-    return True
-    
+def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
+    '''
+    Check if a task is overdue by comparing the due date of the task with the current date-time.
+    Changes the task status from 'active' with 'overdue', and sets the cell background colour to red.
+    '''
+    # Format cell background color using RGB values as floats (1 is full intensity, 0 is no intensity):
+    ## https://gspread-formatting.readthedocs.io/en/latest/#
+    fmt = CellFormat(backgroundColor = color(1, 0.9, 0.9))
+
+    # Update task status for overdue tasks:
+    for k in overdue_rows:
+        worksheet.update_cell(k, TASK_HEADER.index('status') + 1, 'overdue')
+        cell_in_worksheet = gspread.utils.rowcol_to_a1(k, TASK_HEADER.index('status') + 1)
+        format_cell_range(worksheet, cell_in_worksheet, fmt)
+
 def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
     due_date_col, _ = get_column(worksheet, 'due', TASK_HEADER)
     due_dates_tasks = [datetime.strptime(d, "%m-%d-%Y") for d in due_date_col[1:]]
@@ -427,21 +429,6 @@ def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
         return True
     else:
         return False
-
-def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
-    '''
-    Check if a task is overdue by comparing the due date of the task with the current date-time.
-    Changes the task status from 'active' with 'overdue', and sets the cell background colour to red.
-    '''
-    # Format cell background color using RGB values as floats (1 is full intensity, 0 is no intensity):
-    ## https://gspread-formatting.readthedocs.io/en/latest/#
-    fmt = CellFormat(backgroundColor = color(1, 0.9, 0.9))
-
-    # Update task status for overdue tasks:
-    for k in overdue_rows:
-        worksheet.update_cell(k, TASK_HEADER.index('status') + 1, 'overdue')
-        cell_in_worksheet = gspread.utils.rowcol_to_a1(k, TASK_HEADER.index('status') + 1)
-        format_cell_range(worksheet, cell_in_worksheet, fmt)
 
 def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task_data:dict) -> None:
     '''

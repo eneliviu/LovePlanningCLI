@@ -87,3 +87,17 @@ def validate_user_password_numerals(user_password:str) -> bool:
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n') 
         return False
+
+
+def match_user_name(user_data:dict, user_name:str) -> bool:
+    '''
+    Validates existing usernames by matching them against the
+    records in the 'username'- column of the 'users'- sheet.  
+    '''
+ 
+    while True:
+        if user_name in user_data['user_name']:
+            return True
+        else:
+            print('Username not found, please try again')
+            return False
