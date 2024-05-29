@@ -432,7 +432,6 @@ def user_help() -> None:
     # md = Markdown(markdown_help_text)
     # console.print(md)
     
-    
 def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
     '''
     Check if a task is overdue by comparing the due date of the task with the current date-time.
