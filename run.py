@@ -414,10 +414,10 @@ def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list)
 
 def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
     due_date_col, _ = get_column(worksheet, 'due', TASK_HEADER)
-    due_dates_tasks = [datetime.strptime(d, "%m-%d-%Y") for d in due_date_col[1:]]
+    due_dates_tasks = [datetime.strptime(d, "%m-%d-%Y").date() for d in due_date_col[1:]]
     due_dates_tasks_ordered = sorted(due_dates_tasks)
     due_date_idx = [due_dates_tasks.index(d) for d in due_dates_tasks_ordered]
-    overdue_task_row = [ i + 2 for i in range(len(due_dates_tasks_ordered)) if due_dates_tasks_ordered[i] < datetime.now()]
+    overdue_task_row = [ i + 2 for i in range(len(due_dates_tasks_ordered)) if due_dates_tasks_ordered[i] < datetime.now().date()]
     
     if len(overdue_task_row) > 0:
             check_overdue_task(worksheet, overdue_task_row)
@@ -563,13 +563,19 @@ def validate_due_date() -> datetime:
     '''
 
     while True:
-        due_date = input('Enter the due date in the MM-DD-YYYY format (e.g., 1-12-2024): ')
-        creation_date = datetime.now()
+        due_date = input('Enter the due date in the MM-DD-YYYY format\n'
+                        '(Enter Exit to cancel): ')
+        
+        if due_date.lower() == 'exit':
+            print('Operation canceled!')
+            sys.exit(0)
+
+        creation_date = datetime.now().date()
         try:
-            due_date = datetime.strptime(due_date, "%m-%d-%Y")
+            due_date = datetime.strptime(due_date, "%m-%d-%Y").date()
             try:
                 if due_date < creation_date:
-                    raise ValueError('The date is priorto the current time')
+                    raise ValueError('The date is prior to the current time')
                 break
             except ValueError as e:
                 print(f'Invalid time. {e}.')
