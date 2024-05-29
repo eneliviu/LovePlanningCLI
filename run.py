@@ -400,7 +400,10 @@ def user_login() -> list:
     return user_data
                     
 def user_help() -> None:
-    
+    '''
+    Opens and writes a Markdown file in the console.  
+    https://rich.readthedocs.io/en/stable/console.html
+    '''
     console = Console()
     with open("HELP.md", "r+") as help_file:
         console.print(Markdown(help_file.read()))
