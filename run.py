@@ -400,9 +400,35 @@ def user_login() -> list:
     return user_data
                     
 def user_help() -> None:
+    
     console = Console()
     with open("HELP.md", "r+") as help_file:
         console.print(Markdown(help_file.read()))
+
+    # markdown_help_text = '''
+    #     1. Menu options for registered users:  
+    #     - 1 (View tasks):     ---> List all tasks
+    #     - 2 (Add task):       ---> Add a new task
+    #     - 3 (Delete task):    ---> Delete a task
+    #     - 4 (Delete account): ---> Delete user account
+    #     - 5 (Exit):           ---> Return to the main menu
+    #     2. Menu options for new users  
+    #     Registration process requires the following information:
+    #     - User name (non-empty)            
+    #     - User password: minimum 8 characters, of which at least one
+    #         capital letter and two numerals
+    #     - Valid email address (e.g., someone@somewhere.com)  
+    #     3. Datetime entries 
+    #     The date entries must be in the MM-DD-YYYY format (e.g., 12-30-2024). 
+    #     4. Forced exit 
+    #     The forced application exit can be triggered by entering "exit".
+    #     5. To clean the terminal, confirm y (Yes) when the prompt requires to do so.
+    #     Press n (No) otherwise.   
+    # '''
+    # console = Console()
+    # md = Markdown(markdown_help_text)
+    # console.print(md)
+    
     
 def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
     '''
@@ -734,10 +760,10 @@ def handle_input_options(input_option:int) -> None:
             task_handler(user_data) 
             break
         elif input_option == 3: # HELP MENU
+            clear_output('y')
             user_help()
-            clean_cli = input('\nPress y (Yes) to clear the output, or n (No) otherwise.'
-                            '(Enter Exit to cancel): ')
-            clear_output(clean_cli)
+            clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise.'
+                            '(Enter Exit to cancel): '))
             handle_input_options(main_menu())
         else: # Exit app
             print('You are now logged out.\n')
@@ -769,14 +795,12 @@ def task_handler(user_data:dict) -> None:
                 tasks, task_info = tasks_list(user_data)
                 if int(user_data['tasks']) == 0:
                         print('You have no scheduled tasks.\n')
-                        clean_cli = input('\nPress y (Yes) to clear the output, or n (No) otherwise: ')
-                        clear_output(clean_cli)
+                        clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: '))
                         task_handler(user_data)
                 else:
                     print('Your tasks are listed below:')
                     print(tabulate(task_info, headers="keys", numalign="center"))
-                    clean_cli = input('\nPress y (Yes) to clear the output, or n (No) otherwise: ')
-                    clear_output(clean_cli)
+                    clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: '))
                     task_handler(user_data)
             elif user_choice == 2: # Add a new ask
                 add_task(user_data)
@@ -786,8 +810,7 @@ def task_handler(user_data:dict) -> None:
                 print('Your tasks are listed below:')
                 print(tabulate(task_info, headers="keys", numalign="center"))
                 delete_task(user_data, tasks, task_info)
-                clean_cli = input('\nPress y (Yes) to clear the output, or n (No) otherwise: ')
-                clear_output(clean_cli)
+                clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: '))
                 task_handler(get_user_info(USERS, user_data['user_name']))
             elif user_choice == 4: # Delete user account
                 account_deleted = delete_account(user_data['user_name'])
