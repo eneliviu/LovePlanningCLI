@@ -805,7 +805,7 @@ def main() -> None:
     input_option = main_menu()
     while True:
         if not handle_input_options(input_option):
-            print('You are now logged out.')
+            print('You are now logged out.\n')
             break
 
 # %%
