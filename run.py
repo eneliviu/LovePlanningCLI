@@ -49,7 +49,7 @@ def smooth_exit(user_exit_input:str) -> None:
     '''
 
     if user_exit_input.lower() == 'exit':
-            print('Operation canceled!')
+            print('Operation canceled! You are logged out.\n')
             sys.exit(0)
 
 def validate_static_options(remove_choice:str, options:list[str]) -> bool:
@@ -60,8 +60,13 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
 
 
     while True:
+
+        # Smooth application exit:
+        smooth_exit(remove_choice)
+
         if remove_choice.lower() not in options:
-            remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return: ')
+            remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return.'
+                                '(Enter Exit to cancel): ')
         else:
             break
             
@@ -730,12 +735,13 @@ def handle_input_options(input_option:int) -> None:
             break
         elif input_option == 3: # HELP MENU
             user_help()
-            clean_cli = input('\nPress y (Yes) to clear the output, or n (No) otherwise: ')
+            clean_cli = input('\nPress y (Yes) to clear the output, or n (No) otherwise.'
+                            '(Enter Exit to cancel): ')
             clear_output(clean_cli)
             handle_input_options(main_menu())
         else: # Exit app
-            
-            break
+            print('You are now logged out.\n')
+            sys.exit(0)
 
 def task_handler(user_data:dict) -> None:
     '''
@@ -786,12 +792,12 @@ def task_handler(user_data:dict) -> None:
             elif user_choice == 4: # Delete user account
                 account_deleted = delete_account(user_data['user_name'])
                 if account_deleted:
-                    #sys.exit(0)
-                    break
+                    sys.exit(0)
+                    #break
                 else:
                     task_handler(user_data)
             else:
-                print('You are now logged out.')
+                print('You are now logged out.\n')
                 sys.exit(0)
 
 
@@ -801,10 +807,13 @@ def main() -> None:
     '''
     The main() function that wraps all the other functionality required to run the app.
     '''
-    print('Welcome to LovePlanning, the Ultimate Task Management Tool!')
-    input_option = main_menu()
+
+    print(  '*******************************************************************\n'
+            '*** Welcome to LovePlanning, the Ultimate Task Management Tool! ***\n'
+            '*******************************************************************\n')
+
     while True:
-        if not handle_input_options(input_option):
+        if not handle_input_options(main_menu()):
             print('You are now logged out.\n')
             break
 
