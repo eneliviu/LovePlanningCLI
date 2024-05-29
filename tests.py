@@ -101,3 +101,13 @@ def match_user_name(user_data:dict, user_name:str) -> bool:
         else:
             print('Username not found, please try again')
             return False
+
+
+
+# @dataclass
+# class Defaults:
+#     USERS: str = 'users'
+#     TASKS: str = 'tasks'
+#     #STATIC_OPTIONS: list['str'] = field(['y', 'n'])
+#     USER_HEADER:list = field(default=['user_id','user_name','email','password'])
+    

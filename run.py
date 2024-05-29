@@ -9,9 +9,7 @@ from gspread_formatting import *
 from google.oauth2.service_account import Credentials
 import regex as re
 from tabulate import tabulate
-#import pprint
 import os
-#from dataclasses import dataclass, field
 from typing import Tuple
 from datetime import datetime
 import sys
@@ -38,14 +36,6 @@ STATIC_OPTIONS = ['y', 'n']
 USER_HEADER = ['user_id', 'user_name', 'email', 'password', 'tasks']
 TASK_HEADER = ['task_id', 'description', 'category', 'created', 'due', 'status']
 TASK_CATEGORY = ['errand', 'personal', 'work']
-
-# @dataclass
-# class Defaults:
-#     USERS: str = 'users'
-#     TASKS: str = 'tasks'
-#     #STATIC_OPTIONS: list['str'] = field(['y', 'n'])
-#     USER_HEADER:list = field(default=['user_id','user_name','email','password'])
-    
 
 #=================================================================#
 # --------------------- For New Users: ---------------------------#
@@ -182,7 +172,7 @@ def validate_user_email(user_email_column:list[str]) -> bool:
     '''
     
     valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
-    
+
     while True:
         new_user_email = input('Enter your email address or Exit to cancel: ')
         
