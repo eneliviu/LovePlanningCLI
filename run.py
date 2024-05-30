@@ -371,11 +371,6 @@ def get_user_info(worksheet_name:str, user_name:str) -> dict:
     return dict(zip(USER_HEADER, user_info))
 
 
-
-
-
-
-
 def tasks_list(user_data:dict) -> Tuple[gspread.worksheet.Worksheet, dict]:
     '''
     Takes a dictionary conatining the user information, and returns a tuple containing:
@@ -427,35 +422,11 @@ def user_help() -> None:
     Opens and writes a Markdown file in the console.  
     https://rich.readthedocs.io/en/stable/console.html
     '''
+    
     console = Console()
-
     with open("assets/files/HELP.md", "r+") as help_file:
         console.print(Markdown(help_file.read()))
 
-    # markdown_help_text = '''
-    #     1. Menu options for registered users:  
-    #     - 1 (View tasks):     ---> List all tasks
-    #     - 2 (Add task):       ---> Add a new task
-    #     - 3 (Delete task):    ---> Delete a task
-    #     - 4 (Delete account): ---> Delete user account
-    #     - 5 (Exit):           ---> Return to the main menu
-    #     2. Menu options for new users  
-    #     Registration process requires the following information:
-    #     - User name (non-empty)            
-    #     - User password: minimum 8 characters, of which at least one
-    #         capital letter and two numerals
-    #     - Valid email address (e.g., someone@somewhere.com)  
-    #     3. Datetime entries 
-    #     The date entries must be in the MM-DD-YYYY format (e.g., 12-30-2024). 
-    #     4. Forced exit 
-    #     The forced application exit can be triggered by entering "exit".
-    #     5. To clean the terminal, confirm y (Yes) when the prompt requires to do so.
-    #     Press n (No) otherwise.   
-    # '''
-    # console = Console()
-    # md = Markdown(markdown_help_text)
-    # console.print(md)
-    
 
 def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
     '''
@@ -604,7 +575,7 @@ def delete_account(user_name:str) -> bool:
     The deletion cannot be undone. 
     '''
     
-    remove_choice = input('Your account will be permanently deleted.'
+    remove_choice = input('Your account will be permanently deleted.\n'
                         'Press Yes(y) to proceed, No(n) to cancel: \n')
     
     if validate_static_options(remove_choice, STATIC_OPTIONS):
@@ -751,10 +722,10 @@ def main_menu() -> int:
 
         if not input_option.isdigit():
             print('Invalid choice!\n'
-                'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
+                'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): \n')
         elif input_option.isdigit() and int(input_option) not in range(1, 5):
             print('Invalid choice!\n'
-                'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
+                'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): \n')
         else:
             break
 
