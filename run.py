@@ -575,8 +575,8 @@ def delete_account(user_name:str) -> bool:
     The deletion cannot be undone. 
     '''
     
-    remove_choice = input('Your account will be permanently deleted.\n'
-                        'Press Yes(y) to proceed, No(n) to cancel: \n')
+    remove_choice = input('Your account will be deleted. \n'
+                            'Press Yes(y) to proceed, No(n) to cancel: \n')
     
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
@@ -806,8 +806,8 @@ def task_handler(user_data:dict) -> None:
             elif user_choice == 4: # Delete user account
                 account_deleted = delete_account(user_data['user_name'])
                 if account_deleted:
+                    print('You are now logged out.\n')
                     sys.exit(0)
-                    #break
                 else:
                     task_handler(user_data)
             else:
