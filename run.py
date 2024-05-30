@@ -7,6 +7,9 @@
 import gspread 
 from gspread_formatting import *
 from google.oauth2.service_account import Credentials
+
+#from googleapiclient.errors import HttpError
+
 import regex as re
 from tabulate import tabulate
 import os
@@ -57,8 +60,6 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     Check if the user inputs are either y (Yes) or n (No). 
     The input strings are converted to lower case.
     '''
-
-
     while True:
 
         # Smooth application exit:
@@ -66,7 +67,7 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
 
         if remove_choice.lower() not in options:
             remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return.'
-                                '(Enter Exit to cancel): ')
+                                '(Enter Exit to cancel): \n')
         else:
             break
             
@@ -115,7 +116,7 @@ def validate_user_password(**kwargs) -> str:
 
     while True:
         
-        new_user_password = input('Please enter your pasword or Exit to cancel: ')
+        new_user_password = input('Please enter your pasword or Exit to cancel: \n')
         
         # Smooth application exit:
         smooth_exit(new_user_password)
@@ -150,7 +151,7 @@ def validate_username(username_column:list[str]) -> bool:
     It applies to registered users, as well as to new users trying to register.
     '''
     while True:
-        new_user_name = input('Please enter your username or Exit to cancel: ')
+        new_user_name = input('Please enter your username or Exit to cancel: \n')
         
         # Smooth application exit:
         smooth_exit(new_user_name)
@@ -179,7 +180,7 @@ def validate_user_email(user_email_column:list[str]) -> bool:
     valid_pattern = r"^[\w\.-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
 
     while True:
-        new_user_email = input('Enter your email address or Exit to cancel: ')
+        new_user_email = input('Enter your email address or Exit to cancel: \n')
         
         # Smooth application exit:
         smooth_exit(new_user_email)
@@ -213,10 +214,15 @@ def create_new_user_worksheet(new_user_data:dict) -> None:
     Returns a the dictionary containing the new user credentials.  
     '''
     
+    # Create a new worksheet having the username as its name.    
     SHEET.add_worksheet(title = new_user_data['user_name'], rows = 1000, cols = len(TASK_HEADER))
+
     # Write the default worksheet column names:
     SHEET.worksheet(new_user_data['user_name']).append_row(TASK_HEADER)
+
+    # Append the user informatin row to the worksheet:
     SHEET.worksheet(USERS).append_row(list(new_user_data.values()))
+
 
 def new_user_registration() -> dict:
     '''
@@ -226,6 +232,9 @@ def new_user_registration() -> dict:
         - keys: column names (worksheet header)
         - values: column data (without header)
     ''' 
+
+    # Retrieveing columnwise data sequentially takes longer time, 
+    # but it can be eventually implemented asyncroniously.   
     username_column, _ = get_column(SHEET.worksheet(USERS), 'user_name', USER_HEADER)
     user_email_column, _ = get_column(SHEET.worksheet(USERS), 'email', USER_HEADER)
     
@@ -258,7 +267,7 @@ def validate_login_input() -> bool:
     Check if the user log input contains two non-empty strings 
     (username and passord) separated by comma. 
     '''
-    user_input = input('Enter username and password separated by comma or Exit to cancel: ')
+    user_input = input('Enter username and password separated by comma or Exit to cancel: \n')
     
     # Smooth application exit:
     smooth_exit(user_input)
@@ -304,9 +313,16 @@ def match_user_credentials(user_data:dict, user_name:str, user_password:str) -> 
         False
     else:
         return False
-    
+
+
 def get_sheet_meta(worksheet_name:str) -> list:
+    '''
+    Retreave a worksheet and its header.
+    '''
+
+    # Connect to the Worksheet:
     wksheet = SHEET.worksheet(worksheet_name)
+    # Read the heaser (first row):
     wksheet_header = wksheet.row_values(1)
     return wksheet, wksheet_header
 
@@ -319,9 +335,11 @@ def get_column(worksheet:gspread.worksheet.Worksheet, column_name:str, header:li
     '''
     # Get the 1-based index of the 'user_id' columns
     col_idx = header.index(column_name) + 1
+    
     # Get the data in the 'user_id' column
     col_data = worksheet.col_values(col_idx)
     return col_data, col_idx
+
 
 def get_row(worksheet:gspread.worksheet.Worksheet, users_col:list[str], user_name:str) -> list:
      # Get the index of the username in the column
@@ -329,6 +347,7 @@ def get_row(worksheet:gspread.worksheet.Worksheet, users_col:list[str], user_nam
     # Retrieve the row containig the user info based n the username index:
     user_info = worksheet.row_values(user_idx)
     return user_info, user_idx
+
 
 def get_user_info(worksheet_name:str, user_name:str) -> dict:
     '''
@@ -341,9 +360,8 @@ def get_user_info(worksheet_name:str, user_name:str) -> dict:
     '''
     
     # Connect to the worksheet and retrive the header:
-    #users, user_header = get_sheet_meta(sheet_name)
     wksheet = SHEET.worksheet(worksheet_name)
-
+ 
     # Get the 'user_name' column from the 'users'-worksheet:
     users_col, _ = get_column(wksheet, 'user_name', USER_HEADER)
 
@@ -352,19 +370,22 @@ def get_user_info(worksheet_name:str, user_name:str) -> dict:
 
     return dict(zip(USER_HEADER, user_info))
 
+
 def tasks_list(user_data:dict) -> Tuple[gspread.worksheet.Worksheet, dict]:
     '''
     Takes a dictionary conatining the user information, and returns a tuple containing:
     - the user worksheet (the first element)
     - a dictionary containing the user tasks information (the second element).  
     '''
-    #tasks, task_header = get_sheet_meta(user_data['user_name'])
-    wksheet = SHEET.worksheet(user_data['user_name'])
     
+    # Connect to the worksheet
+    wksheet = SHEET.worksheet(user_data['user_name'])
+
     # Get all the row values for the tasks associated to an user_id:   
     task_info = make_dict_from_nested_lists(wksheet.get_all_values()[1:], TASK_HEADER)
     
     return wksheet, task_info
+
 
 def user_login() -> list:
     '''
@@ -383,29 +404,27 @@ def user_login() -> list:
             user_name = user_input[0].strip()
             user_password = user_input[1].strip()
 
-            # Get the user data from the 'users' Google worksheet:
-            try:
-                user_data = get_user_info(USERS, user_name)
+            # Get the user data from the 'users' Google worksheet:           
+            user_data = get_user_info(USERS, user_name)
 
-                if match_user_credentials(user_data, user_name, user_password):
-                    print('Login successful!')
-                    
-                    # Check for overdue tasks at login:
-                    sort_tasks_by_datetime(SHEET.worksheet(user_data['user_name']))
-                    
-                    break
-            except ValueError as e:
-                print(f' {e}. Please try again.')
+            if match_user_credentials(user_data, user_name, user_password):
+                print('Login successful!')
+                
+                # Check for overdue tasks at login:
+                sort_tasks_by_datetime(SHEET.worksheet(user_data['user_name']))
+                break
 
     return user_data
                     
+
 def user_help() -> None:
     '''
     Opens and writes a Markdown file in the console.  
     https://rich.readthedocs.io/en/stable/console.html
     '''
     console = Console()
-    with open("HELP.md", "r+") as help_file:
+
+    with open("assets/files/HELP.md", "r+") as help_file:
         console.print(Markdown(help_file.read()))
 
     # markdown_help_text = '''
@@ -432,6 +451,7 @@ def user_help() -> None:
     # md = Markdown(markdown_help_text)
     # console.print(md)
     
+
 def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list) -> None:  
     '''
     Check if a task is overdue by comparing the due date of the task with the current date-time.
@@ -446,6 +466,7 @@ def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list)
         worksheet.update_cell(k, TASK_HEADER.index('status') + 1, 'overdue')
         cell_in_worksheet = gspread.utils.rowcol_to_a1(k, TASK_HEADER.index('status') + 1)
         format_cell_range(worksheet, cell_in_worksheet, fmt)
+
 
 def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
     due_date_col, _ = get_column(worksheet, 'due', TASK_HEADER)
@@ -465,12 +486,12 @@ def sort_tasks_by_datetime(worksheet:gspread.worksheet.Worksheet) -> bool:
     else:
         return False
 
+
 def validate_task_index(tasks_idx:list[int]) -> bool:
     
-    task_remove_idx = input('Please enter the indexes for tasks to be removed.\n'
-                            'Use commas to separate multiple entries.\n'
-                            '(Enter Exit to cancel): '
-                            )
+    task_remove_idx = input('Please enter the indexes for tasks to be removed.'
+                            'Use commas to separate multiple entries.'
+                            '(Enter Exit to cancel): \n')
     
     
 
@@ -488,13 +509,14 @@ def validate_task_index(tasks_idx:list[int]) -> bool:
             print('There are no tasks to remove!')
             return False
         else:
-            task_remove_idx = input('Please enter the indexes for tasks to be removed.\n'
-                        'Use commas to separate multiple entries.\n'
-                        '(Enter Exit to cancel): '
+            task_remove_idx = input('Please enter the indexes for tasks to be removed.'
+                        'Use commas to separate multiple entries.'
+                        '(Enter Exit to cancel): \n'
                         )
     
     return task_remove_idx
-    
+
+
 def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task_data:dict) -> None:
     '''
     Delete one or more selected tasks.
@@ -516,8 +538,8 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
     task_remove_idx = validate_task_index(user_task_data['task_id'])
 
     # Confirm the choice:
-    remove_choice = input(f'You selected task {task_remove_idx} to be removed.\n'
-                            'Press Yes(y) to proceed, No(n) to cancel: ')
+    remove_choice = input(f'You selected task {task_remove_idx} to be removed.'
+                            'Press Yes(y) to proceed, No(n) to cancel: \n')
     
     # If the user inputs are valid, delete task(s) and update the remaining task_id cells 
     # to start from 1: 
@@ -537,15 +559,18 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
             
             ## Check if there is any task left, otherwise exit function:
             taskid_col, column_id = get_column(worksheet, 'task_id', TASK_HEADER) 
-            if len(taskid_col[1:]) == 0:
+            
+            if len(taskid_col[1:]) == 0: # No more tasks left:
                 print('All task were removed!')
+                
                 # Update the cell containing the # of tasks in the user row form the 'user'-worksheet:
                 SHEET.worksheet(USERS).update_cell(int(user_data['user_id'])+1, 
-                                        USER_HEADER.index('tasks') + 1,
-                                        str(len(taskid_col[1:])))
-                return 
-
-            ## If there are more tasks left, make sure they are sorted ascending by due date: 
+                                    USER_HEADER.index('tasks') + 1,
+                                    str(len(taskid_col[1:])))
+                return
+            
+            ## If there are more tasks left, make sure they are sorted ascending by due date and 
+            ## get the task id column info: 
             if sort_tasks_by_datetime(worksheet):
                 taskid_col, column_id = get_column(worksheet, 'task_id', TASK_HEADER)
 
@@ -563,6 +588,7 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
     else:
         print('Operation cancelled.')     
 
+
 def delete_account(user_name:str) -> bool:
     '''
     Delete the user account in the following order:
@@ -573,8 +599,8 @@ def delete_account(user_name:str) -> bool:
     The deletion cannot be undone. 
     '''
     
-    remove_choice = input('Your account will be permanently deleted.\n'
-                        'Press Yes(y) to proceed, No(n) to cancel: ')
+    remove_choice = input('Your account will be permanently deleted.'
+                        'Press Yes(y) to proceed, No(n) to cancel: \n')
     
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
@@ -602,6 +628,7 @@ def delete_account(user_name:str) -> bool:
             print('Operation cancelled.')
             return False 
 
+
 def validate_new_task_description() -> list[str]:
     '''
     Validates the task description entry. The task description
@@ -609,7 +636,7 @@ def validate_new_task_description() -> list[str]:
     '''
     while True:
         
-        new_task = input('Enter a new task (maximum 70 characters): ')
+        new_task = input('Enter a new task (maximum 70 characters): \n')
         
         # Smooth application exit:
         smooth_exit(new_task)
@@ -622,14 +649,15 @@ def validate_new_task_description() -> list[str]:
             break
         
     return new_task
-    
+
+
 def validate_new_task_category() -> list[str]:
     '''
     Checks that the task category entry is either 'errand', 'personal', or 'work'.
     Casts all inputs to string to avoid checking for numerals.   
     '''
     while True:
-        task_category = input('Specify the task category (errand, personal, or work): ')
+        task_category = input('Specify the task category (errand, personal, or work): \n')
         
         # Smooth application exit:
         smooth_exit(task_category)
@@ -640,7 +668,8 @@ def validate_new_task_category() -> list[str]:
             break       
     
     return task_category
-        
+
+
 def validate_due_date() -> datetime:
     '''
     Checks if the datetime input provides the valid day, month and year values in the 
@@ -650,7 +679,7 @@ def validate_due_date() -> datetime:
 
     while True:
         due_date = input('Enter the due date in the MM-DD-YYYY format\n'
-                        '(Enter Exit to cancel): ')
+                        '(Enter Exit to cancel): \n')
         
         # Smooth application exit:
         smooth_exit(due_date)
@@ -668,6 +697,7 @@ def validate_due_date() -> datetime:
             print('Please enter a date in MM-DD-YYYY format.')
 
     return due_date.strftime("%m-%d-%Y"), creation_date.strftime("%m-%d-%Y")
+
 
 def add_task(user_data:str) -> None:
     '''
@@ -713,6 +743,7 @@ def add_task(user_data:str) -> None:
 
     return dict(zip(TASK_HEADER, task_info))
 
+
 def main_menu() -> int:
     '''
     Gets user choices as follows:
@@ -728,7 +759,7 @@ def main_menu() -> int:
     Returns an integer in range 1-4. 
     '''
     while True:
-        input_option = input('Select: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): ')
+        input_option = input('Select: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): \n')
         
         # Smooth application exit:
         smooth_exit(input_option)
@@ -743,6 +774,7 @@ def main_menu() -> int:
             break
 
     return int(input_option)
+
 
 def handle_input_options(input_option:int) -> None:
     '''
@@ -764,8 +796,8 @@ def handle_input_options(input_option:int) -> None:
         elif input_option == 3: # HELP MENU
             clear_output('y')
             user_help()
-            clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise.'
-                            '(Enter Exit to cancel): '))
+            clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise.\n'
+                            '(Enter Exit to cancel): \n'))
             handle_input_options(main_menu())
         else: # Exit app
             print('You are now logged out.\n')
@@ -773,12 +805,13 @@ def handle_input_options(input_option:int) -> None:
 
 def task_handler(user_data:dict) -> None:
     '''
-    Handles the available options for registered users:\n
-    - 1 (View tasks):     ---> List all tasks
-    - 2 (Add task):       ---> Add a new task
-    - 3 (Delete task):    ---> Delete a task
-    - 4 (Delete account): ---> Delete user account
-    - 5 (Exit):           ---> Return to the main menu
+    Handles the menu options for registered users:
+    * 1 (View tasks):     ---> List all tasks
+    * 2 (Add task):       ---> Add a new task
+    * 3 (Delete task):    ---> Delete a task
+    * 4 (Delete account): ---> Delete user account
+    * 5 (Exit):           ---> Return to the main menu
+    The function uses a recursive call to return to the user menu after completing a task. 
     '''
     print('\nSelect an option:')
     print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit): ')
@@ -797,12 +830,12 @@ def task_handler(user_data:dict) -> None:
                 tasks, task_info = tasks_list(user_data)
                 if int(user_data['tasks']) == 0:
                         print('You have no scheduled tasks.\n')
-                        clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: '))
+                        clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: \n'))
                         task_handler(user_data)
                 else:
                     print('Your tasks are listed below:')
                     print(tabulate(task_info, headers="keys", numalign="center"))
-                    clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: '))
+                    clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: \n'))
                     task_handler(user_data)
             elif user_choice == 2: # Add a new ask
                 add_task(user_data)
@@ -812,7 +845,7 @@ def task_handler(user_data:dict) -> None:
                 print('Your tasks are listed below:')
                 print(tabulate(task_info, headers="keys", numalign="center"))
                 delete_task(user_data, tasks, task_info)
-                clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: '))
+                clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: \n'))
                 task_handler(get_user_info(USERS, user_data['user_name']))
             elif user_choice == 4: # Delete user account
                 account_deleted = delete_account(user_data['user_name'])
@@ -838,9 +871,16 @@ def main() -> None:
             '*******************************************************************\n')
 
     while True:
-        if not handle_input_options(main_menu()):
-            print('You are now logged out.\n')
-            break
+        # Try-except block at the top of the call stack to handle API call errors
+        # and exit gracioulsy if that happens: 
+        try: 
+            if not handle_input_options(main_menu()):
+                print('You are now logged out.\n')
+                break
+        except gspread.exceptions.APIError as e:
+            print(f' An API error has occured: {e}.\n'
+                'Exiting application....')
+            sys.exit(1) 
 
 # %%
 
