@@ -346,9 +346,6 @@ def get_row(worksheet:gspread.worksheet.Worksheet, users_col:list[str], user_nam
     return user_info, user_idx
 
 
-
-
-
 def get_user_info(worksheet_name:str, user_name:str) -> dict:
     '''
     Get the user info from the 'users' worksheet based on 
@@ -364,16 +361,11 @@ def get_user_info(worksheet_name:str, user_name:str) -> dict:
  
     # Get the 'user_name' column from the 'users'-worksheet:
     users_col, _ = get_column(wksheet, 'user_name', USER_HEADER)
-    # Retrieve the row containig the user information from 'users'-worksheet:
 
+    # Retrieve the row containig the user information from 'users'-worksheet:
     user_info, _ = get_row(wksheet, users_col, user_name)
 
     return dict(zip(USER_HEADER, user_info))
-
-
-
-
-
 
 
 def tasks_list(user_data:dict) -> Tuple[gspread.worksheet.Worksheet, dict]:
@@ -410,7 +402,7 @@ def user_login() -> list:
             user_password = user_input[1].strip()
 
             # Get the user data from the 'users' Google worksheet:           
-            user_data = get_user_info(USERS, 'user_name')
+            user_data = get_user_info(USERS, user_name)
 
             if match_user_credentials(user_data, user_name, user_password):
                 print('Login successful!')
@@ -637,23 +629,42 @@ def delete_account(user_name:str) -> bool:
 def validate_new_task_description() -> list[str]:
     '''
     Validates the task description entry. The task description
-    must be non-empty and have at most 44 characters. 
+    must be non-empty and have at most 70 characters. 
     '''
     while True:
         
-        new_task = input('Enter a new task (maximum 44 characters): \n')
+        new_task = input('Enter a new task (maximum 70 characters): \n')
         
         # Smooth application exit:
         smooth_exit(new_task)
 
         if len(new_task) == 0 :
             print('A new task cannot be empty. Please try again.')
-        elif len(new_task) > 44:
-            print(f'The task contains {len(new_task) - 44} extra characters. Please try again.')
+        elif len(new_task) > 70:
+            print(f'The task contains {len(new_task) - 70} extra characters. Please try again.')
         else:
             break
         
     return new_task
+
+
+def validate_new_task_category() -> list[str]:
+    '''
+    Checks that the task category entry is either 'errand', 'personal', or 'work'.
+    Casts all inputs to string to avoid checking for numerals.   
+    '''
+    while True:
+        task_category = input('Specify the task category (errand, personal, or work): \n')
+        
+        # Smooth application exit:
+        smooth_exit(task_category)
+
+        if str(task_category).lower().strip() not in TASK_CATEGORY:
+            print('Invalid choice. Please select a valid category (errand, personal, or work): ')
+        else:
+            break       
+    
+    return task_category
 
 
 def validate_due_date() -> datetime:
@@ -696,6 +707,7 @@ def add_task(user_data:str) -> None:
 
     task_row = dict.fromkeys(TASK_HEADER)
     task_row['description'] = validate_new_task_description()
+    task_row['category'] = validate_new_task_category() 
     task_row['due'], task_row['created'] = validate_due_date()
     task_row['status'] = 'active'
     task_row['task_id'] = str(int(user_data['tasks']) + 1)
