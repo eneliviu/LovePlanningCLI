@@ -4,21 +4,18 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
 #=================================================================#
 
+from datetime import datetime
 import gspread 
 from gspread_formatting import *
 from google.oauth2.service_account import Credentials
-
-#from googleapiclient.errors import HttpError
-
 import regex as re
-from tabulate import tabulate
 import os
-from typing import Tuple
-from datetime import datetime
-import sys
-
+import regex as re
 from rich.console import Console
 from rich.markdown import Markdown
+import sys
+from tabulate import tabulate
+from typing import Tuple
 
 #=================================================================#
 
