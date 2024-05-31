@@ -19,97 +19,132 @@
 
 
 ## Overview
-This application was developed as part of Milestone Project 3 for the Diploma in Full Stack Software Development program at Code Institute. The objective was to create an interactive front-end website utilizing Python. 
-The main purpose of this project is to build up a web application that allows the user to dynamically create a simple TODO list and to follow up the tasks as they are executed.
+This application was developed as part of Milestone Project 3 for the Diploma in Full Stack Software Development program at Code Institute.
 
-The result of the project is the ***LovinPlans***-app that provides a user-friendly interface to create, edit, and track your tasks effortlessly with the purpose to helps the users to stay focused and productive. Nevertheless, the app is not a fully developed product, but rather a proof of acquired skills for manipulating the DOM using vanilla JavaScript.
+The main purpose of this project is to build an interactive command line application utilizing the Python programming language.
+
+The result of the project is the ***LovinPlans*** command line interface (CLI) application that allows the user to dynamically create and edit a simple TODO list, and to follow-up the tasks as they are being executed. 
+
+***LovinPlans*** is a user-friendly CLI app that demonstrates how to create, edit, and track tasks effortlessly with the purpose to help the users to stay focused and productive. Nevertheless, the app is not a fully developed product, but rather a proof of acquired Python programming skills compatible to the Milestone Project 3 requirements.
+
+## Application development 
+This Python CLI application has been developed iteratively, following basic Agile development principles. 
+While still in the learning phase of Agile methodologies, I mostly focused on implementing a small number of user stories per iteration. 
+Below are examples of some of the user stories that guided the development process:
+- As a potential user, I need to register and to set up a user profile.
+- As a registered user, I want to be able to delete my acount.
+- As a user, I want to clean up the console before I access another user menu option.
+- As a user, I want to see clearly the overdue tasks.
+
+The progress was nonlinear, with many bugs that occured and quite painful code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.  
+
+A Lucid wireframe was used to guide the high-level the app development during the iterations. The wireframe has been  
+![App flowchart](/assets/images/Flowchart_CLI_TODO.png)
+*LovinPlans Lucid flowchart.*
+
 
 ## Target audience
-
-As a LovinPlans App user, I want to have a quick overview of the most important tasks incomming in the near future so that I can keep my shedule up to date. 
-
-* Theoretically, the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. 
-
-* The target audience for the app comprises tech-savy, goal-oriented, and organized individuals who prioritize personal productivity. Additionally, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds on a global scale.
+Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively
+The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity. Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
 
 ## Features
-
-A quick demonstration of using the app can be found here [***here.***](assets/images/Demo-functionality.gif)
+A quick demonstration of using the app can be found here: 
+- For the main menu options: [***here.***](assets/images/Demo-functionality.gif)
+- For the user menu options: [***here.***](assets/images/Demo-functionality.gif)
 
 ### **1. User-friendly interface**
-***LovinPlans*** is a CLI application that provides an intutive inteface through console dialogs. 
-- In order to facilitate beyond the 24 rows provided in the Heroku terminal, the user is provided with functionality to presiodically clean up the console outputs. In this way, the user can stay logged and explore the app functionality without constraints related to the terminal height. 
-- The app allows the user to switch betwwen menus without exiting the application      
-The apd doesn not require a steep learning curve to start using it, in order to faciliate the usage, it comes with a Help Menu that for the first time users.
-- The app was built followig the responsive design principles, ensuring a consistent user experience on various devices, such that the user can stay focused on the tasks without getting distracted when a context switch occurs.
-- The styling of the app has been kept simple for not distracting the user, while providing a high color contrast to help identifying relevant information at a glance.
+***LovinPlans*** is a CLI application that provides an intutive inteface through console dialogs.   
+
+The app opens with the Main Menu than provides the following options: 
+- 1 : User Login
+- 2 : Register a new user
+- 3 : Show the help content for running the application
+- 4 : Exit the application
+
+The app doesn not require a steep learning curve to start using it, in order to faciliate the usage, it comes with a Help Menu that for the first time users.
+ 
+- In order to facilitate beyond the 24 rows provided in the Heroku terminal, the user is provided with functionality to presiodically clean up the console outputs. 
+In this way, the user can stay logged and explore the app functionality without constraints related to the terminal height. 
+- The app allows the user to switch betwwen menu options without exiting the application.
+- Closing the application is possible throught the menu options, as well as through forced exit         
+- The console printing is ituitive yet simple, using a tabel formatting style for displaying the worksheet information.   
 
 ### **2. Create and delete user accounts**
 
 ### **3. Task Creation and Editing**
 - Users can effortlessly create new tasks and edit existing ones with just a few clicks. 
 
+### Help Menu 
+The Help Menu was printed using the user_help() function that opens and writes a Markdown file in the console, as described at  
+[https://rich.readthedocs.io/en/stable/](https://rich.readthedocs.io/en/stable/console.html).
+
+
 ### **3. Task follow up**
 - The app allows users to enter task details such as the due date.   
 - At login, the due date of each user task is checked against the curent date. 
 - If a task has passed its due date, the task status changes from 'active' to 'overdue', and the overdue tasks are 
 also marked with light red color background in the worksheet.
-- 
-
-
+ 
 ### **4. Cross-Platform Accessibility**
 - The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.  
-
-
  More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
 
 
 ## Technologies Used
-### Python
+The app was build using Python 3.11.7 version. 
+usning an external VSCode IDE. Windows 11 desktop. 
 
-The app was build using Python 3.11.7 r usning an external VSCode IDE. Windows 11 desktop. 
+The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles.
+
+The structure of the app is provided in the [run.py file](run.py) that containts the Python script. 
 
 
-The structure of the app is provided in the [index.html file](index.html) that containts the static HTML elements. Since the purpose of the project is not focused on the design, the HTML structure was kept simple. 
+### Python call stack
+The script contains the following main sections:
+- External modules imports
+- Connection to Google Sheets via API calls using private credentials.  
+- Declaration of constant variables such as:
+    - connections to the project LovePlanning Google Sheet
+    - the names of the Google worksheets used by the app
+    - the column names (headers) of those worksheets
+    - standard user choices available through the console 
+- Python function definitions with a main() function that calls the stack.
+    - As a rule of thumb, All functions that receive more than two arguments are called using keyword arguments.
+    - To the best of my Python abilities, I tried to use type hints for all function arguments. 
 
-The HTML backbone provides:
-- Header and a footer to frame the task-related content.
-- The building blocks for task tracking and task creation.
-- Semantic elements to improve the accessibility. 
- 
-### CSS (Cascading Style Sheets)
-The CSS3 file [style.css](assets/css/style.css) is responsible for styling the elements created with HTML, ensuring that the app has a consistent appearance across different devices and browsers. 
-CSS is used to define the layout, colors, fonts, spacing, and other visual aspects of the app's user interface.
-Using CSS, the dialog windows for task creation were hidden by default. They are activated/inactivated by the user actions.    
 
-### JavaScript
-JavaScript provides the interactivity and functionality of the app, allowing users to interact with the interface, manipulate tasks, and perform actions dynamically without reloading the page. 
+#### Python modules
+The application uses the following external Python modules:  
+- gspread 6.1.0 ([Python API for Google Sheets](https://docs.gspread.org/en/v6.0.0/))
+- gspread_formatting 1.1.2 ([Complete Google Sheets formatting support for gspread worksheets](https://pypi.org/project/gspread-formatting/))
+- google-auth 2.29.0 ([Google Auth Library for Python](https://google-auth.readthedocs.io/en/master/))
+- google-auth-oauthlib 1.2.0 ([Google Authentication Library](https://pypi.org/project/google-auth-oauthlib/))
+- regex 2024.5.10 ([Alternative regular expression module, to replace re.](https://pypi.org/project/regex/))
+- rich 13.7.1 ([Python library for writing rich text](https://rich.readthedocs.io/en/stable/introduction.html))
+- tabulate 0.9.0 ([Pretty-print tabular data](https://pypi.org/project/tabulate/))
 
-The JavaScript code [script.js](assets/js/script.js) for DOM manipulation provides the app interactivity and handles user inputs, edits and updates the task lists in real-time.
+The extrenal modules were installed locally via `pip install` command in the VSCode PowerShell. 
 
-The script utilizes a functional design approach that (hopefully) adheres to the DRY (Don't Repeat Yourself) principles.
+### Local Development and deployment
+The application developement was done using the VSCode IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed.
 
-### Responsive design
-The app uses responsive design principles such media queries and flexible layouts to ensure proper interaction across various devices and screen sizes. 
-By the app interface adapts dynamically based on the device's viewport size, providing a seamless and consistent user experience on desktops/laptops, tablets, or smartphones.
+The app can be run locally using the `python run.py` command in the terminal.
 
-### Deployment & Local Development
-The app is currently deployed on github and can be accessed at:
-https://love-planning-cli-f243068a58dc.herokuapp.com/. 
 
-The developement was done in VSCode using the Live Server extension for running the app.
+### Markdown 
+The Markdown formatting for README.md and HELP.md files was done according to the documentation provided at
+[www.markdownguide.org](https://www.markdownguide.org/basic-syntax/). 
 
+
+### Cloud deployment
+The app is currently deployed on [Heroku Cloud Application Platform](https://www.heroku.com)
+For cloud deployment, the [dependency requirements file](requirements.txt) was compiled using the \
+`pip freeze > requirements.txt` command in the VSCode PowerShell.
+
+The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/. 
 
 
 ### Testing
-#### HTML and CSS Validators
-The [Markup Validatiopn Service](https://validator.w3.org/#validate_by_input) was used to check the HTML file [index.html file](index.html), and [CSS Validation Service](https://jigsaw.w3.org/css-validator/) for assessing the styling [style.css](style.css) file. Apparently, no errors were found.
-
-#### Lighthouse
-- Chrome's Lighthouse developer tool was used to check the app's performance: 
-- The color contrast for the styling was checked using the tools provided by [WebAIM](https://webaim.org/resources/contrastchecker/).
-
-![App flowchart](/assets/images/Flowchart_CLI_TODO.png "LovinPlans Lucid flowchart")
 
 #### Additional tools and services
 - The [***favicon***](/assets/favicon/favicon.ico) for the website was generated from text using the [favicon.io](https://favicon.io/) tools.
@@ -117,11 +152,11 @@ The [Markup Validatiopn Service](https://validator.w3.org/#validate_by_input) wa
 - The use of ChatGPT was restrictes to getting sensible inputs for the text content in the website and for proof-checking the language.
 
 ### Responsive design
-* The app uses responsive design principles such media queries and flexible layouts to ensure proper interaction across various devices and screen sizes. 
-* The app interface adapts dynamically based on the device's viewport size, providing a seamless and consistent user experience on desktops/laptops, tablets, or smartphones.
+- The app uses responsive design principles such media queries and flexible layouts to ensure proper interaction across various devices and screen sizes. 
+- The app interface adapts dynamically based on the device's viewport size, providing a seamless and consistent user experience on desktops/laptops, tablets, or smartphones.
 
 ### Accessibility
-* Aria-labels for screen readers were included in the sections, input and button HTML elements of the app to ensure semantic elements and enhance accessibility. This approach helps improve the semantic understanding of the content and ensures that the web page becomes easy to navigate and to be understood by all users, especially those using screen readers. 
+- Aria-labels for screen readers were included in the sections, input and button HTML elements of the app to ensure semantic elements and enhance accessibility. This approach helps improve the semantic understanding of the content and ensures that the web page becomes easy to navigate and to be understood by all users, especially those using screen readers. 
 
 ## Usage and screenshots
 ###  **1. Creating a Task**
@@ -194,6 +229,8 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
 - Microsoft Edge: Version 124.0.2478.51 (Official build) (64-bit)
 
 ### Tested features:
+- 
+
 - add new tasks (*pass*)
     - text editing and error checking for min/max text length
     - task activity selection (one at the time)

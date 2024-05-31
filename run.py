@@ -8,7 +8,6 @@ from datetime import datetime
 import gspread 
 import gspread_formatting as gf
 from google.oauth2.service_account import Credentials
-import regex as re
 import os
 import regex as re
 from rich.console import Console
@@ -56,6 +55,9 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     '''
     Check if the user inputs are either y (Yes) or n (No). 
     The input strings are converted to lower case.
+    Arguments: 
+    - remove_choice: user choice 'y'(Yes) or 'n'(No)
+    - options: default list of choices ['y', 'n']
 
     Returns a bool.
     '''
