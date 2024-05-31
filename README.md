@@ -16,6 +16,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
+- [Documentation version](#Documentation-version)
 
 
 ## Overview
@@ -44,7 +45,8 @@ A Lucid wireframe was used to guide the high-level the app development during th
 
 
 ## Target audience
-Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively
+Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.
+
 The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity. Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
 
 ## Features
@@ -53,21 +55,31 @@ A quick demonstration of using the app can be found here:
 - For the user menu options: [***here.***](assets/images/Demo-functionality.gif)
 
 ### **1. User-friendly interface**
-***LovinPlans*** is a CLI application that provides an intutive inteface through console dialogs.   
+***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.   
 
-The app opens with the Main Menu than provides the following options: 
-- 1 : User Login
-- 2 : Register a new user
-- 3 : Show the help content for running the application
-- 4 : Exit the application
+- The app opens with a Main Menu than provides the following options: 
+    - 1 (User Login): Login of regsitered users via username and password;
+    - 2 (Register a new user): Requires a vlaid username, password and email address to creates a user profile 
+        and a dedicated user worksheet for storing the tasks;
+    - 3 (Help): Show the help menu content for running the application;
+    - 4 (Exit): Gracefully exiting the application.
 
-The app doesn not require a steep learning curve to start using it, in order to faciliate the usage, it comes with a Help Menu that for the first time users.
+- After Login, the User Menu section handles the following options for the registered users:
+    - 1 (View tasks): List all tasks;
+    - 2 (Add task): Add a new task; 
+    - 3 (Delete task): Delete a task;
+    - 4 (Delete account): Delete user account;
+    - 5 (Exit): Return to the main menu.
+
+- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options.
+
+- The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes a Help Menu option that offers a quick tour of the app's functionality.
  
-- In order to facilitate beyond the 24 rows provided in the Heroku terminal, the user is provided with functionality to presiodically clean up the console outputs. 
-In this way, the user can stay logged and explore the app functionality without constraints related to the terminal height. 
-- The app allows the user to switch betwwen menu options without exiting the application.
-- Closing the application is possible throught the menu options, as well as through forced exit         
-- The console printing is ituitive yet simple, using a tabel formatting style for displaying the worksheet information.   
+- To facilitate working beyond the 24 rows provided in the Heroku terminal, the app offers functionality for periodically cleaning up console outputs. 
+This allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
+- The app allows users to switch between menu options without exiting the application using recursive function calls.
+- The console printing is intuitive yet simple, utilizing a table formatting style for displaying worksheet information.
+
 
 ### **2. Create and delete user accounts**
 
@@ -253,6 +265,8 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
 - The browser specific promt windows triggered by the error checks doesn't contain a No-button (but the Cancel button has the same role): creating custom promt windows would improve the overall user experience.  
 - There is a unfortunate typo in the name of the respository ('Portololoio' instead of 'Portofolio') that has to be fixed.
 
+If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
+
 ## Possible improvements
 ### Functionality for user accounts and data storage. 
 In its current state, the app can only be user not provide storage for the task list and tracking data. The consequence is that each time the page is refreshed, all the information is gone. 
@@ -292,3 +306,6 @@ The code of the app is available on GitHub, such that developers can view, fork,
 The code for setting callbacks to handle the events for task activities and relevance buttons was adapted from the *Stack Overflow* post available at: 
 
 https://stackoverflow.com/questions/71346490/how-do-i-make-only-one-button-can-be-selected-at-time
+
+## Documentation version
+Last update May 31st, 2024
