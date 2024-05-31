@@ -17,5 +17,4 @@ The ***Datetime Entries*** must be in the MM-DD-YYYY format (e.g., 12-30-2024).
 
 ***Forced exit*** can be triggered by entering "exit".
 
-To ***Clean the Terminal***, confirm y (Yes) when the prompt requires to do so.
-Press n (No) otherwise.   
+To ***Clean the Terminal***, confirm by entering y (Yes), or n (No) otherwise.   
