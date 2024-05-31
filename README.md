@@ -241,7 +241,8 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
 - Microsoft Edge: Version 124.0.2478.51 (Official build) (64-bit)
 
 ### Tested features:
-- 
+
+***HERE***
 
 - add new tasks (*pass*)
     - text editing and error checking for min/max text length
@@ -261,29 +262,33 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
 - responsiveness on various screen sizes (*pass*)   
 
 ## Known bugs and issues
-- The text input is not restored after the error checking is run: the app behaviour is to reset all the inputs such that the user starts with a clean dialog window.   
-- The browser specific promt windows triggered by the error checks doesn't contain a No-button (but the Cancel button has the same role): creating custom promt windows would improve the overall user experience.  
-- There is a unfortunate typo in the name of the respository ('Portololoio' instead of 'Portofolio') that has to be fixed.
+- Switching back to the Main Menu from the User Menu not implemented yet;
+- In rare situations, the app may exit ungracewfully due to API call errors, which were not thorougly tested.
 
 If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
 
 ## Possible improvements
-### Functionality for user accounts and data storage. 
-In its current state, the app can only be user not provide storage for the task list and tracking data. The consequence is that each time the page is refreshed, all the information is gone. 
-It would be nice to include user account and database connections such that the information is stored permanatly and the users can login in their accounts.
+
+### Improved task classification
+Task categories could be introduced such that the users can categorize their tasks by importance (e.g., urgent, chore)
+and/or type categories (e.g., work, personal, etc). 
+
 ### Filtering and Sorting Tasks
 - Filter and sort options to organize and view the tasks according to specific criteria.
 - Possible filters: 
-    - task status (e.g., active or ccompleted tasks)
-    - activity type (work, leisure, etc)
-    - task relevance/importance (urgent, chore) by due date or incoming within a certain time horizon.
+    - task status (e.g., active, completed or overdue tasks)
+    - activity type (work, personal, etc)
+    - task relevance/importance (urgent, chores) by due date or incoming within a certain time horizon.
+
 ### Reminders
 - Set due dates with automatic reminder to receive timely notifications for upcoming tasks and deadlines.
-- Day-time picker
+- Add a day-time picker to improve the UX
 - Check for task overlapp and possible collisions
+
 ### Dialog windows/menus
-- Replace the prompt windows in the browsers with custom forms. For instance, it would a better user experience to replace the 'Cancel' button in the promt windows that pop-up during task editing and handling with a 'No' button.
-- Add intercativity to all task features, including re-catogorizing and re-styling the theme (dark/light) and the button colors. 
+- Replace the prompt windows in the browsers with custom forms.
+- Add interactivity to all task features, including re-catogorizing and editing existing tasks. 
+
 ### Collaboration tools
 - Include features for inviting people to participate in various tasks, sharing task lists and/or assigning tasks to team members.
 - Add the tools to allow the collaborators would have access to view, edit, and comment on the tasks.
@@ -292,6 +297,10 @@ It would be nice to include user account and database connections such that the 
 ### To contribute to the ***LovinPlans*** project:
 - Fork the repository on GitHub to create your own copy.
 - Clone the forked repository to your local machine.
+- To fork the project:
+    - Click the "Fork" button on the top-right corner of the repository page 
+    - Clone Your Fork by running the following command in the terminal or command prompt: 
+        `git clone https://github.com/your-username/repository-name.git`
 - Make your desired changes, whether it's fixing a bug, adding a feature, or updating documentation.
 - Commit your changes with clear messages.
 - Push your commits to your forked repository on GitHub.
@@ -300,7 +309,8 @@ It would be nice to include user account and database connections such that the 
 ## License
 ### Open Source
 As an open-source project, ***LovinPlans*** encourages transparency, and community involvement. 
-The code of the app is available on GitHub, such that developers can view, fork, and contribute to the project if they wish so.
+
+The code is available on GitHub, such that developers can view, fork, and contribute to the project if they wish so.
 
 ## Acknowledgements
 The code for setting callbacks to handle the events for task activities and relevance buttons was adapted from the *Stack Overflow* post available at: 
