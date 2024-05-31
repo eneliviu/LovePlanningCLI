@@ -626,7 +626,7 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
 
         # Confirm the choice:
         remove_choice = input(f'You selected task {task_remove_idx} to be removed.'
-                                'Press Yes(y) to proceed, No(n) to cancel: \n')
+                                'Press y (Yes) to proceed, n (No) to cancel: \n')
         
         # If the user inputs are valid, delete task(s) and update the remaining task_id cells 
         # to start from 1: 
@@ -641,7 +641,7 @@ def delete_task(user_data:dict, worksheet:gspread.worksheet.Worksheet, user_task
                 for k in range(len(task_remove_idx)):
                     row_to_delete = task_remove_idx[k] + 1 - reduce_idx
                     worksheet.delete_rows(row_to_delete)
-                    print(f'Task {k} deleted...Row {row_to_delete} deleted.')
+                    print(f'Task {k + 1} deleted.')
                     reduce_idx += 1
                 
                 ## Check if there is any task left, otherwise exit function:
@@ -1022,6 +1022,7 @@ def task_handler(**kwargs) -> None:
                 tasks, task_info = tasks_list(kwargs['user_data'], kwargs['task_header'])
                 print('Your tasks are listed below:')
                 print(tabulate(task_info, headers="keys", numalign="center"))
+                
                 delete_task(kwargs['user_data'], tasks, task_info)
                 clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: \n'))
 
@@ -1053,7 +1054,7 @@ def task_handler(**kwargs) -> None:
                                 user_header = kwargs['user_header'],
                                 task_header = kwargs['task_header'])
             else:
-                print('You are now logged out.\n')
+                print('You exited the application.\n')
                 sys.exit(0)
 
 
