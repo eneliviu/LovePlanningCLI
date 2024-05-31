@@ -701,7 +701,7 @@ def delete_account(**kwargs) -> bool:
     '''
 
     remove_choice = input('Your account will be deleted. \n'
-                            'Press Yes(y) to proceed, No(n) to cancel: \n')
+                            'Press y (Yes) to proceed, n (No) to cancel: \n')
     
     if validate_static_options(remove_choice, STATIC_OPTIONS):
         if remove_choice.lower() == 'y':
@@ -716,12 +716,12 @@ def delete_account(**kwargs) -> bool:
                                         header =  kwargs['header'])
 
             user_column, _ = get_column(worksheet = users_worksheet,
-                                        column_name = 'user_column_name',
+                                        column_name =  kwargs['user_column_name'],
                                         header = kwargs['header'])
             _, row_index = get_row(worksheet = users_worksheet, 
                                     worksheet_column_data = user_column,
                                     user_name =  user_data['user_name'])
-            SHEET.worksheet(kwargs['user_worksheet_name']).delete_rows(row_index)
+            users_worksheet.delete_rows(row_index)
 
             # Update the 'user_id'-column from the 'users'-worksheet:
             user_id_column, column_idx = get_column(worksheet = users_worksheet,
