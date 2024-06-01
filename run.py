@@ -1,11 +1,5 @@
-
-#%%
-#=================================================================#
-# Write your code to expect a terminal of 80 characters wide and 24 rows high
-#=================================================================#
-
 from datetime import datetime
-import gspread 
+import gspread
 import gspread_formatting as gf
 from google.oauth2.service_account import Credentials
 import os
@@ -16,30 +10,21 @@ import sys
 from tabulate import tabulate
 from typing import Tuple
 
-#=================================================================#
-
-# Declare constants:
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
     ]
-
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('LovePlanning')
-
 USERS = 'users'
 TASKS = 'tasks'
 STATIC_OPTIONS = ['y', 'n']
 USER_HEADER = ['user_id', 'user_name', 'email', 'password', 'tasks']
 TASK_HEADER = ['task_id', 'description', 'created', 'due', 'status']
 
-#=================================================================#
-# --------------------- For New Users: ---------------------------#
-
-#%%
 
 def smooth_exit(user_exit_input:str) -> None:
     '''
@@ -50,6 +35,7 @@ def smooth_exit(user_exit_input:str) -> None:
     if user_exit_input.lower() == 'exit':
             print('Operation canceled! You are logged out.\n')
             sys.exit(0)
+
 
 def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     '''
@@ -62,26 +48,27 @@ def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     Returns a bool.
     '''
     while True:
-        # Smooth application exit:
         smooth_exit(remove_choice)
 
         if remove_choice.lower() not in options:
-            remove_choice = input('Invalid option: please press y(Yes) to proceed, or n(No) to return.'
+            remove_choice = input('Invalid option: press y(Yes) to proceed, \
+                                or n(No) to return.'
                                 '(Enter Exit to cancel): \n')
         else:
             break
-            
+
     return True
+
 
 def clean_cli() -> None:
     '''
     Clean the console. Works for Windows and Linux OS.
     '''
-# https://www.geeksforgeeks.org/clear-screen-python/
     if os.name == 'nt':
         _ = os.system('cls')
     else:
         _ = os.system('clear')
+
 
 def clear_output(clean_cli_choice:str) -> None:
     '''
@@ -90,7 +77,8 @@ def clear_output(clean_cli_choice:str) -> None:
     if validate_static_options(clean_cli_choice, STATIC_OPTIONS):
         if clean_cli_choice.lower() == 'y': 
             clean_cli()
-        
+
+
 def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
     '''
     Takes the google sheet data as list of lists and creates a dictionary using 
@@ -106,8 +94,6 @@ def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
     return {d_keys[i]:[s[i] for s in list_data] for i in range(len(d_keys)) }  
 
 
-#%%
-
 def validate_user_password(**kwargs) -> str:
     '''
     Validate entry password for new users: at least 8 characters length, of which
@@ -118,7 +104,7 @@ def validate_user_password(**kwargs) -> str:
 
     while True:
         
-        new_user_password = input('Please enter your pasword or Exit to cancel: \n')
+        new_user_password = input('Enter your pasword or Exit to cancel: \n')
         
         # Smooth application exit:
         smooth_exit(new_user_password)
@@ -137,13 +123,14 @@ def validate_user_password(**kwargs) -> str:
             elif password_length >= kwargs['length'] and \
                 capital_letters >= kwargs['capital_letters'] and \
                 sum([s.isdigit() for s in new_user_password]) < kwargs['digits']:
-                raise ValueError(f'At least {kwargs["digits"]} numerals are required!')
+                raise ValueError(f'At least {kwargs["digits"]} digits required!')
             else:
-                break 
+                break
         except ValueError as e:
             print(f'Invalid password: {e}, please try again.\n')
 
     return new_user_password
+
 
 def validate_username(username_column:list[str]) -> str:
     '''
@@ -155,12 +142,8 @@ def validate_username(username_column:list[str]) -> str:
     Returns a vlid user name as a string.
     '''
     while True:
-        new_user_name = input('Please enter your username or Exit to cancel: \n')
-        
-        # Smooth application exit:
+        new_user_name = input('Enter your username or Exit to cancel: \n')
         smooth_exit(new_user_name)
-
-
         try: 
             if len(new_user_name) == 0:
                 raise ValueError('Username must not be empty')
@@ -173,6 +156,7 @@ def validate_username(username_column:list[str]) -> str:
             return False
     
     return new_user_name
+
 
 def validate_user_email(user_email_column:list[str]) -> str:
     '''
@@ -203,6 +187,7 @@ def validate_user_email(user_email_column:list[str]) -> str:
             print(f'{e}. Please try again!')
 
     return new_user_email
+
 
 def create_new_user_worksheet(new_user_data:dict) -> None:
     '''
@@ -264,9 +249,6 @@ def new_user_registration() -> dict:
             
     return new_user_data
 
-#%%
-#=================================================================#
-# ------------------- For Registered Users: ----------------------#
 
 def validate_login_input() -> bool:
     '''
@@ -297,6 +279,7 @@ def validate_login_input() -> bool:
     except ValueError as e:
             print(f'{e}. Please try again!')
             return False
+
 
 def match_user_credentials(**kwargs) -> bool:
     '''
@@ -360,6 +343,7 @@ def get_column(**kwargs) -> list[str]:
     col_data = kwargs['worksheet'].col_values(col_idx)
 
     return col_data, col_idx
+
 
 def get_row(**kwargs) -> list:
     '''
@@ -502,7 +486,7 @@ def user_login(**kwargs) -> list:
                 break
 
     return user_data
-                    
+
 
 def user_help() -> None:
     '''
@@ -522,8 +506,6 @@ def check_overdue_task(worksheet:gspread.worksheet.Worksheet, overdue_rows:list)
 
     Returns a bool.
     '''
-    # Format cell background color using RGB values as floats (1 is full intensity, 0 is no intensity):
-    ## https://gspread-formatting.readthedocs.io/en/latest/#
     fmt = gf.CellFormat(backgroundColor = gf.color(1, 0.9, 0.9))
 
     # Update task status for overdue tasks:
@@ -959,6 +941,7 @@ def handle_input_options(**kwargs) -> None:
             print('You are now logged out.\n')
             sys.exit(0)
 
+
 def task_handler(**kwargs) -> None:
     '''
     task_handler(user_data:dict)
@@ -1060,8 +1043,6 @@ def task_handler(**kwargs) -> None:
                 sys.exit(0)
 
 
-#%%                
-# The main() function to run the app:
 def main() -> None:
     '''
     The main() function to run the stack.
@@ -1090,9 +1071,6 @@ def main() -> None:
                 'Exiting application....')
             sys.exit(1) 
 
-# %%
-
-# Run the App:
 
 main()
 

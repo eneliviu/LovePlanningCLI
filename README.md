@@ -285,6 +285,7 @@ In my opinion, using the app on mobiles provides a negative UX, mostly due to di
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
 - In rare situations, the app may exit ungracewfully due to API call errors, which were not thorougly tested.
+- I was not able to fix the errors produced by the CodeInstitute's CI Python Liner. My IDE does not show such things, and I still don't know how to fix these errors.
 
 If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
 
