@@ -1,9 +1,6 @@
 
-
-# https://developers.google.com/sheets/api/quickstart/python
-
-# ***LovinPlans***: The Ultimate Task Management Tool!
-## A TODO List Python CLI 
+# ***<center><font color="red"> LovinPlans</font>***: The Ultimate Task Management Tool!</center>
+## <center> A TODO List Python CLI </center>
 
 ### **Table of content:**
 - [Overview](#overview)
@@ -39,10 +36,10 @@ Below are examples of some of the user stories that guided the development proce
 
 The progress was nonlinear, with many bugs that occured and quite painful code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.  
 
-A Lucid wireframe was used to guide the high-level the app development during the iterations. The wireframe has been  
-![App flowchart](/assets/images/Flowchart_CLI_TODO.png)
-*LovinPlans Lucid flowchart.*
+During iterations, the overview over the app development was guided using Lucid wireframes like the one shwon below:
 
+![App flowchart](/assets/images/Flowchart_CLI_TODO.png)<br>
+<center>*LovinPlans: Lucid flowchart for application development.*</center><br> 
 
 ## Target audience
 Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.
@@ -50,11 +47,16 @@ Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse ra
 The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity. Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
 
 ## Features
+
 A quick demonstration of using the app can be found here: 
+
 - For the main menu options: [***here.***](assets/images/Demo-functionality.gif)
+
 - For the user menu options: [***here.***](assets/images/Demo-functionality.gif)
 
-### **1. User-friendly interface**
+
+### **1. A user-friendly interface**
+
 ***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.   
 
 - The app opens with a Main Menu than provides the following options: 
@@ -64,32 +66,92 @@ A quick demonstration of using the app can be found here:
     - 3 (Help): Show the help menu content for running the application;
     - 4 (Exit): Gracefully exiting the application.
 
-- After Login, the User Menu section handles the following options for the registered users:
+![Main menu](/assets/images/main-menu.png#center)
+*<center><font color="red">LovinPlans</font>: App initialization and main menu configuration*.</center><br> 
+
+- After the Login, the User Menu section handles the following options for the registered users:
     - 1 (View tasks): List all tasks;
     - 2 (Add task): Add a new task; 
     - 3 (Delete task): Delete a task;
     - 4 (Delete account): Delete user account;
     - 5 (Exit): Return to the main menu.
 
-- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options.
+![User menu](/assets/images/user-menu.png) <br>
+*<font color="red">LovinPlans</font>: User menu configuration.*<br> 
 
-- The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes a Help Menu option that offers a quick tour of the app's functionality.
- 
+- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options. In the script,  
+the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
+- The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes a Help Menu option that offers a quick tour of the app's functionality (more details in the [Help Menu](#help-menu) section).
+- A great deal of attention was put on handling exceptions in order to provide a positive UX. The exception handling was implemented using try-except blocks for detect error during executions and provide relevant error messages to the user. 
 - To facilitate working beyond the 24 rows provided in the Heroku terminal, the app offers functionality for periodically cleaning up console outputs. 
 This allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
 - The app allows users to switch between menu options without exiting the application using recursive function calls.
 - The console printing is intuitive yet simple, utilizing a table formatting style for displaying worksheet information.
 
+### **2. Use of Google Sheets**
 
-### **2. Create and delete user accounts**
+The user information and the TODO lists are stored in a dedicated document hosted by Google Sheets. 
+The app uses two categories of worksheets: 
+- users-worksheet for storing the user login information and contact details such as:
+    - user id
+    - username
+    - email address
+    - user password
+    - number of tasks
 
-### **3. Task Creation and Editing**
+![users worksheet](/assets/images/users-worksheet.png) <br>
+*<font color="red">LovinPlans</font>: The 'users' worksheet containing the registered users profiles.*<br> 
+
+- provate user worksheets for storing the user login information and contact details such as:
+    - task id
+    - task description
+    - task creation date (MM-DD-YYYY format)
+    - task due date (MM-DD-YYYY format)
+    - status (active / overdue)
+By convention, the registered usernames are used for labeling the dedicated user worksheets. 
+
+![user worksheet](/assets/images/user-worksheet.png) <br>
+*<font color="red">LovinPlans</font>: A typical user worksheet containing the users tasks.*<br> 
+
+### **3. Create and delete user accounts**
+- New users can easily register and create their own TODO list with a few inputs.
+- User registration requires:
+    - a valid username (non-empty)
+    - a password  of at minimum eight chatacters, of which at least one capital letter and two numerals (e.g., Password12)
+    - an email address with valid formatting (e.g., someone@somewhere.com) that passess the regex
+    -  
+
+### **4. Task Creation and Editing**
 - Users can effortlessly create new tasks and edit existing ones with just a few clicks. 
+- The process of creating a new task requires:
+    - a (non-empty) text input of maximum 44 characters
+    - a due date specification using the MM-DD-YYYY formatting (e.g., 12-30-2024)
+- By default, all newly created tasks receive an 'active' status 
+- The current local time is also registered in the user worksheet to allow tracking of the overdue tasks. 
 
-### Help Menu 
-The Help Menu was printed using the user_help() function that opens and writes a Markdown file in the console, as described at  
+### **5 Task Views**
+- The user tasks are printed on the terminal using the tabulate Python module that allows formatting the output as a table.
+- The task viewing functionality is also available for listing the available tasks before selecting the ones to be removed.    
+
+![Tasks view](/assets/images/tasks-view.png) <br>
+*<font color="red">LovinPlans</font>: Printing the user tasks on the Herou console.*<br> 
+
+### **Clear the terminal option**
+- After each main operation such views or multiple entries during user registation or task deletion, the app provides the option to clear the
+terminal to eliminate the cluttering provide a positive UX to the user.
+
+![Clear terminal](/assets/images/clear.png) <br>
+*<font color="red">LovinPlans</font>: Option to clear the terminal.*<br> 
+
+
+
+### **Help Menu** 
+- The Help Menu provides a quick overview of the main app functionality.
+- The Help Menu content was printed using the user_help() function that opens and writes a Markdown file in the console, as described at  
 [https://rich.readthedocs.io/en/stable/](https://rich.readthedocs.io/en/stable/console.html).
 
+![Help menu](/assets/images/help-menu.png)<br>
+*<font color="red">LovinPlans</font>: Help menu content.*<br> 
 
 ### **3. Task follow up**
 - The app allows users to enter task details such as the due date.   
@@ -103,13 +165,7 @@ also marked with light red color background in the worksheet.
 
 
 ## Technologies Used
-The app was build using Python 3.11.7 version. 
-usning an external VSCode IDE. Windows 11 desktop. 
-
-The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles.
-
-The structure of the app is provided in the [run.py file](run.py) that containts the Python script. 
-
+The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script. 
 
 ### Python call stack
 The script contains the following main sections:
@@ -121,7 +177,9 @@ The script contains the following main sections:
     - the column names (headers) of those worksheets
     - standard user choices available through the console 
 - Python function definitions with a main() function that calls the stack.
-    - As a rule of thumb, All functions that receive more than two arguments are called using keyword arguments.
+    - As a rule of thumb, all functions that receive more than two arguments are called using **kwargs.
+    - Docstrins were placed after function definitions to document the code.
+    - Where necessary, text comments were placed in the script to provide further explanations. 
     - To the best of my Python abilities, I tried to use type hints for all function arguments. 
 
 
@@ -158,30 +216,16 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 ### Testing
 
-#### Additional tools and services
-- The [***favicon***](/assets/favicon/favicon.ico) for the website was generated from text using the [favicon.io](https://favicon.io/) tools.
-- All the other icons were obtained from [fontawesome.com](https://fontawesome.com/) website.
-- The use of ChatGPT was restrictes to getting sensible inputs for the text content in the website and for proof-checking the language.
-
-### Responsive design
-- The app uses responsive design principles such media queries and flexible layouts to ensure proper interaction across various devices and screen sizes. 
-- The app interface adapts dynamically based on the device's viewport size, providing a seamless and consistent user experience on desktops/laptops, tablets, or smartphones.
-
-### Accessibility
-- Aria-labels for screen readers were included in the sections, input and button HTML elements of the app to ensure semantic elements and enhance accessibility. This approach helps improve the semantic understanding of the content and ensures that the web page becomes easy to navigate and to be understood by all users, especially those using screen readers. 
-
 ## Usage and screenshots
+
 ###  **1. Creating a Task**
 #### To create a new task, click on the "Add Task" button or the plus icon located at the top or bottom of the task list.
 #### Enter the task description in the text input field. 
 
-![Add task dialig box](/assets/images/task1.webp "Add task: opening the dialog box")
 
 #### Select an activity (personal activity, work-related or errands).
-![Select activity dialig box](/assets/images/task2.webp "Add task: select activity")
 
 #### Select the task priority (urgent/chore).
-![Select task relevance dialig box](/assets/images/task3.webp "Add task: select task relevance")
 
 #### Once you've filled out the task details, click the "OK" button to add the task to your list.
 #### The task entry contains:
@@ -193,13 +237,10 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - Error checks are placed to prevent submitting an invalid text entry (3-40 characters required for a valid task name)
     or ill formatted task (missing attributes).
 
-![Add task to the Todo list](/assets/images/task4.webp "Add new task to the list")
 
 ### **2. Editing a Task**
 - By clicking on the task name enables a prompt window for editing the text. 
 - The new text input is validated before utpading the task name 
-
-![Add task to the Todo list](/assets/images/task5.webp "Add new task to the list")
 
 ### **3. Complete/reactivate tasks**
 - A left click on the edit button (lef side) opens a confirmation window 
@@ -208,13 +249,9 @@ The app is currently deployed on github and can be accessed at: https://love-pla
     - If all task are completed, the message "All Task Completed" marks the event.
 - Note that pressing the Cancel button on the task completion confirmation window will delete the task  
 
-![Add task to the Todo list](/assets/images/task6.webp "Add new task to the list")
-
 - To reactivate a task, click on the edit button and press the OK button on the confirmation window.
     - The task name and edit button are restored to previous styling
     - The task tracking *increments* the scores for active tasks
-
-![Add task to the Todo list](/assets/images/task7.webp "Add new task to the list")
 
 
 ### **4. Deleting a task**
@@ -261,7 +298,7 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
     - using the bin trash icon action (press OK button on the prompt window)
 - responsiveness on various screen sizes (*pass*)   
 
-## Known bugs and issues
+## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
 - In rare situations, the app may exit ungracewfully due to API call errors, which were not thorougly tested.
 
@@ -269,9 +306,10 @@ If you encounter issues or bugs, please create an issue by clicking [here](https
 
 ## Possible improvements
 
-### Improved task classification
-Task categories could be introduced such that the users can categorize their tasks by importance (e.g., urgent, chore)
+### Improved task editing
+- Task categories could be introduced such that the users can categorize their tasks by importance (e.g., urgent, chore)
 and/or type categories (e.g., work, personal, etc). 
+- Functionality for re-catogorizing and editing existing tasks.
 
 ### Filtering and Sorting Tasks
 - Filter and sort options to organize and view the tasks according to specific criteria.
@@ -285,13 +323,16 @@ and/or type categories (e.g., work, personal, etc).
 - Add a day-time picker to improve the UX
 - Check for task overlapp and possible collisions
 
-### Dialog windows/menus
-- Replace the prompt windows in the browsers with custom forms.
-- Add interactivity to all task features, including re-catogorizing and editing existing tasks. 
+
+### About menu option
+For further development, including an About option would to provide more information about the various releases and other information
+that helps keeping the users updated.  
 
 ### Collaboration tools
 - Include features for inviting people to participate in various tasks, sharing task lists and/or assigning tasks to team members.
 - Add the tools to allow the collaborators would have access to view, edit, and comment on the tasks.
+
+Some of the improvements mentioned in this section (such as the task classification or an About menu option) were not introduced in the current release due to  the printing space limitations imposed in the Heroku terminal.
 
 ## Contributing
 ### To contribute to the ***LovinPlans*** project:
@@ -313,9 +354,10 @@ As an open-source project, ***LovinPlans*** encourages transparency, and communi
 The code is available on GitHub, such that developers can view, fork, and contribute to the project if they wish so.
 
 ## Acknowledgements
-The code for setting callbacks to handle the events for task activities and relevance buttons was adapted from the *Stack Overflow* post available at: 
-
-https://stackoverflow.com/questions/71346490/how-do-i-make-only-one-button-can-be-selected-at-time
+- Further details on the usage of Google Sheets API were obtained from https://developers.google.com/sheets/api/quickstart/python
+- Printing the Markdown file in the console used for the Help-menu followed the expamples provided at https://rich.readthedocs.io/en/stable/console.html
+- Formatting the worksheet cell background color followed the examples from https://gspread-formatting.readthedocs.io/en/latest/#
+- The use of ChatGPT was restricted to getting sensible inputs for the text content in the Readme-file and for proof-checking the language.
 
 ## Documentation version
 Last update May 31st, 2024
