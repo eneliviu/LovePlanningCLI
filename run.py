@@ -106,7 +106,6 @@ def validate_user_password(**kwargs) -> str:
         
         new_user_password = input('Enter your pasword or Exit to cancel: \n')
         
-        # Smooth application exit:
         smooth_exit(new_user_password)
         
         password_length = len(new_user_password)
@@ -139,7 +138,7 @@ def validate_username(username_column:list[str]) -> str:
     - The input must contain two strings separated by comma;
     It applies to registered users, as well as to new users trying to register.
 
-    Returns a vlid user name as a string.
+    Returns a valid user name as a string.
     '''
     while True:
         new_user_name = input('Enter your username or Exit to cancel: \n')
@@ -217,7 +216,6 @@ def new_user_registration() -> dict:
             - user_email: str
             - password: str
             - number of tasks: int
-
     ''' 
 
     # Retrieveing columnwise data sequentially takes longer time, 
@@ -254,6 +252,8 @@ def validate_login_input() -> bool:
     '''
     Check if the user log input contains two non-empty strings 
     (username and passord) separated by comma. 
+
+    Return a bool.
     '''
     user_input = input('Enter username and password separated by comma or Exit to cancel: \n')
     
@@ -311,9 +311,11 @@ def match_user_credentials(**kwargs) -> bool:
         return False
 
 
-def get_sheet_meta(worksheet_name:str) -> list:
+def get_sheet_meta(worksheet_name:str) -> Tuple[list]:
     '''
     Retreave a worksheet and its header.
+
+    Returns a tuple conatining the worksheet connection and a worksheet header
     '''
 
     # Connect to the Worksheet:
@@ -679,9 +681,6 @@ def delete_account(**kwargs) -> bool:
     - header:str
 
     Returns a bool. 
-
-    user_name:str, worksheet:gspread.worksheet.Worksheet
-
     '''
 
     remove_choice = input('Your account will be deleted. \n'
@@ -756,7 +755,7 @@ def validate_new_task_description() -> list[str]:
     return new_task
 
 
-def validate_due_date() -> datetime:
+def validate_due_date() -> Tuple[str]:
     '''
     Checks if the datetime input provides the valid day, month and year values in the 
     requested format MM-DD-YYY (e.g., 05-15-2024), otherwise it throws a ValueError.
@@ -796,8 +795,6 @@ def add_task(**kwargs) -> dict:
     - users_worksheet_name:str
     - user_data:dict
     - header:str
-
-    add_task(users_worksheet_name = USERS, user_data = user_data, header = TASK_HEADER)
 
     Returns a dictionary containing the newly added task:
     - keys:str - 'task_id', 'description', 'created', 'due', 'status'
@@ -865,8 +862,8 @@ def main_menu() -> int:
     - 4 : Exit the application
 
     Runs a while loop to collect a valid string of data
-    from the user via the terminal. The loop breaks
-    when the user input data is valid.
+    from the user via the terminal. The loop breaks when 
+    the user input data is valid.
     
     Returns an integer in range 1-4. 
     '''
@@ -901,7 +898,6 @@ def handle_input_options(**kwargs) -> None:
     - users_worksheet_name
     - user_header
     - task_header
-
     '''
     while True:
         if kwargs['input_option'] == 1: # USER LOGIN
@@ -955,6 +951,7 @@ def task_handler(**kwargs) -> None:
 
     The function uses a recursive call to return to the user menu after completing a task. 
     '''
+    
     print('\nSelect an option:')
     print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit): ')
 
@@ -1045,7 +1042,7 @@ def task_handler(**kwargs) -> None:
 
 def main() -> None:
     '''
-    The main() function to run the stack.
+    The main() function to run the Python call stack.
     '''
 
     print(  '*******************************************************************\n'

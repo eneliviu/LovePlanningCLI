@@ -270,6 +270,9 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - Forced exit using 'Exit'-input (*<font color="lime">pass</font>*)
     - The functionality is available only within operations that cannot access the Menu exit options.
 
+- CodeInstitute's CI Python Linter (*<font color="RED">FAIL</font>*)  
+
+
 ### Additional testing
 
 #### Devices and browsers
