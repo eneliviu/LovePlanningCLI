@@ -801,17 +801,6 @@ def add_task(**kwargs) -> dict:
     - values:list[str]  
     '''
 
-    #users_worksheet = SHEET.worksheet(kwargs['users_worksheet_name'])
-    #user_worksheet  = SHEET.worksheet(kwargs['user_name'])
-
-    #_, task_row = tasks_list(user_data)
-    # user_data = get_user_info(worksheet = users_worksheet,
-    #                     column_name =  kwargs['user_column_name'], 
-    #                     user_name = kwargs['user_name'],
-    #                     header =  kwargs['header'])
-
-    #user_data = get_user_info(USERS, user_data['user_name'])
-
     task_row = dict.fromkeys(kwargs['header']) #TASK_HEADER
     task_row['description'] = validate_new_task_description()
     task_row['due'], task_row['created'] = validate_due_date()
@@ -842,7 +831,7 @@ def add_task(**kwargs) -> dict:
                                     worksheet_column_data = user_column,
                                     user_name = kwargs['user_data']['user_name'])
     user_row = dict(zip(USER_HEADER, user_row))
-    user_row['tasks'] = str(int(user_row['tasks']) + 1)
+    user_row['tasks'] = int(user_row['tasks']) + 1
 
     # Update user row:
     _, column_index = get_column(worksheet = users_worksheet, #USERS
