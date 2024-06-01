@@ -82,11 +82,6 @@ A quick demonstration of using the app can be found here:
 - In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options. In the script,  
 the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
 - The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes a Help Menu option that offers a quick tour of the app's functionality (more details in the [Help Menu](#help-menu) section).
-- A great deal of attention was put on handling exceptions in order to provide a positive UX. The exception handling was implemented using try-except blocks for detect error during executions and provide relevant error messages to the user. 
-- To facilitate working beyond the 24 rows provided in the Heroku terminal, the app offers functionality for periodically cleaning up console outputs. 
-This allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
-- The app allows users to switch between menu options without exiting the application using recursive function calls.
-- The console printing is intuitive yet simple, utilizing a table formatting style for displaying worksheet information.
 
 ### **2. Use of Google Sheets**
 
@@ -119,7 +114,6 @@ By convention, the registered usernames are used for labeling the dedicated user
     - a valid username (non-empty)
     - a password  of at minimum eight chatacters, of which at least one capital letter and two numerals (e.g., Password12)
     - an email address with valid formatting (e.g., someone@somewhere.com) that passess the regex
-    -  
 
 ### **4. Task Creation and Editing**
 - Users can effortlessly create new tasks and edit existing ones with just a few clicks. 
@@ -139,13 +133,12 @@ By convention, the registered usernames are used for labeling the dedicated user
 ### **Clear the terminal option**
 - After each main operation such views or multiple entries during user registation or task deletion, the app provides the option to clear the
 terminal to eliminate the cluttering provide a positive UX to the user.
+- This also allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
 
 ![Clear terminal](/assets/images/clear.png) <br>
 *<font color="red">LovinPlans</font>: Option to clear the terminal.*<br> 
 
-
-
-### **Help Menu** 
+### **6. Help Menu** 
 - The Help Menu provides a quick overview of the main app functionality.
 - The Help Menu content was printed using the user_help() function that opens and writes a Markdown file in the console, as described at  
 [https://rich.readthedocs.io/en/stable/](https://rich.readthedocs.io/en/stable/console.html).
@@ -153,13 +146,20 @@ terminal to eliminate the cluttering provide a positive UX to the user.
 ![Help menu](/assets/images/help-menu.png)<br>
 *<font color="red">LovinPlans</font>: Help menu content.*<br> 
 
-### **3. Task follow up**
+### **7. Task follow up**
 - The app allows users to enter task details such as the due date.   
 - At login, the due date of each user task is checked against the curent date. 
 - If a task has passed its due date, the task status changes from 'active' to 'overdue', and the overdue tasks are 
 also marked with light red color background in the worksheet.
  
-### **4. Cross-Platform Accessibility**
+### **8. Menu Navigation**
+- The app allows users to switch between menu options without exiting the application using recursive function calls.
+
+### **9. Exception Handling**
+- A great deal of attention was put on handling exceptions in order to provide a positive UX. 
+- The exception handling was implemented using try-except blocks for detect error during executions and provide relevant error messages to the user.
+
+### **10. Cross-Platform Accessibility**
 - The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.  
  More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
 
@@ -183,7 +183,7 @@ The script contains the following main sections:
     - To the best of my Python abilities, I tried to use type hints for all function arguments. 
 
 
-#### Python modules
+### Python modules
 The application uses the following external Python modules:  
 - gspread 6.1.0 ([Python API for Google Sheets](https://docs.gspread.org/en/v6.0.0/))
 - gspread_formatting 1.1.2 ([Complete Google Sheets formatting support for gspread worksheets](https://pypi.org/project/gspread-formatting/))
@@ -194,6 +194,11 @@ The application uses the following external Python modules:
 - tabulate 0.9.0 ([Pretty-print tabular data](https://pypi.org/project/tabulate/))
 
 The extrenal modules were installed locally via `pip install` command in the VSCode PowerShell. 
+
+### Google Sheets
+- The application uses Google Sheets for storin agd retrieveing user information. 
+- The google-auth and google-auth-oauthlib Python modules are used for authorization and authentication
+- The API calls are run performed using the gspread and gspread_formatting Python modules
 
 ### Local Development and deployment
 The application developement was done using the VSCode IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed.
@@ -218,85 +223,61 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 ## Usage and screenshots
 
-###  **1. Creating a Task**
-#### To create a new task, click on the "Add Task" button or the plus icon located at the top or bottom of the task list.
-#### Enter the task description in the text input field. 
+### **1. User login**
 
+#### **Creating a Task**
+#### **Deleting Tasks**
+#### **Delete user account**
 
-#### Select an activity (personal activity, work-related or errands).
+### **2. Register new users**
 
-#### Select the task priority (urgent/chore).
-
-#### Once you've filled out the task details, click the "OK" button to add the task to your list.
-#### The task entry contains:
-- A task name field that can be edited on click action.
-- Edit butoon on the left side  
-- A Bin Trash icon on the right side
-- The selected task attributes are below the task name, on the left and the right side respectivelly.
-- When a task is entered, the task tracking field updates the counters by task activities and categories.
-- Error checks are placed to prevent submitting an invalid text entry (3-40 characters required for a valid task name)
-    or ill formatted task (missing attributes).
-
-
-### **2. Editing a Task**
-- By clicking on the task name enables a prompt window for editing the text. 
-- The new text input is validated before utpading the task name 
-
-### **3. Complete/reactivate tasks**
-- A left click on the edit button (lef side) opens a confirmation window 
-- For OK selection, the task name is striked and font size reduces, while the edit button is checked.
-    - The task tracking *decrements* the scores for active tasks
-    - If all task are completed, the message "All Task Completed" marks the event.
-- Note that pressing the Cancel button on the task completion confirmation window will delete the task  
-
-- To reactivate a task, click on the edit button and press the OK button on the confirmation window.
-    - The task name and edit button are restored to previous styling
-    - The task tracking *increments* the scores for active tasks
-
-
-### **4. Deleting a task**
-Removing a task from the list can be done in two ways: 
-- Clicking on the Bin Trash icon opens a confirmation window. 
-    - Press OK to permanently remove the task from the list 
-#### or 
-- Press the Cancel button on the task completion from the confirmation window  (see [Complete/reactivate tasks](#3.-complete/reactivate-tasks) section)
-
-![Add task to the Todo list](/assets/images/task8.webp "Add new task to the list")
-
-
-### **5.Tracking the task list**
+### **3. Tracking the task list**
 - When a task is marked as completed and/or removed from the list, the task tracking field updates the counters by task activities and categories.
 - If all task are completed, the message "All Task Completed" marks the event.
 
 ## Additional testing
 
 ### Devices and browsers
-Additional testing was performed on my private devices Windows 11 devices (desktop and laptop), as well as
+Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop), as well as
 on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers: 
-- Google Chrome: Version 123.0.6312.124
-- Brave: version 1.65.114 Chromium: 124.0.6367.60 (Official Build) (64-bit)
-- Microsoft Edge: Version 124.0.2478.51 (Official build) (64-bit)
+- Google Chrome: Version 125.0.6422.77 (Official Build) (64-bit)
+- Brave: version 1.66.115 Chromium: 125.0.6422.112 (Official Build) (64-bit)
+- Microsoft Edge: Version 125.0.2535.67 (Official build) (64-bit)
+
+In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility. 
 
 ### Tested features:
 
-***HERE***
+- User login (*<font color="lime">pass</font>*)
+    - username and password validation (*<font color="lime">pass</font>*)
+        - username and password should be found in the 'users' worksheet (*<font color="lime">pass</font>*)
+        - the application awaits until the user provides valid inputs
 
-- add new tasks (*pass*)
-    - text editing and error checking for min/max text length
-    - task activity selection (one at the time)
-- text editing for an existing task (*pass*)
-    - update the text in the task card
-    - check for min/max text length  
-- incrementing the task tracking score when adding a new task (*pass*)
-    - incrementing the task tracking score when reactivating a previously completed task
-    - decrementing the task tracking score
-- mark a task as completed (*pass*)
-    - editing tool action (press OK button on the 'Is the task completed?' prompt window )
-    - bin trash icon action (press OK button on the prompt window)
-- remove a task (*pass*)
-    - editing tool action after task copletion confirmation (press OK button on the 'Remove task?' prompt window)
-    - using the bin trash icon action (press OK button on the prompt window)
-- responsiveness on various screen sizes (*pass*)   
+- User registration (*<font color="lime">pass</font>*)
+    - username validatin (non-empty) (*<font color="lime">pass</font>*)
+    - password validation (*<font color="lime">pass</font>*)
+        - min. eight chatacters, of which at least one capital letter and two numerals (e.g., Password12) (*<font color="lime">pass</font>*)
+        - email validatin (e.g., someone@somewhere.com) that passess the regex test (*<font color="lime">pass</font>*)
+    - the application awaits until the user provides valid inputs (*<font color="lime">pass</font>*)
+
+- Add/remove new tasks (*<font color="lime">pass</font>*)
+    - error checking for text length  (*<font color="lime">pass</font>*)
+    - error checking for date (cannot be prior to current date) and formatting (*<font color="lime">pass</font>*)
+    - incrementing/decrementing the task number in the user account worksheet ('users') when adding/removing tasks (*<font color="lime">pass</font>*)
+    - incrementing/decrementing the task id in the private user worksheet when adding/removing tasks (*<font color="lime">pass</font>*)
+
+- Mark a task as overdue (*<font color="lime">pass</font>*)
+    - change the state from 'active' to 'overdue' (*<font color="lime">pass</font>*)
+    - change the cell background color from white to light red for the overdue tasks (*<font color="lime">pass</font>*)
+
+- Clear the terminal by user input (*<font color="lime">pass</font>*)
+
+- Application exit using the menu option (*<font color="lime">pass</font>*)
+    - exiting from the Main Menu (*<font color="lime">pass</font>*)
+    - exiting from the User Menu (*<font color="lime">pass</font>*) 
+
+- Forced exit using 'Exit'-input (*<font color="lime">pass</font>*)
+    - The functionality is available only within operations that cannot access the Menu exit options.
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
@@ -305,6 +286,9 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
 If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
 
 ## Possible improvements
+
+### Contact the user
+- Functionality to retrieve or change the username and password may be implemented, but the application security has to be enhanced to protect the user privacy
 
 ### Improved task editing
 - Task categories could be introduced such that the users can categorize their tasks by importance (e.g., urgent, chore)
