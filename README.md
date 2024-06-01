@@ -154,7 +154,9 @@ also marked with light red color background in the worksheet.
 
 ### **10. Cross-Platform Accessibility**
 - The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.  
- More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
+ 
+
+More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
 
 
 ## Technologies Used
@@ -345,4 +347,4 @@ The code is available on GitHub, such that developers can view, fork, and contri
 - The use of ChatGPT was restricted to getting sensible inputs for the text content in the Readme-file and for proof-checking the language.
 
 ## Documentation version
-Last update May 31st, 2024
+Last update June 1st, 2024
