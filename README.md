@@ -260,11 +260,23 @@ In my opinion, using the app on mobiles provides a negative UX, mostly due to di
         - email validatin (e.g., someone@somewhere.com) that passess the regex test (*<font color="lime">pass</font>*)
     - the application awaits until the user provides valid inputs (*<font color="lime">pass</font>*)
 
-- Add/remove new tasks (*<font color="lime">pass</font>*)
+- Add a new task (*<font color="lime">pass</font>*)
     - error checking for text length  (*<font color="lime">pass</font>*)
-    - error checking for date (cannot be prior to current date) and formatting (*<font color="lime">pass</font>*)
-    - incrementing/decrementing the task number in the user account worksheet ('users') when adding/removing tasks (*<font color="lime">pass</font>*)
-    - incrementing/decrementing the task id in the private user worksheet when adding/removing tasks (*<font color="lime">pass</font>*)
+    - error checking for the due date (*<font color="lime">pass</font>*)
+        - cannot be prior to current date (*<font color="lime">pass</font>*)
+        - standardized formatting (*<font color="lime">pass</font>*)
+    - increment the task number in the user account worksheet ('users') when adding a task (*<font color="lime">pass</font>*)
+    - increment the task id in the private user worksheet when adding a task (*<font color="lime">pass</font>*)
+
+- Remove one or several tasks (*<font color="lime">pass</font>*)
+    - mandatory user confirmation prior to task(s) deletion (*<font color="lime">pass</font>*)
+    - decrement the task number in the user account worksheet ('users') after removing tasks (*<font color="lime">pass</font>*)
+    - update the task id in the private user worksheet after removing tasks (*<font color="lime">pass</font>*)
+
+- Remove user account (*<font color="lime">pass</font>*)
+    - mandatory user confirmation prior to account deletion (*<font color="lime">pass</font>*)
+    - delete the private user worksheet (*<font color="lime">pass</font>*)
+    - delete the user information from the 'users'-worksheet (*<font color="lime">pass</font>*)
 
 - Mark a task as overdue (*<font color="lime">pass</font>*)
     - change the state from 'active' to 'overdue' (*<font color="lime">pass</font>*)
