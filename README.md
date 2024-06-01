@@ -48,13 +48,6 @@ The target audience for the app includes tech-savvy, goal-oriented, and organize
 
 ## Features
 
-A quick demonstration of using the app can be found here: 
-
-- For the main menu options: [***here.***](assets/images/Demo-functionality.gif)
-
-- For the user menu options: [***here.***](assets/images/Demo-functionality.gif)
-
-
 ### **1. A user-friendly interface**
 
 ***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.   
@@ -219,34 +212,18 @@ For cloud deployment, the [dependency requirements file](requirements.txt) was c
 The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/. 
 
 
-### Testing
-
 ## Usage and screenshots
 
-### **1. User login**
+- A quick demonstration of using the app for viewing the user tasks can be found here: [***here.***](assets/giffs/Demo-functionality.gif)
 
-#### **Creating a Task**
-#### **Deleting Tasks**
-#### **Delete user account**
+- The user registraton process can be found here: [***here.***](assets/giffs/Demo-functionality-registration.gif)
 
-### **2. Register new users**
+- An example for the task deletion process can be found here: [***here.***](assets/giffs/Demo-functionality-task-delete.gif)
 
-### **3. Tracking the task list**
-- When a task is marked as completed and/or removed from the list, the task tracking field updates the counters by task activities and categories.
-- If all task are completed, the message "All Task Completed" marks the event.
+- An example for adding a new task can be found here: [***here.***](assets/giffs/Demo-functionality-task-add.gif)
 
-## Additional testing
 
-### Devices and browsers
-Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop), as well as
-on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers: 
-- Google Chrome: Version 125.0.6422.77 (Official Build) (64-bit)
-- Brave: version 1.66.115 Chromium: 125.0.6422.112 (Official Build) (64-bit)
-- Microsoft Edge: Version 125.0.2535.67 (Official build) (64-bit)
-
-In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility. 
-
-### Tested features:
+## Tested features:
 
 - User login (*<font color="lime">pass</font>*)
     - username and password validation (*<font color="lime">pass</font>*)
@@ -290,6 +267,18 @@ In my opinion, using the app on mobiles provides a negative UX, mostly due to di
 
 - Forced exit using 'Exit'-input (*<font color="lime">pass</font>*)
     - The functionality is available only within operations that cannot access the Menu exit options.
+
+### Additional testing
+
+#### Devices and browsers
+Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop), as well as
+on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers: 
+- Google Chrome: Version 125.0.6422.77 (Official Build) (64-bit)
+- Brave: version 1.66.115 Chromium: 125.0.6422.112 (Official Build) (64-bit)
+- Microsoft Edge: Version 125.0.2535.67 (Official build) (64-bit)
+
+In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility. 
+
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
