@@ -50,6 +50,7 @@ def validate_password_length(user_password:str) -> bool:
         print(f'Invalid password: {e}, please try again.\n')
         return False
 
+
 def validate_user_password_capital(user_password:str) -> bool:
     '''
     Validate entry password for new users: 
@@ -67,6 +68,7 @@ def validate_user_password_capital(user_password:str) -> bool:
     except ValueError as e:
         print(f'Invalid password: {e}, please try again.\n')
         return False
+
 
 def validate_user_password_numerals(user_password:str) -> bool:
     '''
@@ -94,7 +96,7 @@ def match_user_name(user_data:dict, user_name:str) -> bool:
     Validates existing usernames by matching them against the
     records in the 'username'- column of the 'users'- sheet.  
     '''
- 
+
     while True:
         if user_name in user_data['user_name']:
             return True
