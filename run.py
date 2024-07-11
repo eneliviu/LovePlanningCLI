@@ -15,6 +15,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from tabulate import tabulate
 
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -82,6 +83,7 @@ def clear_output(clean_cli_choice:str) -> None:
     if validate_static_options(clean_cli_choice, STATIC_OPTIONS):
         if clean_cli_choice.lower() == 'y':
             clean_cli()
+
 
 def make_dict_from_nested_lists(list_data:list[list], d_keys:list[str]) -> dict:
     '''
@@ -766,8 +768,6 @@ def validate_due_date() -> Tuple[str, str]:
     The due date also has to be past the current time.
 
     Returns a tuple containing the string formatted creation and due dates.
-
-    TODO: Fix error
     '''
 
     while True:
@@ -784,9 +784,9 @@ def validate_due_date() -> Tuple[str, str]:
                 if due_date < creation_date:
                     raise ValueError('The date is prior to the current time')
                 break
-            except ValueError as e:
-                print(f'Invalid time. {e}.')
-        except ValueError as e:
+            except ValueError as error_creation_time:
+                print(f'Invalid time. {error_creation_time}.')
+        except ValueError:
             print('Please enter a date in MM-DD-YYYY format.')
 
     return due_date.strftime("%m-%d-%Y"), creation_date.strftime("%m-%d-%Y")

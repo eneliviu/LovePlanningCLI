@@ -106,6 +106,24 @@ def match_user_name(user_data:dict, user_name:str) -> bool:
 
 
 
+def is_valid_date_format(date_str: str, date_format: str) -> bool:
+    '''
+    Checks if the user entered the date using the specified format
+
+    Arguments:
+    - date_str (str): The user inout date
+    - date_format(str): The template
+
+    Returns:
+    - bool: true if the user entered the date in the specified format
+    '''
+
+    try:
+        datetime.strptime(date_str, date_format).date()
+        return True
+    except ValueError:
+        print('Please enter a date in MM-DD-YYYY format.')
+        return False
 # @dataclass
 # class Defaults:
 #     USERS: str = 'users'
