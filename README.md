@@ -271,7 +271,10 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - Forced exit using 'Exit'-input (*<font color="lime">pass</font>*)
     - The functionality is available only within operations that cannot access the Menu exit options.
 
-- CodeInstitute's CI Python Linter (*<font color="RED">FAIL</font>*)
+- Check the PEP 8 code stye conventions
+    - Using VSCode (Pylint):
+        - (*<font color="lightblue">'Too many lines in module (1062/1000)'</font>*) problem raised as the script length is more than 1000 lines of code
+    - Using the CodeInstitute's CI Python Linter: (*<font color="RED">FAIL</font>*)
 
 
 ### Additional testing
@@ -288,12 +291,15 @@ In my opinion, using the app on mobiles provides a negative UX, mostly due to di
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
-- In rare situations, the app may exit ungracewfully due to API call errors, which were not thorougly tested.
-- I was not able to fix the errors produced by the CodeInstitute's CI Python Liner. My IDE does not show such things, and I still don't know how to fix these errors.
+- In rare situations, the app may exit ungracefully due to API call errors.
+- Python Linter raises PEP 8 issues due to the length of the run.py script.
 
 If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
 
 ## Possible improvements
+
+### Fix formatting-errors reported by Lint according to Python's PEP 8 coding standard
+- Refactor the run.py scrip by moving the function definitions to an utils.py file, and then import the utils.py inside the run.py script.
 
 ### Contact the user
 - Functionality to retrieve or change the username and password may be implemented, but the application security has to be enhanced to protect the user privacy
@@ -352,4 +358,4 @@ The code is available on GitHub, such that developers can view, fork, and contri
 - The use of ChatGPT was restricted to getting sensible inputs for the text content in the Readme-file and for proof-checking the language.
 
 ## Documentation version
-Last update June 1st, 2024
+Last updated: July 11, 2024
