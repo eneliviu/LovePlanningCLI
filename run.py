@@ -281,8 +281,6 @@ def match_user_credentials(**kwargs) -> bool:
     * user_password:str ---> user password input
 
     Returns a bool.
-
-    TODO: Refactor
     '''
 
     if (kwargs['user_name'] in kwargs['users_col']) and \
@@ -792,11 +790,11 @@ def validate_due_date() -> Tuple[str, str]:
     return due_date.strftime("%m-%d-%Y"), creation_date.strftime("%m-%d-%Y")
 
 
+#  TODO: Add error check for empty (whitespace) user input.
 def add_task(**kwargs) -> dict:
     '''
     Add a new task to the user worksheet. The new task is inserted such that
     it maintains the default sorting by due date, with the earliest due date at the top.
-    TODO: Add error check for empty (whitespace) user input.
 
     Arguments:
     - users_worksheet_name:str
