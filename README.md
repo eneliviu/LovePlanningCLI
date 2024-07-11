@@ -188,10 +188,10 @@ The application uses the following external Python modules:
 - rich 13.7.1 ([Python library for writing rich text](https://rich.readthedocs.io/en/stable/introduction.html))
 - tabulate 0.9.0 ([Pretty-print tabular data](https://pypi.org/project/tabulate/))
 
-The extrenal modules were installed locally via `pip install` command in the VSCode PowerShell. 
+The extrenal modules were installed locally via `pip install` command in the VSCode PowerShell.
 
 ### Google Sheets
-- The application uses Google Sheets for storin agd retrieveing user information. 
+- The application uses Google Sheets for storin agd retrieveing user information.
 - The google-auth and google-auth-oauthlib Python modules are used for authorization and authentication
 - The API calls are run performed using the gspread and gspread_formatting Python modules
 
@@ -201,9 +201,9 @@ The application developement was done using the VSCode IDE version 1.89.1. with 
 The app can be run locally using the `python run.py` command in the terminal.
 
 
-### Markdown 
+### Markdown
 The Markdown formatting for README.md and HELP.md files was done according to the documentation provided at
-[www.markdownguide.org](https://www.markdownguide.org/basic-syntax/). 
+[www.markdownguide.org](https://www.markdownguide.org/basic-syntax/).
 
 
 ### Cloud deployment
@@ -211,7 +211,7 @@ The app is currently deployed on [Heroku Cloud Application Platform](https://www
 For cloud deployment, the [dependency requirements file](requirements.txt) was compiled using the \
 `pip freeze > requirements.txt` command in the VSCode PowerShell.
 
-The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/. 
+The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/.
 
 
 ## Usage and screenshots
@@ -240,12 +240,13 @@ The app is currently deployed on github and can be accessed at: https://love-pla
     - the application awaits until the user provides valid inputs (*<font color="lime">pass</font>*)
 
 - Add a new task (*<font color="lime">pass</font>*)
-    - error checking for text length  (*<font color="lime">pass</font>*)
-    - error checking for the due date (*<font color="lime">pass</font>*)
+    - checks and raise error for empty (whitespace) user input
+    - checks and raise error for maximum text length  (*<font color="lime">pass</font>*)
+    - checks and raise error for the due date (*<font color="lime">pass</font>*)
         - cannot be prior to current date (*<font color="lime">pass</font>*)
         - standardized formatting (*<font color="lime">pass</font>*)
-    - increment the task number in the user account worksheet ('users') when adding a task (*<font color="lime">pass</font>*)
-    - increment the task id in the private user worksheet when adding a task (*<font color="lime">pass</font>*)
+    - increments the task number in the user account worksheet ('users') when adding a task (*<font color="lime">pass</font>*)
+    - increments the task id in the private user worksheet when adding a task (*<font color="lime">pass</font>*)
 
 - Remove one or several tasks (*<font color="lime">pass</font>*)
     - mandatory user confirmation prior to task(s) deletion (*<font color="lime">pass</font>*)
@@ -265,24 +266,24 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 - Application exit using the menu option (*<font color="lime">pass</font>*)
     - exiting from the Main Menu (*<font color="lime">pass</font>*)
-    - exiting from the User Menu (*<font color="lime">pass</font>*) 
+    - exiting from the User Menu (*<font color="lime">pass</font>*)
 
 - Forced exit using 'Exit'-input (*<font color="lime">pass</font>*)
     - The functionality is available only within operations that cannot access the Menu exit options.
 
-- CodeInstitute's CI Python Linter (*<font color="RED">FAIL</font>*)  
+- CodeInstitute's CI Python Linter (*<font color="RED">FAIL</font>*)
 
 
 ### Additional testing
 
 #### Devices and browsers
 Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop), as well as
-on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers: 
+on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers:
 - Google Chrome: Version 125.0.6422.77 (Official Build) (64-bit)
 - Brave: version 1.66.115 Chromium: 125.0.6422.112 (Official Build) (64-bit)
 - Microsoft Edge: Version 125.0.2535.67 (Official build) (64-bit)
 
-In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility. 
+In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility.
 
 
 ## <font color="red">Known bugs and issues</font>
@@ -299,12 +300,12 @@ If you encounter issues or bugs, please create an issue by clicking [here](https
 
 ### Improved task editing
 - Task categories could be introduced such that the users can categorize their tasks by importance (e.g., urgent, chore)
-and/or type categories (e.g., work, personal, etc). 
+and/or type categories (e.g., work, personal, etc).
 - Functionality for re-catogorizing and editing existing tasks.
 
 ### Filtering and Sorting Tasks
 - Filter and sort options to organize and view the tasks according to specific criteria.
-- Possible filters: 
+- Possible filters:
     - task status (e.g., active, completed or overdue tasks)
     - activity type (work, personal, etc)
     - task relevance/importance (urgent, chores) by due date or incoming within a certain time horizon.
@@ -317,7 +318,7 @@ and/or type categories (e.g., work, personal, etc).
 
 ### About menu option
 For further development, including an About option would to provide more information about the various releases and other information
-that helps keeping the users updated.  
+that helps keeping the users updated.
 
 ### Collaboration tools
 - Include features for inviting people to participate in various tasks, sharing task lists and/or assigning tasks to team members.
@@ -330,8 +331,8 @@ Some of the improvements mentioned in this section (such as the task classificat
 - Fork the repository on GitHub to create your own copy.
 - Clone the forked repository to your local machine.
 - To fork the project:
-    - Click the "Fork" button on the top-right corner of the repository page 
-    - Clone Your Fork by running the following command in the terminal or command prompt: 
+    - Click the "Fork" button on the top-right corner of the repository page
+    - Clone Your Fork by running the following command in the terminal or command prompt:
         `git clone https://github.com/your-username/repository-name.git`
 - Make your desired changes, whether it's fixing a bug, adding a feature, or updating documentation.
 - Commit your changes with clear messages.
@@ -340,7 +341,7 @@ Some of the improvements mentioned in this section (such as the task classificat
 
 ## License
 ### Open Source
-As an open-source project, ***LovinPlans*** encourages transparency, and community involvement. 
+As an open-source project, ***LovinPlans*** encourages transparency, and community involvement.
 
 The code is available on GitHub, such that developers can view, fork, and contribute to the project if they wish so.
 

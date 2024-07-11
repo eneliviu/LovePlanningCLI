@@ -790,7 +790,6 @@ def validate_due_date() -> Tuple[str, str]:
     return due_date.strftime("%m-%d-%Y"), creation_date.strftime("%m-%d-%Y")
 
 
-#  TODO: Add error check for empty (whitespace) user input.
 def add_task(**kwargs) -> dict:
     '''
     Add a new task to the user worksheet. The new task is inserted such that
@@ -813,7 +812,6 @@ def add_task(**kwargs) -> dict:
     task_row['task_id'] = str(int(kwargs['user_data']['tasks']) + 1)
     task_info = list(task_row.values())
 
-
     user_worksheet = SHEET.worksheet(kwargs['user_data']['user_name'])
     user_worksheet.append_row(task_info)
 
@@ -825,7 +823,6 @@ def add_task(**kwargs) -> dict:
                                             header = TASK_HEADER)
         for k in range(len(taskid_col[1:])):
             SHEET.worksheet(kwargs['user_data']['user_name']).update_cell(k + 2, column_id, k+1)
-
 
     # Update the  number of tasks in the 'tasks' column from the 'users'-worksheet:
     users_worksheet = SHEET.worksheet(kwargs['users_worksheet_name'])
