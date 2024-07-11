@@ -50,36 +50,35 @@ The target audience for the app includes tech-savvy, goal-oriented, and organize
 
 ### **1. A user-friendly interface**
 
-***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.   
+***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.
 
-- The app opens with a Main Menu than provides the following options: 
+- The app opens with a Main Menu than provides the following options:
     - 1 (User Login): Login of regsitered users via username and password;
-    - 2 (Register a new user): Requires a vlaid username, password and email address to creates a user profile 
+    - 2 (Register a new user): Requires a valid username, password and email address to creates a user profile
         and a dedicated user worksheet for storing the tasks;
     - 3 (Help): Show the help menu content for running the application;
     - 4 (Exit): Gracefully exiting the application.
 
 ![Main menu](/assets/images/main-menu.png#center)
-*<center><font color="red">LovinPlans</font>: App initialization and main menu configuration*.</center><br> 
+*<center><font color="red">LovinPlans</font>: App initialization and main menu configuration*.</center><br>
 
 - After the Login, the User Menu section handles the following options for the registered users:
     - 1 (View tasks): List all tasks;
-    - 2 (Add task): Add a new task; 
+    - 2 (Add task): Add a new task;
     - 3 (Delete task): Delete a task;
     - 4 (Delete account): Delete user account;
     - 5 (Exit): Return to the main menu.
 
 ![User menu](/assets/images/user-menu.png) <br>
-*<font color="red">LovinPlans</font>: User menu configuration.*<br> 
+*<font color="red">LovinPlans</font>: User menu configuration.*<br>
 
-- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options. In the script,  
-the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
+- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options. In the script, the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
 - The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes a Help Menu option that offers a quick tour of the app's functionality (more details in the [Help Menu](#help-menu) section).
 
 ### **2. Use of Google Sheets**
 
-The user information and the TODO lists are stored in a dedicated document hosted by Google Sheets. 
-The app uses two categories of worksheets: 
+The user information and the TODO lists are stored in a dedicated document hosted by Google Sheets.
+The app uses two categories of worksheets:
 - users-worksheet for storing the user login information and contact details such as:
     - user id
     - username
@@ -88,7 +87,7 @@ The app uses two categories of worksheets:
     - number of tasks
 
 ![users worksheet](/assets/images/users-worksheet.png) <br>
-*<font color="red">LovinPlans</font>: The 'users' worksheet containing the registered users profiles.*<br> 
+*<font color="red">LovinPlans</font>: The 'users' worksheet containing the registered users profiles.*<br>
 
 - provate user worksheets for storing the user login information and contact details such as:
     - task id
@@ -96,10 +95,10 @@ The app uses two categories of worksheets:
     - task creation date (MM-DD-YYYY format)
     - task due date (MM-DD-YYYY format)
     - status (active / overdue)
-By convention, the registered usernames are used for labeling the dedicated user worksheets. 
+By convention, the registered usernames are used for labeling the dedicated user worksheets.
 
 ![user worksheet](/assets/images/user-worksheet.png) <br>
-*<font color="red">LovinPlans</font>: A typical user worksheet containing the users tasks.*<br> 
+*<font color="red">LovinPlans</font>: A typical user worksheet containing the users tasks.*<br>
 
 ### **3. Create and delete user accounts**
 - New users can easily register and create their own TODO list with a few inputs.
@@ -109,77 +108,75 @@ By convention, the registered usernames are used for labeling the dedicated user
     - an email address with valid formatting (e.g., someone@somewhere.com) that passess the regex
 
 ### **4. Task Creation and Editing**
-- Users can effortlessly create new tasks and edit existing ones with just a few clicks. 
+- Users can effortlessly create new tasks and edit existing ones with just a few clicks.
 - The process of creating a new task requires:
     - a (non-empty) text input of maximum 44 characters
     - a due date specification using the MM-DD-YYYY formatting (e.g., 12-30-2024)
-- By default, all newly created tasks receive an 'active' status 
-- The current local time is also registered in the user worksheet to allow tracking of the overdue tasks. 
+- By default, all newly created tasks receive an 'active' status
+- The current local time is also registered in the user worksheet to allow tracking of the overdue tasks.
 
 ### **5 Task Views**
 - The user tasks are printed on the terminal using the tabulate Python module that allows formatting the output as a table.
-- The task viewing functionality is also available for listing the available tasks before selecting the ones to be removed.    
+- The task viewing functionality is also available for listing the available tasks before selecting the ones to be removed.
 
 ![Tasks view](/assets/images/tasks-view.png) <br>
-*<font color="red">LovinPlans</font>: Printing the user tasks on the Herou console.*<br> 
+*<font color="red">LovinPlans</font>: Printing the user tasks on the Herou console.*<br>
 
 ### **Clear the terminal option**
-- After each main operation such views or multiple entries during user registation or task deletion, the app provides the option to clear the
-terminal to eliminate the cluttering provide a positive UX to the user.
+- After each main operation such views or multiple entries during user registation or task deletion, the app provides the option to clear the terminal to eliminate the cluttering provide a positive UX to the user.
 - This also allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
 
 ![Clear terminal](/assets/images/clear.png) <br>
-*<font color="red">LovinPlans</font>: Option to clear the terminal.*<br> 
+*<font color="red">LovinPlans</font>: Option to clear the terminal.*<br>
 
-### **6. Help Menu** 
+### **6. Help Menu**
 - The Help Menu provides a quick overview of the main app functionality.
-- The Help Menu content was printed using the user_help() function that opens and writes a Markdown file in the console, as described at  
+- The Help Menu content was printed using the user_help() function that opens and writes a Markdown file in the console, as described at
 [https://rich.readthedocs.io/en/stable/](https://rich.readthedocs.io/en/stable/console.html).
 
 ![Help menu](/assets/images/help-menu.png)<br>
-*<font color="red">LovinPlans</font>: Help menu content.*<br> 
+*<font color="red">LovinPlans</font>: Help menu content.*<br>
 
 ### **7. Task follow up**
-- The app allows users to enter task details such as the due date.   
-- At login, the due date of each user task is checked against the curent date. 
-- If a task has passed its due date, the task status changes from 'active' to 'overdue', and the overdue tasks are 
+- The app allows users to enter task details such as the due date.
+- At login, the due date of each user task is checked against the curent date.
+- If a task has passed its due date, the task status changes from 'active' to 'overdue', and the overdue tasks are
 also marked with light red color background in the worksheet.
- 
+
 ### **8. Menu Navigation**
 - The app allows users to switch between menu options without exiting the application using recursive function calls.
 
 ### **9. Exception Handling**
-- A great deal of attention was put on handling exceptions in order to provide a positive UX. 
+- A great deal of attention was put on handling exceptions in order to provide a positive UX.
 - The exception handling was implemented using try-except blocks for detect error during executions and provide relevant error messages to the user.
 
 ### **10. Cross-Platform Accessibility**
-- The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.  
- 
+- The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.
 
 More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
 
 
 ## Technologies Used
-The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script. 
+The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script.
 
 ### Python call stack
 The script contains the following main sections:
 - External modules imports
-- Connection to Google Sheets via API calls using private credentials.  
+- Connection to Google Sheets via API calls using private credentials.
 - Declaration of constant variables such as:
     - connections to the project LovePlanning Google Sheet
     - the names of the Google worksheets used by the app
     - the column names (headers) of those worksheets
-    - standard user choices available through the console 
+    - standard user choices available through the console
 - Python function definitions with a main() function that calls the stack.
     - As a rule of thumb, all functions that receive more than two arguments are called using **kwargs.
     - Docstrins were placed after function definitions to document the code.
-    - Where necessary, text comments were placed in the script to provide further explanations. 
-    - To the best of my Python abilities, I tried to use type hints for all function arguments. 
+    - Where necessary, text comments were placed in the script to provide further explanations.
+    - To the best of my Python abilities, I tried to use type hints for all function arguments.
 
 
 ### Python modules
-The application uses the following external Python modules:  
+The application uses the following external Python modules:
 - gspread 6.1.0 ([Python API for Google Sheets](https://docs.gspread.org/en/v6.0.0/))
 - gspread_formatting 1.1.2 ([Complete Google Sheets formatting support for gspread worksheets](https://pypi.org/project/gspread-formatting/))
 - google-auth 2.29.0 ([Google Auth Library for Python](https://google-auth.readthedocs.io/en/master/))
@@ -241,6 +238,7 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 - Add a new task (*<font color="lime">pass</font>*)
     - checks and raise error for empty (whitespace) user input
+    - checks and raise error for task description using less than three characters (*<font color="lime">pass</font>*)
     - checks and raise error for maximum text length  (*<font color="lime">pass</font>*)
     - checks and raise error for the due date (*<font color="lime">pass</font>*)
         - cannot be prior to current date (*<font color="lime">pass</font>*)

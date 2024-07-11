@@ -749,8 +749,10 @@ def validate_new_task_description() -> list[str]:
         # Smooth application exit:
         smooth_exit(new_task)
 
-        if len(new_task) == 0 :
+        if new_task.isspace() or len(new_task.strip()) == 0:
             print('A new task cannot be empty. Please try again.')
+        elif len(new_task) < 3:
+            print(f'Task description too short: {len(new_task)} characters. Please try again.')
         elif len(new_task) > 44:
             print(f'The task contains {len(new_task) - 44} extra characters. Please try again.')
         else:
@@ -981,8 +983,8 @@ def task_handler(**kwargs) -> None:
                                 task_header = kwargs['task_header'])
             elif user_choice == 2: # Add a new task
                 add_task(users_worksheet_name = kwargs['users_worksheet_name'],
-                            user_data = kwargs['user_data'],
-                            header = kwargs['task_header']) #TASK_HEADER
+                        user_data = kwargs['user_data'],
+                        header = kwargs['task_header'])
                 user_data = get_user_info(worksheet = kwargs['users_worksheet_name'],
                                             column_name = kwargs['user_column_name'],
                                             user_name = kwargs['user_data']['user_name'],
