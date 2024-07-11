@@ -45,9 +45,9 @@ def smooth_exit(user_exit_input:str) -> None:
 
 def validate_static_options(remove_choice:str, options:list[str]) -> bool:
     '''
-    Check if the user inputs are either y (Yes) or n (No). 
+    Check if the user inputs are either y (Yes) or n (No).
     The input strings are converted to lower case.
-    Arguments: 
+    Arguments:
     - remove_choice: user choice 'y'(Yes) or 'n'(No)
     - options: default list of choices ['y', 'n']
 
@@ -946,26 +946,25 @@ def task_handler(**kwargs) -> None:
     '''
 
     print('\nSelect an option:')
-    print('1 (View tasks), 2 (Add task), 3 (Delete task), 4 (Delete user account) 5 (Exit): ')
+    print('1(View tasks), 2(Add task), 3(Delete task), 4(Delete account) 5(Exit): ')
 
     while True:
         user_choice = input()
         if not user_choice.isdigit():
             print('Invalid selection! Please select a valid option:')
-            print('1 (View tasks), 2 (Add task), 3 (Delete task),\
-                4 (Delete user account) 5 (Exit).')
+            print('1(View tasks), 2(Add task), 3(Delete task), 4(Delete account) 5(Exit).')
         elif int(user_choice) not in range(1, 6):
             print('Invalid selection! Please select a valid option:')
-            print('1 (View tasks), 2 (Add task), 3 (Delete task), \
-                4 (Delete user account) 5 (Exit).')
+            print('1(View tasks), 2(Add task), 3(Delete task), 4(Delete account) 5(Exit).')
         else:
             user_choice = int(user_choice)
             if user_choice == 1: # View tasks
                 tasks, task_info = tasks_list(kwargs['user_data'], kwargs['task_header'])
                 if int(kwargs['user_data']['tasks']) == 0:
                     print('You have no scheduled tasks.\n')
-                    clear_output(input('\nPress y (Yes) to clear the output,\
-                                    or n (No) otherwise: \n'))
+                    clear_output(
+                        input('\nPress y(Yes) to clear console, or n(No) otherwise: \n')
+                        )
                     task_handler(users_worksheet_name = kwargs['users_worksheet_name'],
                             user_column_name = kwargs['user_column_name'],
                             user_data = kwargs['user_data'],
@@ -974,8 +973,9 @@ def task_handler(**kwargs) -> None:
                 else:
                     print('Your tasks are listed below:')
                     print(tabulate(task_info, headers="keys", numalign="center"))
-                    clear_output(input('\nPress y (Yes) to clear the output,\
-                                    or n (No) otherwise: \n'))
+                    clear_output(
+                        input('\nPress y(Yes) to clear console, or n(No) otherwise: \n')
+                        )
                     task_handler(users_worksheet_name = kwargs['users_worksheet_name'],
                                 user_data = kwargs['user_data'],
                                 user_column_name = kwargs['user_column_name'],
@@ -999,7 +999,9 @@ def task_handler(**kwargs) -> None:
                 print('Your tasks are listed below:')
                 print(tabulate(task_info, headers="keys", numalign="center"))
                 delete_task(kwargs['user_data'], tasks, task_info)
-                clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise: \n'))
+                clear_output(
+                    input('\nPress y (Yes) to clear console, or n (No) otherwise: \n')
+                    )
 
                 user_data = get_user_info(worksheet = kwargs['users_worksheet_name'],
                                             column_name = kwargs['user_column_name'],
