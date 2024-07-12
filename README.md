@@ -4,7 +4,7 @@
 
 ### **Table of content:**
 - [Overview](#overview)
-- [Target audience](#item-two)
+- [Application development](#application-development)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Manual testing](#manual-testing)
@@ -13,7 +13,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
-- [Documentation version](#Documentation-version)
+- [Documentation version](#documentation-version)
 
 
 ## Overview
@@ -21,9 +21,15 @@ This application was developed as part of Milestone Project 3 for the Diploma in
 
 The main purpose of this project is to build an interactive command line application utilizing the Python programming language.
 
-The result of the project is the ***LovinPlans*** command line interface (CLI) application that allows the user to dynamically create and edit a simple TODO list, and to follow-up the tasks as they are being executed. 
+The result of the project is the ***LovinPlans*** command line interface (CLI) application that allows the user to dynamically create and edit a simple TODO list, and to follow-up the tasks as they are being executed.
 
 ***LovinPlans*** is a user-friendly CLI app that demonstrates how to create, edit, and track tasks effortlessly with the purpose to help the users to stay focused and productive. Nevertheless, the app is not a fully developed product, but rather a proof of acquired Python programming skills compatible to the Milestone Project 3 requirements.
+
+### Target audience
+Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.
+
+The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity. Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
+
 
 ## Application development
 This Python CLI application has been developed iteratively, following basic Agile development principles.
@@ -41,10 +47,8 @@ During iterations, the overview over the app development was guided using Lucid 
 ![App flowchart](/assets/images/Flowchart_CLI_TODO.png)<br>
 <center>*LovinPlans: Lucid flowchart for application development.*</center><br>
 
-## Target audience
-Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.
+[*Back to top*](#)
 
-The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity. Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
 
 ## Features
 
@@ -155,6 +159,8 @@ also marked with light red color background in the worksheet.
 
 More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
 
+[*Back to top*](#)
+
 
 ## Technologies Used
 The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script.
@@ -219,6 +225,8 @@ command in the VSCode PowerShell.
 
 The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/.
 
+[*Back to top*](#)
+
 
 ## Usage and screenshots
 
@@ -229,6 +237,8 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - An example for the task deletion process can be found here: [***here.***](assets/giffs/Demo-functionality-task-delete.gif)
 
 - An example for adding a new task can be found here: [***here.***](assets/giffs/Demo-functionality-task-add.gif)
+
+[*Back to top*](#)
 
 
 ## Manual testing:
@@ -294,6 +304,8 @@ In my opinion, using the app on mobiles provides a negative UX, mostly due to di
 
 If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
 
+[*Back to top*](#)
+
 ## Possible improvements
 
 ### Fix formatting-errors reported by Lint according to Python's PEP 8 coding standard
@@ -330,6 +342,8 @@ that helps keeping the users updated.
 
 Some of the improvements mentioned in this section (such as the task classification or an About menu option) were not introduced in the current release due to  the printing space limitations imposed in the Heroku terminal.
 
+[*Back to top*](#)
+
 ## Contributing
 ### To contribute to the ***LovinPlans*** project:
 - Fork the repository on GitHub to create your own copy.
@@ -343,17 +357,24 @@ Some of the improvements mentioned in this section (such as the task classificat
 - Push your commits to your forked repository on GitHub.
 - Submit a pull request detailing your changes and their benefits.
 
+[*Back to top*](#)
+
 ## License
 ### Open Source
 As an open-source project, ***LovinPlans*** encourages transparency, and community involvement.
 
 The code is available on GitHub, such that developers can view, fork, and contribute to the project if they wish so.
 
+[*Back to top*](#)
+
 ## Acknowledgements
 - Further details on the usage of Google Sheets API were obtained from https://developers.google.com/sheets/api/quickstart/python
 - Printing the Markdown file in the console used for the Help-menu followed the expamples provided at https://rich.readthedocs.io/en/stable/console.html
 - Formatting the worksheet cell background color followed the examples from https://gspread-formatting.readthedocs.io/en/latest/#
 - The use of ChatGPT was restricted to getting sensible inputs for the text content in the Readme-file and for proof-checking the language.
+[*Back to top*](#)
 
 ## Documentation version
 Last updated: July 11, 2024
+
+[*Back to top*](#)
