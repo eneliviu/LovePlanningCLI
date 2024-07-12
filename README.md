@@ -7,7 +7,7 @@
 - [Target audience](#item-two)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
-- [Additional testing](#additional-testing)
+- [Manual testing](#manual-testing)
 - [Known bugs and issues](#known-bugs-and-issues)
 - [Possible improvements](#possible-improvements)
 - [Contributing](#contributing)
@@ -25,21 +25,21 @@ The result of the project is the ***LovinPlans*** command line interface (CLI) a
 
 ***LovinPlans*** is a user-friendly CLI app that demonstrates how to create, edit, and track tasks effortlessly with the purpose to help the users to stay focused and productive. Nevertheless, the app is not a fully developed product, but rather a proof of acquired Python programming skills compatible to the Milestone Project 3 requirements.
 
-## Application development 
-This Python CLI application has been developed iteratively, following basic Agile development principles. 
-While still in the learning phase of Agile methodologies, I mostly focused on implementing a small number of user stories per iteration. 
+## Application development
+This Python CLI application has been developed iteratively, following basic Agile development principles.
+While still in the learning phase of Agile methodologies, I mostly focused on implementing a small number of user stories per iteration.
 Below are examples of some of the user stories that guided the development process:
 - As a potential user, I need to register and to set up a user profile.
 - As a registered user, I want to be able to delete my acount.
 - As a user, I want to clean up the console before I access another user menu option.
 - As a user, I want to see clearly the overdue tasks.
 
-The progress was nonlinear, with many bugs that occured and quite painful code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.  
+The progress was nonlinear, with many bugs that occured and quite painful code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.
 
 During iterations, the overview over the app development was guided using Lucid wireframes like the one shwon below:
 
 ![App flowchart](/assets/images/Flowchart_CLI_TODO.png)<br>
-<center>*LovinPlans: Lucid flowchart for application development.*</center><br> 
+<center>*LovinPlans: Lucid flowchart for application development.*</center><br>
 
 ## Target audience
 Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.
@@ -187,15 +187,21 @@ The application uses the following external Python modules:
 
 The extrenal modules were installed locally via `pip install` command in the VSCode PowerShell.
 
+
 ### Google Sheets
 - The application uses Google Sheets for storin agd retrieveing user information.
 - The google-auth and google-auth-oauthlib Python modules are used for authorization and authentication
 - The API calls are run performed using the gspread and gspread_formatting Python modules
 
 ### Local Development and deployment
-The application developement was done using the VSCode IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed.
+The application developement was done using the The Visual Studio Code ([`VScode`](https://code.visualstudio.com/)) IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed. The `VScode` linters [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) and [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) were manually installed and used for checking the Python code style follows the PEP8 conventions.
 
-The app can be run locally using the `python run.py` command in the terminal.
+
+The app can be run locally using the
+```
+python python run.py
+```
+command in the terminal.
 
 
 ### Markdown
@@ -205,8 +211,11 @@ The Markdown formatting for README.md and HELP.md files was done according to th
 
 ### Cloud deployment
 The app is currently deployed on [Heroku Cloud Application Platform](https://www.heroku.com)
-For cloud deployment, the [dependency requirements file](requirements.txt) was compiled using the \
-`pip freeze > requirements.txt` command in the VSCode PowerShell.
+For cloud deployment, the [dependency requirements file](requirements.txt) was compiled using the
+```
+pip freeze > requirements.txt
+```
+command in the VSCode PowerShell.
 
 The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/.
 
@@ -222,58 +231,50 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - An example for adding a new task can be found here: [***here.***](assets/giffs/Demo-functionality-task-add.gif)
 
 
-## Tested features:
+## Manual testing:
 
-- User login (*<font color="lime">pass</font>*)
-    - username and password validation (*<font color="lime">pass</font>*)
-        - username and password should be found in the 'users' worksheet (*<font color="lime">pass</font>*)
-        - the application awaits until the user provides valid inputs
-
-- User registration (*<font color="lime">pass</font>*)
-    - username validatin (non-empty) (*<font color="lime">pass</font>*)
-    - password validation (*<font color="lime">pass</font>*)
-        - min. eight chatacters, of which at least one capital letter and two numerals (e.g., Password12) (*<font color="lime">pass</font>*)
-        - email validatin (e.g., someone@somewhere.com) that passess the regex test (*<font color="lime">pass</font>*)
-    - the application awaits until the user provides valid inputs (*<font color="lime">pass</font>*)
-
-- Add a new task (*<font color="lime">pass</font>*)
-    - checks and raise error for empty (whitespace) user input
-    - checks and raise error for task description using less than three characters (*<font color="lime">pass</font>*)
-    - checks and raise error for maximum text length  (*<font color="lime">pass</font>*)
-    - checks and raise error for the due date (*<font color="lime">pass</font>*)
-        - cannot be prior to current date (*<font color="lime">pass</font>*)
-        - standardized formatting (*<font color="lime">pass</font>*)
-    - increments the task number in the user account worksheet ('users') when adding a task (*<font color="lime">pass</font>*)
-    - increments the task id in the private user worksheet when adding a task (*<font color="lime">pass</font>*)
-
-- Remove one or several tasks (*<font color="lime">pass</font>*)
-    - mandatory user confirmation prior to task(s) deletion (*<font color="lime">pass</font>*)
-    - decrement the task number in the user account worksheet ('users') after removing tasks (*<font color="lime">pass</font>*)
-    - update the task id in the private user worksheet after removing tasks (*<font color="lime">pass</font>*)
-
-- Remove user account (*<font color="lime">pass</font>*)
-    - mandatory user confirmation prior to account deletion (*<font color="lime">pass</font>*)
-    - delete the private user worksheet (*<font color="lime">pass</font>*)
-    - delete the user information from the 'users'-worksheet (*<font color="lime">pass</font>*)
-
-- Mark a task as overdue (*<font color="lime">pass</font>*)
-    - change the state from 'active' to 'overdue' (*<font color="lime">pass</font>*)
-    - change the cell background color from white to light red for the overdue tasks (*<font color="lime">pass</font>*)
-
-- Clear the terminal by user input (*<font color="lime">pass</font>*)
-
-- Application exit using the menu option (*<font color="lime">pass</font>*)
-    - exiting from the Main Menu (*<font color="lime">pass</font>*)
-    - exiting from the User Menu (*<font color="lime">pass</font>*)
-
-- Forced exit using 'Exit'-input (*<font color="lime">pass</font>*)
-    - The functionality is available only within operations that cannot access the Menu exit options.
-
-- Check the PEP 8 code stye conventions
-    - Using VSCode (Pylint):
-        - (*<font color="lightblue">'Too many lines in module (1062/1000)'</font>*) problem raised as the script length is more than 1000 lines of code
-    - Using the CodeInstitute's CI Python Linter: (*<font color="RED">FAIL</font>*)
-
+| Feature | Expected behaviour | Test | Status |
+| --- | --- | --- | --- |
+| `User login` | **User information retrieved, user can login**
+| &nbsp;&nbsp;- *Username validation* | Username matched in 'users' worksheet | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Password validation* | Password matched in 'users' worksheet | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Email address validation* |Email address matched in 'users' worksheet | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `User registration` | **New user can open account and login**
+| &nbsp;&nbsp;- *Username validation* | Accept a valid username | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Username validation* | Accept a valid password | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Username validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Add a new task` | **User can add a new task**
+| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Checks and raises error for empty input, text length less 3 characters or more than 40 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task update* | Increment number of tasks and task ID in 'users' sheet | Entry new user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task status* | Mark overdue tasks | Change the cell background color from <span style="background-color:white"><span style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> to <span style="background-color:rgb(255, 132, 136)"><span style="color:rgb(255, 132, 136)">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> for the overdue tasks |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Delete task` | **User can remove a task**
+| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task update* | Decrement number of tasks in 'users' sheet, and update task ID in the user's private sheet | Delete user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Delete user account` | **User can delete its own account**
+| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Delete private user worksheet* | Delete the user worksheet | Try to delete user worksheets using correct and wrong worksheet names |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Delete info from 'users' worksheet* | Delete user information (row) and update the 'users' sheet | Delete user account |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Clear the terminal` | **User can clear the terminal**
+| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Application exit (Menu option)` | **User can clear the terminal**
+| &nbsp;&nbsp;- *Exiting from the `Main Menu`* | User confirmation (yes/no) required, clear if `y` and stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Exiting from the `User Menu`* | User confirmation (yes/no) required, delete task if `y` stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Forced exit` | **User can force the App to exit with the menu Exit option**
+| &nbsp;&nbsp;- *Exiting the app from the `Main Menu`* | App exits when the user enters the number indicated by the `Exit`- menu option | Check if the user input corresponds to the `Exit`- menu option. Exits for correct input, or stays in the loop otherwise | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `PEP8 code style conventions` | **Code syle follows the PEP8 conventions**
+| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) extension - no problems found| ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) extension raises a warning on using more than 1000 lines of code| ![warning](https://via.placeholder.com/10/ff8c00?text=+) `warning` `Too many lines in module (1127/1000)`|
+| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions |Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+---
 
 ### Additional testing
 
@@ -285,7 +286,6 @@ on my smartphone (Samsung Galaxy S21) operating on Android OS, using the followi
 - Microsoft Edge: Version 125.0.2535.67 (Official build) (64-bit)
 
 In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility.
-
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
