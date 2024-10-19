@@ -229,6 +229,7 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 ## Usage and screenshots
 
+### Demos
 - A quick demonstration of using the app for viewing the user tasks can be found here: [***here.***](assets/giffs/Demo-functionality.gif)
 
 - The user registraton process can be found here: [***here.***](assets/giffs/Demo-functionality-registration.gif)
@@ -238,6 +239,10 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - An example for adding a new task can be found here: [***here.***](assets/giffs/Demo-functionality-task-add.gif)
 
 [*Back to top*](#)
+
+
+### Screenshots
+
 
 
 ## Manual testing:
@@ -352,8 +357,7 @@ In my opinion, using the app on mobiles provides a negative UX, mostly due to di
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
-- In rare situations, the app may exit ungracefully due to API call errors.
-- Python Linter raises PEP 8 issues due to the length of the run.py script.
+- In rare situations, the app may exit ungracefully due to API call issues.
 
 If you encounter issues or bugs, please create an issue by clicking [here](https://github.com/eneliviu/LovePlanningCLI/issues).
 

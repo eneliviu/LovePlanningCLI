@@ -257,7 +257,7 @@ def validate_login_input() -> bool:
 
     Return a bool.
     '''
-    user_input = input('Enter username and password separated by comma \n'
+    user_input = input('\nEnter username and password separated by comma \n'
                        'Enter Exit to cancel: \n')
 
     # Smooth application exit:
@@ -645,7 +645,7 @@ def delete_task(user_data: dict,
         task_remove_idx = validate_task_index(user_task_data['task_id'])
 
         # Confirm the choice:
-        remove_choice = input(f'{task_remove_idx} will be removed.'
+        remove_choice = input(f'Tasks {task_remove_idx} will be removed.\n'
                               'Press y (Yes) to proceed: \n'
                               'Press n (No) to cancel: \n')
 
@@ -915,20 +915,21 @@ def main_menu() -> int:
     Returns an integer in range 1-4.
     '''
     while True:
-        input_option = input('Select: 1 (User Login), 2 (Register User),\
-                            3 (Help), 4 (Exit): \n')
+
+        input_option = input(
+            'Please select:\n'
+            '1(User Login) 2(Register User) 3(Help) 4(Exit)\n'
+        )
 
         # Smooth application exit:
         smooth_exit(input_option)
 
         if not input_option.isdigit():
-            print('Invalid choice!\n'
-                  'Valid options: 1 (User Login), 2 (Register User),\
-                    3 (Help), 4 (Exit): \n')
+            print('Invalid choice! Valid options: \n'
+                  '1(User Login), 2(Register User), 3(Help), 4(Exit): \n')
         elif input_option.isdigit() and int(input_option) not in range(1, 5):
-            print('Invalid choice!\n'
-                  'Valid options: 1 (User Login), 2 (Register User),\
-                    3 (Help), 4 (Exit): \n')
+            print('Invalid choice! Valid options:\n'
+                  '1(User Login), 2(Register User), 3(Help), 4(Exit): \n')
         else:
             break
 
@@ -951,14 +952,12 @@ def handle_input_options(**kwargs) -> None:
     '''
     while True:
         if kwargs['input_option'] == 1:  # USER LOGIN
-
             user_data = user_login(
                             worksheet_name=kwargs['users_worksheet_name'],
                             user_column_name=kwargs['user_column_name'],
                             password_column_name=kwargs['user_password_name'],
                             header=kwargs['user_header']
                         )
-
             task_handler(
                     users_worksheet_name=kwargs['users_worksheet_name'],
                     user_column_name=kwargs['user_column_name'],
@@ -968,6 +967,7 @@ def handle_input_options(**kwargs) -> None:
                 )
             break
         elif kwargs['input_option'] == 2:  # REGISTER NEW USER
+            clear_output('y')
             user_data = new_user_registration()
             task_handler(
                 users_worksheet_name=kwargs['users_worksheet_name'],
@@ -981,10 +981,10 @@ def handle_input_options(**kwargs) -> None:
             clear_output('y')
             user_help()
             clear_output(
-                input('\nPress y (Yes) to clear console, or n (No) otherwise.'
-                      '\n(Enter Exit to cancel): ')
+                input(
+                    '\nPress y(Yes) to clear console, or n(No) otherwise.'
+                    '\n(Enter Exit to cancel): ')
             )
-
             handle_input_options(
                 input_option=main_menu(),
                 users_worksheet_name=kwargs['users_worksheet_name'],
@@ -1000,8 +1000,6 @@ def handle_input_options(**kwargs) -> None:
 
 def task_handler(**kwargs) -> None:
     '''
-    task_handler(user_data:dict)
-
     Handles the menu options for registered users:
     - 1 (View tasks):     ---> List all tasks
     - 2 (Add task):       ---> Add a new task
@@ -1012,11 +1010,9 @@ def task_handler(**kwargs) -> None:
     The function uses a recursive call to return to the user menu
     after completing a task.
     '''
-
-    print('\nSelect an option:')
-    print('1(View tasks), 2(Add task), 3(Delete task),\
-        4(Delete account) 5(Exit): ')
-
+    print('\nSelect:\n'
+          '1(View tasks) 2(Add task) 3(Delete task) 4(Delete account) 5(Exit):'
+          )
     while True:
         user_choice = input()
         if not user_choice.isdigit():
@@ -1035,9 +1031,9 @@ def task_handler(**kwargs) -> None:
                 if int(kwargs['user_data']['tasks']) == 0:
                     print('You have no scheduled tasks.\n')
                     clear_output(
-                        input('\nPress y(Yes) to clear console,\
-                            or n(No) otherwise: ')
-                        )
+                        input('\nPress y(Yes) to clear console.\n'
+                              'Press n(No) otherwise: ')
+                            )
                     task_handler(
                         users_worksheet_name=kwargs['users_worksheet_name'],
                         user_column_name=kwargs['user_column_name'],
@@ -1046,13 +1042,14 @@ def task_handler(**kwargs) -> None:
                         task_header=kwargs['task_header']
                         )
                 else:
-                    print('Your tasks are listed below:')
+                    print('\nYour tasks are listed below:')
                     print(tabulate(task_info,
                                    headers="keys",
                                    numalign="center"))
                     clear_output(
-                        input('\nPress y(Yes) to clear console,\
-                            or n(No) otherwise: \n')
+                        input(
+                            '\nPress y(Yes) to clear console.'
+                            '\nPress n(No) otherwise: \n')
                         )
                     task_handler(
                         users_worksheet_name=kwargs['users_worksheet_name'],
@@ -1091,8 +1088,9 @@ def task_handler(**kwargs) -> None:
                             tasks,
                             task_info)
                 clear_output(
-                    input('\nPress y (Yes) to clear console,\
-                        or n (No) otherwise: \n')
+                    input(
+                        '\nPress y (Yes) to clear console.'
+                        '\nPress n (No) otherwise: \n')
                     )
 
                 user_data = get_user_info(
@@ -1147,12 +1145,14 @@ def main() -> None:
         try:
             input_option = main_menu()
             # Hard-coded inputs here:
-            if not handle_input_options(input_option=input_option,
-                                        users_worksheet_name=USERS,
-                                        user_column_name='user_name',
-                                        user_password_name='password',
-                                        user_header=USER_HEADER,
-                                        task_header=TASK_HEADER):
+            if not handle_input_options(
+                        input_option=input_option,
+                        users_worksheet_name=USERS,
+                        user_column_name='user_name',
+                        user_password_name='password',
+                        user_header=USER_HEADER,
+                        task_header=TASK_HEADER
+                    ):
                 print('You are now logged out.\n')
                 break
         except gspread.exceptions.APIError as e:
