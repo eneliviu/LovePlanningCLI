@@ -249,111 +249,61 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 | Feature | Expected behaviour | Test | Status |
 | --- | --- | --- | --- |
-| `User login` | **User information retrieved, user can login**
-| &nbsp;&nbsp;- *Username validation* | Username matched in 'users' worksheet | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Password validation* | Password matched in 'users' worksheet | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Email address validation* |Email address matched in 'users' worksheet | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `User login` | **User information retrieved, registered user can login**
+| &nbsp;&nbsp;- *Username validation* | Accept a valid username | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Username validation* | Username matched in 'users' worksheet | Entry new valid usernames and existing usernames | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Password validation* | Accept a valid password | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Password validation* | Password matched in 'users' worksheet | Entry valid and invalid passwords for registered users |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Email validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Email validation* |Email address matched in 'users' worksheet | Entry valid and invalid emails for registered users |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the user inputs are not valid | Entry valid and invalid user inputs and check if the correct exceptions are raised|![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `User registration` | **New user can open account and login**
 | &nbsp;&nbsp;- *Username validation* | Accept a valid username | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Username validation* | Accept a valid password | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Username validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Password validation* | Accept a valid password | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Email validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the user inputs are not valid | Entry valid and invalid user inputs and check if the correct exceptions are raised|![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Add a new task` | **User can add a new task**
-| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Checks and raises error for empty input, text length less 3 characters or more than 40 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Task update* | Increment number of tasks and task ID in 'users' sheet | Entry new user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Task status* | Mark overdue tasks | Change the cell background color from <span style="background-color:white"><span style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> to <span style="background-color:rgb(255, 132, 136)"><span style="color:rgb(255, 132, 136)">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> for the overdue tasks |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Check and raise error for empty input, text length less 3 characters or more than 40 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Check and raise error for invalid date format or for past dates |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task update* | Increment number of tasks and task ID in 'users' sheet | Check for task id increment when adding new tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task status* | Mark overdue tasks | Check for change of the cell background color from <span style="background-color:white"><span style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> to <span style="background-color:rgb(255, 132, 136)"><span style="color:rgb(255, 132, 136)">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> for the overdue tasks |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the user inputs are not valid | Entry valid and invalid user inputs and check if the correct exceptions are raised|![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Delete task` | **User can remove a task**
-| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Task update* | Decrement number of tasks in 'users' sheet, and update task ID in the user's private sheet | Delete user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *User confirmation* | Delete task after user confirmation or continue to `User menu` | Select `Delete task` option and use the `y(Yes)` and `n(No)` user confirmation |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task list update* | Decrement number of tasks in 'users' sheet, and update task ID in the user's private sheet | Delete user one or more tasks and check the results |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the choice for task deletion is not valid | Entry valid and invalid user inputs and check if the correct exceptions are raised |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Delete user account` | **User can delete its own account**
-| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Delete private user worksheet* | Delete the user worksheet | Try to delete user worksheets using correct and wrong worksheet names |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Delete info from 'users' worksheet* | Delete user information (row) and update the 'users' sheet | Delete user account |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *User confirmation* | Account deleted after user confirmation or continue to `User menu` | Check if task is deleted if for `y(Yes)` user confirmation; check for return to `Usermenu `if `n(No)` is selected |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Delete private user worksheet* | Delete the user worksheet after user confirmation| Check if right user worksheet is deleted using correct and wrong worksheet names |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Delete info from 'users' worksheet* | Delete user information and update the 'users' sheet after account deletion| Delete user account and check for the correct changes |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the selections are not valid | Entry valid and invalid user selections and check if the correct exceptions are raised |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Clear the terminal` | **User can clear the terminal**
-| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *User confirmation* | Optional console cleared after user confirmation, or continue to `User menu` | Enter `y/n` options and check results |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the user inputs are not valid | Entry valid and invalid user inputs and check if the correct exceptions are raised |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Application exit (Menu option)` | **User can clear the terminal**
-| &nbsp;&nbsp;- *Exiting from the `Main Menu`* | User confirmation (yes/no) required, clear if `y` and stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Exiting from the `User Menu`* | User confirmation (yes/no) required, delete task if `y` stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Exiting from the `Main Menu`* | Exit app after user confirmation (yes/no) | Enter `y/n` inputs and check if the application exits or stays in the loop |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Exiting from the `User Menu`* | Exit app after user confirmation (yes/no) | Enter `y/n` inputs and check if the application exits or stays in the loop |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Forced exit` | **User can force the App to exit with the menu Exit option**
-| &nbsp;&nbsp;- *Exiting the app from the `Main Menu`* | App exits when the user enters the number indicated by the `Exit`- menu option | Check if the user input corresponds to the `Exit`- menu option. Exits for correct input, or stays in the loop otherwise | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Exiting the app from the `Main Menu`* | App exits when the user enters the digit indicated by the `Exit`- menu option | Check if the user input corresponds to the `Exit`- menu option; exit for correct input, or stays in the loop otherwise | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the `y/n` user input are not valid | Test the `y/n` behaviour for valid and invalid inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `User action feedback` | **User receives a success message after an action is completed**
+| &nbsp;&nbsp;- *Message is printed on the console* | Success message sent to the user | Test if the messages appear after task completion |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `PEP8 code style conventions` | **Code syle follows the PEP8 conventions**
-| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) extension - no problems found| ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) extension raises a warning on using more than 1000 lines of code| ![warning](https://via.placeholder.com/10/ff8c00?text=+) `warning` `Too many lines in module (1127/1000)`|
-| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions |Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
+| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions | Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
 ---
 
-
-
-
-
-| Feature | Expected behaviour | Test | Status |
-| --- | --- | --- | --- |
-| `User login` | **User information retrieved, user can login**
-| &nbsp;&nbsp;- *Username validation* | Username matched in 'users' worksheet | Try empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Password validation* | Password matched in 'users' worksheet | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Email address validation* |Email address matched in 'users' worksheet | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `User registration` | **New user can open account and login**
-| &nbsp;&nbsp;- *Username validation* | Accept a valid username | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Username validation* | Accept a valid password | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Username validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `Add a new task` | **User can add a new task**
-| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Checks and raises error for empty input, text length less 3 characters or more than 40 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Task update* | Increment number of tasks and task ID in 'users' sheet | Entry new user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Task status* | Mark overdue tasks | Change the cell background color from <span style="background-color:white"><span style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> to <span style="background-color:rgb(255, 132, 136)"><span style="color:rgb(255, 132, 136)">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> for the overdue tasks |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `Delete task` | **User can remove a task**
-| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Task update* | Decrement number of tasks in 'users' sheet, and update task ID in the user's private sheet | Delete user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `Delete user account` | **User can delete its own account**
-| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Delete private user worksheet* | Delete the user worksheet | Try to delete user worksheets using correct and wrong worksheet names |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Delete info from 'users' worksheet* | Delete user information (row) and update the 'users' sheet | Delete user account |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `Clear the terminal` | **User can clear the terminal**
-| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `Application exit (Menu option)` | **User can clear the terminal**
-| &nbsp;&nbsp;- *Exiting from the `Main Menu`* | User confirmation (yes/no) required, clear if `y` and stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *Exiting from the `User Menu`* | User confirmation (yes/no) required, delete task if `y` stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `Forced exit` | **User can force the App to exit with the menu Exit option**
-| &nbsp;&nbsp;- *Exiting the app from the `Main Menu`* | App exits when the user enters the number indicated by the `Exit`- menu option | Check if the user input corresponds to the `Exit`- menu option. Exits for correct input, or stays in the loop otherwise | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| `PEP8 code style conventions` | **Code syle follows the PEP8 conventions**
-| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) extension - no problems found| ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
-| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) extension raises a warning on using more than 1000 lines of code| ![warning](https://via.placeholder.com/10/ff8c00?text=+) `warning` `Too many lines in module (1127/1000)`|
-| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions |Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
----
-
-
-
-
-
-
-
+[*Back to top*](#)
 
 ### Additional testing
 
 #### Devices and browsers
 Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop), as well as
 on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers:
-- Google Chrome: Version 125.0.6422.77 (Official Build) (64-bit)
-- Brave: version 1.66.115 Chromium: 125.0.6422.112 (Official Build) (64-bit)
-- Microsoft Edge: Version 125.0.2535.67 (Official build) (64-bit)
+- Google Chrome: Version 129.0.6668.101 (Official Build) (64-bit)
+- Brave: version 1.70.126 Chromium: 129.0.6668.100 (Official Build) (64-bit)
+- Microsoft Edge: Version 130.0.2849.46 (Official build) (64-bit)
 
-In my opinion, using the app on mobiles provides a negative UX, mostly due to difficulties with taking the inputs from user when using the mobile keyboard, and poor text visibility.
+Using the app on mobiles provides affects the UX due to difficulties with taking the inputs from user when using the mobile keyboard, and the poor text visibility.
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
@@ -364,9 +314,6 @@ If you encounter issues or bugs, please create an issue by clicking [here](https
 [*Back to top*](#)
 
 ## Possible improvements
-
-### Fix formatting-errors reported by Lint according to Python's PEP 8 coding standard
-- Refactor the run.py scrip by moving the function definitions to an utils.py file, and then import the utils.py inside the run.py script.
 
 ### Contact the user
 - Functionality to retrieve or change the username and password may be implemented, but the application security has to be enhanced to protect the user privacy
@@ -387,7 +334,6 @@ and/or type categories (e.g., work, personal, etc).
 - Set due dates with automatic reminder to receive timely notifications for upcoming tasks and deadlines.
 - Add a day-time picker to improve the UX
 - Check for task overlapp and possible collisions
-
 
 ### About menu option
 For further development, including an About option would to provide more information about the various releases and other information
@@ -432,6 +378,6 @@ The code is available on GitHub, such that developers can view, fork, and contri
 [*Back to top*](#)
 
 ## Documentation version
-Last updated: July 12, 2024
+Last updated: October 19, 2024
 
 [*Back to top*](#)
