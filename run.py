@@ -668,7 +668,8 @@ def delete_task(user_data: dict,
                 for k, task_idx in enumerate(task_remove_idx):
                     row_to_delete = task_idx + 1 - reduce_idx
                     worksheet.delete_rows(row_to_delete)
-                    print(f'Task {k + 1} deleted.')
+                    # print(f'Task {k + 1} deleted.')
+                    print(f'Task {task_idx} deleted.')
                     reduce_idx += 1
 
                 # Check if there is any task left, otherwise exit function:
