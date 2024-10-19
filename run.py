@@ -165,7 +165,6 @@ def validate_username(username_column: list[str]) -> str:
             print(f'{e}. Please try again!')
     return new_user_name
 
-
 def validate_user_email(user_email_column: list[str]) -> str:
     '''
     Check if the string contains a valid email address
@@ -784,7 +783,7 @@ def delete_account(**kwargs) -> bool:
 def validate_new_task_description() -> list[str]:
     '''
     Validates the task description entry.
-    The task description must be non-empty and have maximum 44 characters.
+    The task description must be non-empty and have maximum 35 characters.
 
     Returns a list containing the new task definition:
         - task_id:str ---> task id
@@ -795,7 +794,7 @@ def validate_new_task_description() -> list[str]:
     '''
     while True:
 
-        new_task = input('Enter a new task (maximum 44 characters): \n')
+        new_task = input('Enter a new task (maximum 35 characters): \n')
 
         # Smooth application exit:
         smooth_exit(new_task)
@@ -804,8 +803,8 @@ def validate_new_task_description() -> list[str]:
             print('A new task cannot be empty. Please try again.')
         elif len(new_task) < 3:
             print(f'Task description too short: {len(new_task)} characters.')
-        elif len(new_task) > 44:
-            print(f'The task contains {len(new_task) - 44} extra characters.')
+        elif len(new_task) > 35:
+            print(f'The task contains {len(new_task) - 35} extra characters.')
         else:
             break
 
@@ -899,6 +898,8 @@ def add_task(**kwargs) -> dict:
     users_worksheet.update_cell(row_index,
                                 column_index,
                                 int(user_row['tasks']))
+
+    print('New task added successfully')
 
     return dict(zip(TASK_HEADER, task_info))
 

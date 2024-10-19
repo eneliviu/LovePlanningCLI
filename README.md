@@ -61,7 +61,8 @@ During iterations, the overview over the app development was guided using Lucid 
 
 ### **1. A user-friendly interface**
 
-***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.
+***LovinPlans*** is a CLI application that provides an intuitive usage experience through console dialogs.  
+Short demos for the app usage are provided in the [Usage](#usage) section.
 
 - The app opens with a Main Menu than provides the following options:
     - 1 (User Login): Login of regsitered users via username and password;
@@ -127,11 +128,10 @@ By convention, the registered usernames are used for labeling the dedicated user
 *<font color="red">LovinPlans</font>: User account deletion.*<br>
 
 
-
 ### **4. Task Creation and Editing**
 - Users can effortlessly create new tasks and edit existing ones with just a few clicks.
 - The process of creating a new task requires:
-    - a (non-empty) text input of maximum 44 characters
+    - a (non-empty) text input of maximum 35 characters
     - a due date specification using the MM-DD-YYYY formatting (e.g., 12-30-2024)
 - By default, all newly created tasks receive an 'active' status
 - The current local time is also registered in the user worksheet to allow tracking of the overdue tasks.
@@ -192,7 +192,6 @@ Exception handling examples:
 ### **10. Cross-Platform Accessibility**
 - The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.
 
-Short demos for the app usage are provided in the [Usage](#usage) section.
 
 [*Back to top*](#)
 
@@ -270,14 +269,10 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 
 ## Usage
+- The user registraton process: [***here.***](assets/giffs/user-registration.gif)
+- Adding and removing tasks: [***here.***](assets/giffs/user-login-add-delete-task.gif)
+- Deleting user account: [***here.***](assets/giffs/Demo-functionality-task-delete.gif)
 
-- A quick demonstration of using the app for viewing the user tasks can be found here: [***here.***](assets/giffs/Demo-functionality.gif)
-
-- The user registraton process can be found here: [***here.***](assets/giffs/Demo-functionality-registration.gif)
-
-- An example for the task deletion process can be found here: [***here.***](assets/giffs/Demo-functionality-task-delete.gif)
-
-- An example for adding a new task can be found here: [***here.***](assets/giffs/Demo-functionality-task-add.gif)
 
 
 [*Back to top*](#)
@@ -301,7 +296,7 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 | &nbsp;&nbsp;- *Email validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | &nbsp;&nbsp;- *App awaits for valid input* | Error message sent to the user if the user inputs are not valid | Entry valid and invalid user inputs and check if the correct exceptions are raised|![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `Add a new task` | **User can add a new task**
-| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Check and raise error for empty input, text length less 3 characters or more than 40 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Check and raise error for empty input, text length between 3-35 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Check and raise error for invalid date format or for past dates |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | &nbsp;&nbsp;- *Task update* | Increment number of tasks and task ID in 'users' sheet | Check for task id increment when adding new tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | &nbsp;&nbsp;- *Task status* | Mark overdue tasks | Check for change of the cell background color from <span style="background-color:white"><span style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> to <span style="background-color:rgb(255, 132, 136)"><span style="color:rgb(255, 132, 136)">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> for the overdue tasks |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
