@@ -40,7 +40,7 @@ Below are examples of some of the user stories that guided the development proce
 - As a user, I want to clean up the console before I access another user menu option.
 - As a user, I want to see clearly the overdue tasks.
 
-The progress was nonlinear, with many bugs that occured and quite painful code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.
+The development process faced several challenges, including numerous bugs and the need for code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.
 
 During iterations, the overview over the app development was guided using Lucid wireframes like the one shwon below:
 
@@ -58,8 +58,7 @@ During iterations, the overview over the app development was guided using Lucid 
 
 - The app opens with a Main Menu than provides the following options:
     - 1 (User Login): Login of regsitered users via username and password;
-    - 2 (Register a new user): Requires a valid username, password and email address to creates a user profile
-        and a dedicated user worksheet for storing the tasks;
+    - 2 (Register a new user): Requires a valid username, password and email address to creates a user profile and a dedicated user worksheet for storing the tasks;
     - 3 (Help): Show the help menu content for running the application;
     - 4 (Exit): Gracefully exiting the application.
 
@@ -163,7 +162,7 @@ More details about the app functionality are provided in the [Usage and screensh
 
 
 ## Technologies Used
-The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that (***hopefully***) adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script.
+The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script for running the CLI application.
 
 ### Python call stack
 The script contains the following main sections:
@@ -195,17 +194,17 @@ The extrenal modules were installed locally via `pip install` command in the VSC
 
 
 ### Google Sheets
-- The application uses Google Sheets for storin agd retrieveing user information.
-- The google-auth and google-auth-oauthlib Python modules are used for authorization and authentication
+- The application uses Google Sheets for storage and retrieval of user information.
+- The `google-auth` and `google-auth-oauthlib` Python modules are used for authorization and authentication
 - The API calls are run performed using the gspread and gspread_formatting Python modules
 
 ### Local Development and deployment
 The application developement was done using the The Visual Studio Code ([`VScode`](https://code.visualstudio.com/)) IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed. The `VScode` linters [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) and [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) were manually installed and used for checking the Python code style follows the PEP8 conventions.
 
 
-The app can be run locally using the
+The app can be run locally (VSCode) using the
 ```
-python python run.py
+python run.py
 ```
 command in the terminal.
 
@@ -221,7 +220,7 @@ For cloud deployment, the [dependency requirements file](requirements.txt) was c
 ```
 pip freeze > requirements.txt
 ```
-command in the VSCode PowerShell.
+command in the terminal (VSCode).
 
 The app is currently deployed on github and can be accessed at: https://love-planning-cli-f243068a58dc.herokuapp.com/.
 
@@ -285,6 +284,60 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 | &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) extension raises a warning on using more than 1000 lines of code| ![warning](https://via.placeholder.com/10/ff8c00?text=+) `warning` `Too many lines in module (1127/1000)`|
 | &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions |Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
 ---
+
+
+
+
+
+| Feature | Expected behaviour | Test | Status |
+| --- | --- | --- | --- |
+| `User login` | **User information retrieved, user can login**
+| &nbsp;&nbsp;- *Username validation* | Username matched in 'users' worksheet | Try empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Password validation* | Password matched in 'users' worksheet | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Email address validation* |Email address matched in 'users' worksheet | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `User registration` | **New user can open account and login**
+| &nbsp;&nbsp;- *Username validation* | Accept a valid username | Non-empty user input | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Username validation* | Accept a valid password | Min. 8 characters, 1 capital letter, 2 numerals |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Username validation* | Accept a valid email address | Valid format (name, @, and domain) |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Add a new task` | **User can add a new task**
+| &nbsp;&nbsp;- *Task description* | Accept a valid task description | Checks and raises error for empty input, text length less 3 characters or more than 40 characters |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task update* | Increment number of tasks and task ID in 'users' sheet | Entry new user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task status* | Mark overdue tasks | Change the cell background color from <span style="background-color:white"><span style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> to <span style="background-color:rgb(255, 132, 136)"><span style="color:rgb(255, 132, 136)">&nbsp;&nbsp;&nbsp;&nbsp;</span></span> for the overdue tasks |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Delete task` | **User can remove a task**
+| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Due date validation* | Accept a valid due date | Valid date format, and not prior to the current date |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Task update* | Decrement number of tasks in 'users' sheet, and update task ID in the user's private sheet | Delete user tasks |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Delete user account` | **User can delete its own account**
+| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/o` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Delete private user worksheet* | Delete the user worksheet | Try to delete user worksheets using correct and wrong worksheet names |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Delete info from 'users' worksheet* | Delete user information (row) and update the 'users' sheet | Delete user account |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Clear the terminal` | **User can clear the terminal**
+| &nbsp;&nbsp;- *User confirmation* | User confirmation (yes/no) required, delete task if `y` and return to `User menu` if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Application exit (Menu option)` | **User can clear the terminal**
+| &nbsp;&nbsp;- *Exiting from the `Main Menu`* | User confirmation (yes/no) required, clear if `y` and stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *Exiting from the `User Menu`* | User confirmation (yes/no) required, delete task if `y` stay in the loop if `n` | Enter valid `y/n` and invalid user inputs |![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *App awaits for valid input* | App runs until the the user inputs are valid | Entry valid and invalid user inputs |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `Forced exit` | **User can force the App to exit with the menu Exit option**
+| &nbsp;&nbsp;- *Exiting the app from the `Main Menu`* | App exits when the user enters the number indicated by the `Exit`- menu option | Check if the user input corresponds to the `Exit`- menu option. Exits for correct input, or stays in the loop otherwise | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| `PEP8 code style conventions` | **Code syle follows the PEP8 conventions**
+| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) extension - no problems found| ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass`|
+| &nbsp;&nbsp;- *`VSCode` linters compatibilty* | Feedback on code quality according to PEP8 conventions | [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) extension raises a warning on using more than 1000 lines of code| ![warning](https://via.placeholder.com/10/ff8c00?text=+) `warning` `Too many lines in module (1127/1000)`|
+| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions |Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
+---
+
+
+
+
+
+
+
 
 ### Additional testing
 

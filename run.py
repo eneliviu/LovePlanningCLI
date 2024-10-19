@@ -140,8 +140,8 @@ def validate_user_password(**kwargs) -> str:
 def validate_username(username_column: list[str]) -> str:
     '''
     Validate the user input for login option:
-    - The name and passord strings must not be empty;
-    - The input must contain two strings separated by comma;
+    - The name string must be non-empty;
+    - The name string must contain at most 25 chars;
     It applies to registered users, as well as to new users trying to register.
 
     Returns a valid user name as a string.
@@ -153,6 +153,8 @@ def validate_username(username_column: list[str]) -> str:
         try:
             if len(new_user_name) == 0:
                 raise ValueError('Username must not be empty')
+            elif len(new_user_name) > 25:
+                raise ValueError('Username must contain at most 25 chars')
             elif new_user_name in username_column[-1]:
                 raise ValueError('Username not available')
             else:
@@ -371,10 +373,11 @@ def get_row(**kwargs) -> list:
 
 def get_user_info(**kwargs) -> dict:
     '''
-    Returns a dictionary with the user info from the 'users' worksheet.
-    Can be handy when there are many registered users since it does not require
-    to import the entire worksheet data. Notice that the for Google Sheets,
-    the row numbers start at 1, while Python list indexes are 0-based.
+    Returns a dictionary with the user info from the specified worksheet.
+    This can be useful when there are many registered users since it doesn't
+    require importing the entire worksheet data.
+    - Note that in Google Sheets, row numbers start at 1,
+      whereas Python list indexes are 0-based.
 
     Arguments:
     * worksheet_name: str ---> worksheet name
@@ -385,33 +388,35 @@ def get_user_info(**kwargs) -> dict:
     Returns a dictonary:
     - keys:str ---> the worksheet column names
     - values:str ---> user records.
-
     '''
 
     try:
-        # if type(kwargs['worksheet']) == gspread.worksheet.Worksheet:
-        #     wksheet = kwargs['worksheet']
-        # if type(kwargs['worksheet']) == str:
-        #     wksheet = SHEET.worksheet(kwargs['worksheet'])
-        if isinstance(kwargs['worksheet'], gspread.worksheet.Worksheet):
+        wksheet = kwargs['worksheet']
+        if isinstance(wksheet, gspread.worksheet.Worksheet):
             wksheet = kwargs['worksheet']
-        if isinstance(kwargs['worksheet'], str):
+        elif isinstance(wksheet, str):
             wksheet = SHEET.worksheet(kwargs['worksheet'])
+        else:
+            raise ValueError("Invalid worksheet type")
+
+        # Get the 'user_name' column from the 'users'-worksheet:
+        users_col, _ = get_column(
+                            worksheet=wksheet,
+                            column_name=kwargs['column_name'],
+                            header=kwargs['header']
+                        )
+        # Retrieve the row containig the user information from
+        # 'users'-worksheet:
+        user_info, _ = get_row(
+                            worksheet=wksheet,
+                            worksheet_column_data=users_col,
+                            user_name=kwargs['user_name']
+                        )
+        return dict(zip(USER_HEADER, user_info))
+
     except TypeError as e:
         print(f'Something went wrong: {e}. Please try again!')
         sys.exit(1)
-
-    # Get the 'user_name' column from the 'users'-worksheet:
-    users_col, _ = get_column(worksheet=wksheet,
-                              column_name=kwargs['column_name'],
-                              header=kwargs['header'])
-
-    # Retrieve the row containig the user information from 'users'-worksheet:
-    user_info, _ = get_row(worksheet=wksheet,
-                           worksheet_column_data=users_col,
-                           user_name=kwargs['user_name'])
-
-    return dict(zip(USER_HEADER, user_info))
 
 
 def tasks_list(user_data: dict,
@@ -469,23 +474,31 @@ def user_login(**kwargs) -> list:
             user_name = user_input[0].strip()
             user_password = user_input[1].strip()
 
-            users_col, _ = get_column(worksheet=wksheet,
-                                      column_name=kwargs['user_column_name'],
-                                      header=kwargs['header'])
+            users_col, _ = get_column(
+                                worksheet=wksheet,
+                                column_name=kwargs['user_column_name'],
+                                header=kwargs['header']
+                            )
 
-            passwords_col, _ = get_column(worksheet=wksheet,
-                                          column_name=kwargs['password_column_name'],
-                                          header=kwargs['header'])
+            passwords_col, _ = get_column(
+                                    worksheet=wksheet,
+                                    column_name=kwargs['password_column_name'],
+                                    header=kwargs['header']
+                                )
 
-            if match_user_credentials(users_col=users_col,
-                                      passwords_col=passwords_col,
-                                      user_name=user_name,
-                                      user_password=user_password):
+            if match_user_credentials(
+                                    users_col=users_col,
+                                    passwords_col=passwords_col,
+                                    user_name=user_name,
+                                    user_password=user_password
+                                ):
                 # Get the user data from the 'users' Google worksheet:
-                user_data = get_user_info(worksheet=wksheet,
-                                          column_name=kwargs['user_column_name'],
-                                          user_name=user_name,
-                                          header=kwargs['header'])
+                user_data = get_user_info(
+                                worksheet=wksheet,
+                                column_name=kwargs['user_column_name'],
+                                user_name=user_name,
+                                header=kwargs['header']
+                            )
 
                 # Check for overdue tasks at login:
                 sort_tasks_by_datetime(SHEET.worksheet(user_data['user_name']))
@@ -740,9 +753,11 @@ def delete_account(**kwargs) -> bool:
 
             # Update the 'user_id'-column from the 'users'-worksheet:
             user_id_column, \
-                column_idx = get_column(worksheet=users_worksheet,
-                                        column_name=kwargs['user_id_column_name'],
-                                        header=kwargs['header'])
+                column_idx = get_column(
+                            worksheet=users_worksheet,
+                            column_name=kwargs['user_id_column_name'],
+                            header=kwargs['header']
+                        )
             # user_id_column[1:] = [i + 1
             # for i in range(len(user_id_column[1:]))]
             user_id_column[1:] = [i + 1
@@ -859,9 +874,8 @@ def add_task(**kwargs) -> dict:
                                            column_name='task_id',
                                            header=TASK_HEADER)
         for k in range(len(taskid_col[1:])):
-            SHEET.worksheet(kwargs['user_data']['user_name']).update_cell(k+2,
-                                                                          column_id,
-                                                                          k+1)
+            SHEET.worksheet(kwargs['user_data']['user_name']).\
+                update_cell(k+2, column_id, k+1)
 
     # Update the  number of tasks in the 'tasks' column
     # from the 'users'- worksheet:
@@ -901,17 +915,20 @@ def main_menu() -> int:
     Returns an integer in range 1-4.
     '''
     while True:
-        input_option = input('Select: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): \n')
+        input_option = input('Select: 1 (User Login), 2 (Register User),\
+                            3 (Help), 4 (Exit): \n')
 
         # Smooth application exit:
         smooth_exit(input_option)
 
         if not input_option.isdigit():
             print('Invalid choice!\n'
-                  'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): \n')
+                  'Valid options: 1 (User Login), 2 (Register User),\
+                    3 (Help), 4 (Exit): \n')
         elif input_option.isdigit() and int(input_option) not in range(1, 5):
             print('Invalid choice!\n'
-                  'Valid options: 1 (User Login), 2 (Register User), 3 (Help), 4 (Exit): \n')
+                  'Valid options: 1 (User Login), 2 (Register User),\
+                    3 (Help), 4 (Exit): \n')
         else:
             break
 
@@ -935,37 +952,47 @@ def handle_input_options(**kwargs) -> None:
     while True:
         if kwargs['input_option'] == 1:  # USER LOGIN
 
-            user_data = user_login(worksheet_name=kwargs['users_worksheet_name'],
-                                   user_column_name=kwargs['user_column_name'],
-                                   password_column_name=kwargs['user_password_name'],
-                                   header=kwargs['user_header'])
+            user_data = user_login(
+                            worksheet_name=kwargs['users_worksheet_name'],
+                            user_column_name=kwargs['user_column_name'],
+                            password_column_name=kwargs['user_password_name'],
+                            header=kwargs['user_header']
+                        )
 
-            task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                         user_column_name=kwargs['user_column_name'],
-                         user_data=user_data,
-                         user_header=kwargs['user_header'],
-                         task_header=kwargs['task_header'])
+            task_handler(
+                    users_worksheet_name=kwargs['users_worksheet_name'],
+                    user_column_name=kwargs['user_column_name'],
+                    user_data=user_data,
+                    user_header=kwargs['user_header'],
+                    task_header=kwargs['task_header']
+                )
             break
         elif kwargs['input_option'] == 2:  # REGISTER NEW USER
             user_data = new_user_registration()
-            task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                         user_column_name=kwargs['user_column_name'],
-                         user_data=user_data,
-                         user_header=kwargs['user_header'],
-                         task_header=kwargs['task_header'])
+            task_handler(
+                users_worksheet_name=kwargs['users_worksheet_name'],
+                user_column_name=kwargs['user_column_name'],
+                user_data=user_data,
+                user_header=kwargs['user_header'],
+                task_header=kwargs['task_header']
+            )
             break
         elif kwargs['input_option'] == 3:  # HELP MENU
             clear_output('y')
             user_help()
-            clear_output(input('\nPress y (Yes) to clear the output, or n (No) otherwise.\n'
-                               '(Enter Exit to cancel): \n'))
+            clear_output(
+                input('\nPress y (Yes) to clear console, or n (No) otherwise.'
+                      '\n(Enter Exit to cancel): ')
+            )
 
-            handle_input_options(input_option=main_menu(),
-                                 users_worksheet_name=kwargs['users_worksheet_name'],
-                                 user_column_name=kwargs['user_column_name'],
-                                 user_password_name=kwargs['user_password_name'],
-                                 user_header=kwargs['user_header'],
-                                 task_header=kwargs['task_header'])
+            handle_input_options(
+                input_option=main_menu(),
+                users_worksheet_name=kwargs['users_worksheet_name'],
+                user_column_name=kwargs['user_column_name'],
+                user_password_name=kwargs['user_password_name'],
+                user_header=kwargs['user_header'],
+                task_header=kwargs['task_header']
+            )
         else:  # Exit app
             print('You are now logged out.\n')
             sys.exit(0)
@@ -987,16 +1014,19 @@ def task_handler(**kwargs) -> None:
     '''
 
     print('\nSelect an option:')
-    print('1(View tasks), 2(Add task), 3(Delete task), 4(Delete account) 5(Exit): ')
+    print('1(View tasks), 2(Add task), 3(Delete task),\
+        4(Delete account) 5(Exit): ')
 
     while True:
         user_choice = input()
         if not user_choice.isdigit():
             print('Invalid selection! Please select a valid option:')
-            print('1(View tasks), 2(Add task), 3(Delete task), 4(Delete account) 5(Exit).')
+            print('1(View tasks), 2(Add task), 3(Delete task),\
+                4(Delete account) 5(Exit).')
         elif int(user_choice) not in range(1, 6):
             print('Invalid selection! Please select a valid option:')
-            print('1(View tasks), 2(Add task), 3(Delete task), 4(Delete account) 5(Exit).')
+            print('1(View tasks), 2(Add task), 3(Delete task),\
+                4(Delete account) 5(Exit).')
         else:
             user_choice = int(user_choice)
             if user_choice == 1:  # View tasks
@@ -1005,39 +1035,51 @@ def task_handler(**kwargs) -> None:
                 if int(kwargs['user_data']['tasks']) == 0:
                     print('You have no scheduled tasks.\n')
                     clear_output(
-                        input('\nPress y(Yes) to clear console, or n(No) otherwise: \n')
+                        input('\nPress y(Yes) to clear console,\
+                            or n(No) otherwise: ')
                         )
-                    task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                                 user_column_name=kwargs['user_column_name'],
-                                 user_data=kwargs['user_data'],
-                                 user_header=kwargs['user_header'],
-                                 task_header=kwargs['task_header'])
+                    task_handler(
+                        users_worksheet_name=kwargs['users_worksheet_name'],
+                        user_column_name=kwargs['user_column_name'],
+                        user_data=kwargs['user_data'],
+                        user_header=kwargs['user_header'],
+                        task_header=kwargs['task_header']
+                        )
                 else:
                     print('Your tasks are listed below:')
                     print(tabulate(task_info,
                                    headers="keys",
                                    numalign="center"))
                     clear_output(
-                        input('\nPress y(Yes) to clear console, or n(No) otherwise: \n')
+                        input('\nPress y(Yes) to clear console,\
+                            or n(No) otherwise: \n')
                         )
-                    task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                                 user_data=kwargs['user_data'],
-                                 user_column_name=kwargs['user_column_name'],
-                                 user_header=kwargs['user_header'],
-                                 task_header=kwargs['task_header'])
+                    task_handler(
+                        users_worksheet_name=kwargs['users_worksheet_name'],
+                        user_data=kwargs['user_data'],
+                        user_column_name=kwargs['user_column_name'],
+                        user_header=kwargs['user_header'],
+                        task_header=kwargs['task_header']
+                    )
             elif user_choice == 2:  # Add a new task
-                add_task(users_worksheet_name=kwargs['users_worksheet_name'],
-                         user_data=kwargs['user_data'],
-                         header=kwargs['task_header'])
-                user_data = get_user_info(worksheet=kwargs['users_worksheet_name'],
-                                          column_name=kwargs['user_column_name'],
-                                          user_name=kwargs['user_data']['user_name'],
-                                          header=kwargs['user_header'])
-                task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                             user_column_name=kwargs['user_column_name'],
-                             user_data=user_data,
-                             user_header=kwargs['user_header'],
-                             task_header=kwargs['task_header'])
+                add_task(
+                    users_worksheet_name=kwargs['users_worksheet_name'],
+                    user_data=kwargs['user_data'],
+                    header=kwargs['task_header']
+                )
+                user_data = get_user_info(
+                                worksheet=kwargs['users_worksheet_name'],
+                                column_name=kwargs['user_column_name'],
+                                user_name=kwargs['user_data']['user_name'],
+                                header=kwargs['user_header']
+                            )
+                task_handler(
+                    users_worksheet_name=kwargs['users_worksheet_name'],
+                    user_column_name=kwargs['user_column_name'],
+                    user_data=user_data,
+                    user_header=kwargs['user_header'],
+                    task_header=kwargs['task_header']
+                )
             elif user_choice == 3:  # Delete task
                 tasks, task_info = tasks_list(kwargs['user_data'],
                                               kwargs['task_header'])
@@ -1049,35 +1091,42 @@ def task_handler(**kwargs) -> None:
                             tasks,
                             task_info)
                 clear_output(
-                    input('\nPress y (Yes) to clear console, or n (No) otherwise: \n')
+                    input('\nPress y (Yes) to clear console,\
+                        or n (No) otherwise: \n')
                     )
 
-                user_data = get_user_info(worksheet=kwargs['users_worksheet_name'],
-                                          column_name=kwargs['user_column_name'],
-                                          user_name=kwargs['user_data']['user_name'],
-                                          header=kwargs['user_header'])
-                task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                             user_column_name=kwargs['user_column_name'],
-                             user_data=user_data,
-                             user_header=kwargs['user_header'],
-                             task_header=kwargs['task_header'])
+                user_data = get_user_info(
+                                worksheet=kwargs['users_worksheet_name'],
+                                column_name=kwargs['user_column_name'],
+                                user_name=kwargs['user_data']['user_name'],
+                                header=kwargs['user_header']
+                            )
+                task_handler(
+                    users_worksheet_name=kwargs['users_worksheet_name'],
+                    user_column_name=kwargs['user_column_name'],
+                    user_data=user_data,
+                    user_header=kwargs['user_header'],
+                    task_header=kwargs['task_header']
+                )
             elif user_choice == 4:  # Delete user account
                 account_deleted = delete_account(
-                                                 users_worksheet_name=kwargs['users_worksheet_name'],
-                                                 user_name=kwargs['user_data']['user_name'],
-                                                 user_column_name='user_name',
-                                                 user_id_column_name='user_id',
-                                                 header=kwargs['user_header']
-                                                 )
+                        users_worksheet_name=kwargs['users_worksheet_name'],
+                        user_name=kwargs['user_data']['user_name'],
+                        user_column_name='user_name',
+                        user_id_column_name='user_id',
+                        header=kwargs['user_header']
+                    )
                 if account_deleted:
                     print('You are now logged out.\n')
                     sys.exit(0)
                 else:
-                    task_handler(users_worksheet_name=kwargs['users_worksheet_name'],
-                                 user_column_name=kwargs['user_column_name'],
-                                 user_data=kwargs['user_data'],
-                                 user_header=kwargs['user_header'],
-                                 task_header=kwargs['task_header'])
+                    task_handler(
+                        users_worksheet_name=kwargs['users_worksheet_name'],
+                        user_column_name=kwargs['user_column_name'],
+                        user_data=kwargs['user_data'],
+                        user_header=kwargs['user_header'],
+                        task_header=kwargs['task_header']
+                    )
             else:
                 print('You exited the application.\n')
                 sys.exit(0)
