@@ -8,4 +8,5 @@ node_modules/
 .github/
 creds.json
 test.py
-run_copy.py
+run_v1.py
+run_v2.py
