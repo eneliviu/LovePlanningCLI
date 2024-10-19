@@ -72,7 +72,7 @@ During iterations, the overview over the app development was guided using Lucid 
     - 4 (Delete account): Delete user account;
     - 5 (Exit): Return to the main menu.
 
-![User menu](/assets/images/user-menu.png) <br>
+![User menu](/assets/images/start-screen.webp) <br>
 *<font color="red">LovinPlans</font>: User menu configuration.*<br>
 
 - In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options. In the script, the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
@@ -122,14 +122,14 @@ By convention, the registered usernames are used for labeling the dedicated user
 - The user tasks are printed on the terminal using the tabulate Python module that allows formatting the output as a table.
 - The task viewing functionality is also available for listing the available tasks before selecting the ones to be removed.
 
-![Tasks view](/assets/images/tasks-view.png) <br>
+![Tasks view](/assets/images/view-tasks.webp) <br>
 *<font color="red">LovinPlans</font>: Printing the user tasks on the Herou console.*<br>
 
 ### **Clear the terminal option**
 - After each main operation such views or multiple entries during user registation or task deletion, the app provides the option to clear the terminal to eliminate the cluttering provide a positive UX to the user.
 - This also allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
 
-![Clear terminal](/assets/images/clear.png) <br>
+![Clear terminal](/assets/images/clean-console.webp) <br>
 *<font color="red">LovinPlans</font>: Option to clear the terminal.*<br>
 
 ### **6. Help Menu**

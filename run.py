@@ -56,11 +56,13 @@ def validate_static_options(remove_choice: str,
     '''
     while True:
         smooth_exit(remove_choice)
-
         if remove_choice.lower() not in options:
-            remove_choice = input('Invalid option: press y(Yes) to proceed, \
-                                    or n(No) to return. \
-                                    (Enter Exit to cancel): \n')
+            remove_choice = input(
+                                'Invalid option:\n'
+                                '   Press y(Yes) to proceed\n'
+                                '   Press n(No) to return.\n'
+                                '   Enter Exit to cancel: '
+                            )
         else:
             break
 
@@ -1017,13 +1019,20 @@ def task_handler(**kwargs) -> None:
     while True:
         user_choice = input()
         if not user_choice.isdigit():
-            print('Invalid selection! Please select a valid option:')
-            print('1(View tasks), 2(Add task), 3(Delete task),\
-                4(Delete account) 5(Exit).')
+            print(
+                'Invalid choice! Please select a valid option:\n'
+                '   1 (View tasks)\n'
+                '   2 (Add task)\n'
+                '   3 (Delete task)\n'
+                '   4 (Delete account)\n'
+                '   5 (Exit): \n'
+            )
         elif int(user_choice) not in range(1, 6):
-            print('Invalid selection! Please select a valid option:')
-            print('1(View tasks), 2(Add task), 3(Delete task),\
-                4(Delete account) 5(Exit).')
+            print('Invalid choice! Please select a valid option:')
+            print(
+             '''1(View tasks) 2(Add task) 3(Delete task) 4(Delete account)
+                5(Exit)'''
+            )
         else:
             user_choice = int(user_choice)
             if user_choice == 1:  # View tasks
