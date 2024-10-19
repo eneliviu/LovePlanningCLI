@@ -7,6 +7,7 @@
 - [Application development](#application-development)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
+- [Usage](#usage)
 - [Manual testing](#manual-testing)
 - [Known bugs and issues](#known-bugs-and-issues)
 - [Possible improvements](#possible-improvements)
@@ -21,26 +22,32 @@ This application was developed as part of Milestone Project 3 for the Diploma in
 
 The main purpose of this project is to build an interactive command line application utilizing the Python programming language.
 
-The result of the project is the ***LovinPlans*** command line interface (CLI) application that allows the user to dynamically create and edit a simple TODO list, and to follow-up the tasks as they are being executed.
+The result of the project is the ***LovinPlans*** command line interface (CLI) application that allows the user to dynamically  
+create and edit a simple TODO list, and to follow-up the tasks as they are being executed.
 
-***LovinPlans*** is a user-friendly CLI app that demonstrates how to create, edit, and track tasks effortlessly with the purpose to help the users to stay focused and productive. Nevertheless, the app is not a fully developed product, but rather a proof of acquired Python programming skills compatible to the Milestone Project 3 requirements.
+***LovinPlans*** is a user-friendly CLI app that demonstrates how to create, edit, and track tasks effortlessly with the purpose  
+to help the users to stay focused and productive. Nevertheless, the app is not a fully developed product, but rather a proof of acquired  
+Python programming skills compatible to the Milestone Project 3 requirements.
 
 ### Target audience
-Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution. These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.
+Theoretically, the the ***LovinPlans*** app is designed to cater to a diverse range of users seeking a simple yet powerful task management solution.  
+These user stories helped shape the functionality and usability of our CLI application, ensuring it meets the needs of its users effectively.  
 
-The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity. Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
+The target audience for the app includes tech-savvy, goal-oriented, and organized individuals who prioritize personal productivity.  
+Furthermore, the app is designed to be inclusive, aiming to accommodate users from diverse geographic regions, cultures, and backgrounds worldwide.
 
 
 ## Application development
-This Python CLI application has been developed iteratively, following basic Agile development principles.
-While still in the learning phase of Agile methodologies, I mostly focused on implementing a small number of user stories per iteration.
-Below are examples of some of the user stories that guided the development process:
+This Python CLI application has been developed iteratively, following basic Agile development principles.  
+While still in the learning phase of Agile methodologies, I mostly focused on implementing a small number of  
+user stories per iteration. Below are examples of some of the user stories that guided the development process:
 - As a potential user, I need to register and to set up a user profile.
 - As a registered user, I want to be able to delete my acount.
 - As a user, I want to clean up the console before I access another user menu option.
 - As a user, I want to see clearly the overdue tasks.
 
-The development process faced several challenges, including numerous bugs and the need for code refactoring to adhere to the DRY (Don't Repeat Yourself) principles.
+The development process faced several challenges, including numerous bugs and the need for code refactoring to adhere  
+to the DRY (Don't Repeat Yourself) principles.
 
 During iterations, the overview over the app development was guided using Lucid wireframes like the one shwon below:
 
@@ -58,11 +65,12 @@ During iterations, the overview over the app development was guided using Lucid 
 
 - The app opens with a Main Menu than provides the following options:
     - 1 (User Login): Login of regsitered users via username and password;
-    - 2 (Register a new user): Requires a valid username, password and email address to creates a user profile and a dedicated user worksheet for storing the tasks;
+    - 2 (Register a new user): Requires a valid username, password and email address to creates a user profile and  
+    a dedicated user worksheet for storing the tasks;
     - 3 (Help): Show the help menu content for running the application;
     - 4 (Exit): Gracefully exiting the application.
 
-![Main menu](/assets/images/main-menu.png#center)
+![Main menu](/assets/images/start-screen.webp#center)
 *<center><font color="red">LovinPlans</font>: App initialization and main menu configuration*.</center><br>
 
 - After the Login, the User Menu section handles the following options for the registered users:
@@ -72,14 +80,16 @@ During iterations, the overview over the app development was guided using Lucid 
     - 4 (Delete account): Delete user account;
     - 5 (Exit): Return to the main menu.
 
-![User menu](/assets/images/start-screen.webp) <br>
+![User menu](/assets/images/user-login-1.webp) <br>
 *<font color="red">LovinPlans</font>: User menu configuration.*<br>
 
-- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options. In the script, the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
-- The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes a Help Menu option that offers a quick tour of the app's functionality (more details in the [Help Menu](#help-menu) section).
+- In addition, the users can invoque forced exit by entering 'exit' from the keyboard instead of the suggested options.  
+    In the script, the forced exit calls the sys.exit(0) Python routine to close the app gracefully.
+- The app is user-friendly and easy to start using without a steep learning curve. To assist new users, the Main Menu includes  
+    a Help Menu option that offers a quick tour of the app's functionality (more details in the [Help Menu](#help-menu) section).
+
 
 ### **2. Use of Google Sheets**
-
 The user information and the TODO lists are stored in a dedicated document hosted by Google Sheets.
 The app uses two categories of worksheets:
 - users-worksheet for storing the user login information and contact details such as:
@@ -92,7 +102,7 @@ The app uses two categories of worksheets:
 ![users worksheet](/assets/images/users-worksheet.png) <br>
 *<font color="red">LovinPlans</font>: The 'users' worksheet containing the registered users profiles.*<br>
 
-- provate user worksheets for storing the user login information and contact details such as:
+- provide user worksheets for storing the user login information and contact details such as:
     - task id
     - task description
     - task creation date (MM-DD-YYYY format)
@@ -110,6 +120,14 @@ By convention, the registered usernames are used for labeling the dedicated user
     - a password  of at minimum eight chatacters, of which at least one capital letter and two numerals (e.g., Password12)
     - an email address with valid formatting (e.g., someone@somewhere.com) that passess the regex
 
+![Register new user](/assets/images/register-user.webp) <br>
+*<font color="red">LovinPlans</font>: New user registration.*<br>
+
+![Register new user](/assets/images/delete-account.webp) <br>
+*<font color="red">LovinPlans</font>: User account deletion.*<br>
+
+
+
 ### **4. Task Creation and Editing**
 - Users can effortlessly create new tasks and edit existing ones with just a few clicks.
 - The process of creating a new task requires:
@@ -117,6 +135,8 @@ By convention, the registered usernames are used for labeling the dedicated user
     - a due date specification using the MM-DD-YYYY formatting (e.g., 12-30-2024)
 - By default, all newly created tasks receive an 'active' status
 - The current local time is also registered in the user worksheet to allow tracking of the overdue tasks.
+
+
 
 ### **5 Task Views**
 - The user tasks are printed on the terminal using the tabulate Python module that allows formatting the output as a table.
@@ -126,7 +146,8 @@ By convention, the registered usernames are used for labeling the dedicated user
 *<font color="red">LovinPlans</font>: Printing the user tasks on the Herou console.*<br>
 
 ### **Clear the terminal option**
-- After each main operation such views or multiple entries during user registation or task deletion, the app provides the option to clear the terminal to eliminate the cluttering provide a positive UX to the user.
+- After each main operation such views or multiple entries during user registation or task deletion, the app provides the option  
+to clear the terminal to eliminate the cluttering provide a positive UX to the user.
 - This also allows the user to stay logged in and explore the app's functionality without being constrained by the terminal height.
 
 ![Clear terminal](/assets/images/clean-console.webp) <br>
@@ -134,8 +155,8 @@ By convention, the registered usernames are used for labeling the dedicated user
 
 ### **6. Help Menu**
 - The Help Menu provides a quick overview of the main app functionality.
-- The Help Menu content was printed using the user_help() function that opens and writes a Markdown file in the console, as described at
-[https://rich.readthedocs.io/en/stable/](https://rich.readthedocs.io/en/stable/console.html).
+- The Help Menu content was printed using the user_help() function that opens and writes a Markdown file in the console, as described
+[**here**](https://rich.readthedocs.io/en/stable/console.html).
 
 ![Help menu](/assets/images/help-menu.png)<br>
 *<font color="red">LovinPlans</font>: Help menu content.*<br>
@@ -143,26 +164,44 @@ By convention, the registered usernames are used for labeling the dedicated user
 ### **7. Task follow up**
 - The app allows users to enter task details such as the due date.
 - At login, the due date of each user task is checked against the curent date.
-- If a task has passed its due date, the task status changes from 'active' to 'overdue', and the overdue tasks are
-also marked with light red color background in the worksheet.
+- If a task has passed its due date, the task status changes from 'active' to 'overdue', and the overdue tasks are marked using  
+    light red color background in the worksheet.
 
 ### **8. Menu Navigation**
 - The app allows users to switch between menu options without exiting the application using recursive function calls.
 
 ### **9. Exception Handling**
 - A great deal of attention was put on handling exceptions in order to provide a positive UX.
-- The exception handling was implemented using try-except blocks for detect error during executions and provide relevant error messages to the user.
+- The exception handling was implemented using try-except blocks for detect error during executions and provide relevant  
+    error messages to the user.
+- The expected app behaviour is to remain in the loop until the correct input has been introduced by the user.
+
+Exception handling examples:
+
+![User menu](/assets/images/exception-handling-username-password.webp) <br>
+*<font color="red">LovinPlans</font>: Exception handling for wrong username and/or password at Login.*<br>
+
+
+![User menu](/assets/images/exception-handling-date-format.webp) <br>
+*<font color="red">LovinPlans</font>: Exception handling for wrong date format.*<br>
+
+![User menu](/assets/images/exception-handling-user-menu-choice.webp) <br>
+*<font color="red">LovinPlans</font>: Exception handling for invalid user menu choice.*<br>
+
 
 ### **10. Cross-Platform Accessibility**
 - The app can be used on any device (mobile, tablet, laptop/desktop) that is connected to internet.
 
-More details about the app functionality are provided in the [Usage and screenshots](#usage-and-screenshots) section.
+Short demos for the app usage are provided in the [Usage](#usage) section.
 
 [*Back to top*](#)
 
 
 ## Technologies Used
-The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop. The script utilizes a functional design approach that adheres to the DRY (Don't Repeat Yourself) principles. The structure of the app is provided in the [run.py file](run.py) that containts the Python script for running the CLI application.
+The app was written in Python 3.11.7 version using an external VSCode IDE on a Windows 11 desktop.  
+The script utilizes a functional design approach that adheres to the DRY (Don't Repeat Yourself) principles.  
+The structure of the app is provided in the [run.py file](run.py) that containts the Python script for  
+running the CLI application.
 
 ### Python call stack
 The script contains the following main sections:
@@ -199,7 +238,10 @@ The extrenal modules were installed locally via `pip install` command in the VSC
 - The API calls are run performed using the gspread and gspread_formatting Python modules
 
 ### Local Development and deployment
-The application developement was done using the The Visual Studio Code ([`VScode`](https://code.visualstudio.com/)) IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed. The `VScode` linters [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) and [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) were manually installed and used for checking the Python code style follows the PEP8 conventions.
+The application developement was done using the The Visual Studio Code ([`VScode`](https://code.visualstudio.com/)) IDE version 1.89.1.  
+with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed.  
+The `VScode` linters [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) and [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)  
+were manually installed and used for checking the Python code style follows the PEP8 conventions.
 
 
 The app can be run locally (VSCode) using the
@@ -227,9 +269,8 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 [*Back to top*](#)
 
 
-## Usage and screenshots
+## Usage
 
-### Demos
 - A quick demonstration of using the app for viewing the user tasks can be found here: [***here.***](assets/giffs/Demo-functionality.gif)
 
 - The user registraton process can be found here: [***here.***](assets/giffs/Demo-functionality-registration.gif)
@@ -238,11 +279,8 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 
 - An example for adding a new task can be found here: [***here.***](assets/giffs/Demo-functionality-task-add.gif)
 
+
 [*Back to top*](#)
-
-
-### Screenshots
-
 
 
 ## Manual testing:
@@ -297,13 +335,14 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 ### Additional testing
 
 #### Devices and browsers
-Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop), as well as
-on my smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers:
+Additional testing was performed by calling the application from my private devices operating on Windows 11 (desktop and laptop),  
+as well as on a smartphone (Samsung Galaxy S21) operating on Android OS, using the following web browsers:
 - Google Chrome: Version 129.0.6668.101 (Official Build) (64-bit)
 - Brave: version 1.70.126 Chromium: 129.0.6668.100 (Official Build) (64-bit)
 - Microsoft Edge: Version 130.0.2849.46 (Official build) (64-bit)
 
-Using the app on mobiles provides affects the UX due to difficulties with taking the inputs from user when using the mobile keyboard, and the poor text visibility.
+Using the app on mobiles provides affects the UX due to difficulties with taking the inputs from user when using the mobile keyboard,  
+and the poor text visibility.
 
 ## <font color="red">Known bugs and issues</font>
 - Switching back to the Main Menu from the User Menu not implemented yet;
