@@ -409,6 +409,7 @@ The code is available on GitHub, such that developers can view, fork, and contri
 - Printing the Markdown file in the console used for the Help-menu followed the expamples provided at https://rich.readthedocs.io/en/stable/console.html
 - Formatting the worksheet cell background color followed the examples from https://gspread-formatting.readthedocs.io/en/latest/#
 - The use of ChatGPT was restricted to getting sensible inputs for the text content in the Readme-file and for proof-checking the language.
+
 [*Back to top*](#)
 
 ## Documentation version
