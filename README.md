@@ -271,7 +271,7 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 ## Usage
 - The user registraton process: [***here.***](assets/giffs/user-registration.gif)
 - Adding and removing tasks: [***here.***](assets/giffs/user-login-add-delete-task.gif)
-- Deleting user account: [***here.***](assets/giffs/Demo-functionality-task-delete.gif)
+- Deleting user account: [***here.***](assets/giffs/delete-account.gif)
 
 
 
