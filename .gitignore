@@ -9,5 +9,6 @@ node_modules/
 .github/
 creds.json
 tests.py
+tests_v1.py
 run_v1.py
 run_v2.py

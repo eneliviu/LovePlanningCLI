@@ -165,6 +165,7 @@ def validate_username(username_column: list[str]) -> str:
             print(f'{e}. Please try again!')
     return new_user_name
 
+
 def validate_user_email(user_email_column: list[str]) -> str:
     '''
     Check if the string contains a valid email address
