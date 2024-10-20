@@ -237,18 +237,13 @@ The extrenal modules were installed locally via `pip install` command in the VSC
 - The API calls are run performed using the gspread and gspread_formatting Python modules
 
 ### Local Development and deployment
-The application developement was done using the The Visual Studio Code ([`VScode`](https://code.visualstudio.com/)) IDE version 1.89.1.  
-with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed.  
-The `VScode` linters [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) and [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint)  
-were manually installed and used for checking the Python code style follows the PEP8 conventions.
+The application developement was done using the The Visual Studio Code ([`VScode`](https://code.visualstudio.com/)) IDE version 1.89.1. with the [Microsoft Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) installed. A virtual environment `.venv` was created in the root project directory using the `requirements.txt` file. The `VScode` linters [Flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8) and [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint) extensions were manually installed and used for checking the Python code style follows the PEP8 conventions.
 
 
-The app can be run locally (VSCode) using the
+The app can be run locally (VSCode) using the following command in the terminal:
 ```
 python run.py
 ```
-command in the terminal.
-
 
 ### Markdown
 The Markdown formatting for README.md and HELP.md files was done according to the documentation provided at
@@ -272,7 +267,6 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 - The user registraton process: [***here.***](assets/giffs/user-registration.gif)
 - Adding and removing tasks: [***here.***](assets/giffs/user-login-add-delete-task.gif)
 - Deleting user account: [***here.***](assets/giffs/delete-account.gif)
-
 
 
 [*Back to top*](#)
