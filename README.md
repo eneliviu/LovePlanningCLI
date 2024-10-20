@@ -316,8 +316,9 @@ The app is currently deployed on github and can be accessed at: https://love-pla
 | `User action feedback` | **User receives a success message after an action is completed**
 | &nbsp;&nbsp;- *Message is printed on the console* | Success message sent to the user | Test if the messages appear after task completion |![warning](https://via.placeholder.com/10/00FF00?text=+) `pass`|
 | `PEP8 code style conventions` | **Code syle follows the PEP8 conventions**
-| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | Feedback on code quality according to PEP8 conventions | Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
+| &nbsp;&nbsp;- *`CI Python Linter` compatibilty* | `CI Python Linter` returns no errors | Python code tested using the [CodeInstitute test service](https://pep8ci.herokuapp.com/#) | ![pass](https://via.placeholder.com/10/00FF00?text=+) `pass` `All clear, no errors found`|
 ---
+
 
 [*Back to top*](#)
 
